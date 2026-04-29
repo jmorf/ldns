@@ -1,44 +1,33 @@
 <script lang="ts">
+    import { RefreshCw } from 'lucide-svelte';
+
     interface Props {
         onClick: () => void | Promise<void>;
         loading: boolean;
+        disabled?: boolean;
+        /**
+         * Kept for backwards compatibility with existing call sites — the
+         * new design is a single tight icon-button regardless of variant.
+         */
+        variant?: 'primary' | 'secondary';
         loadingText?: string;
         defaultText?: string;
-        disabled?: boolean;
-        variant?: "primary" | "secondary";
     }
 
-    let {
-        onClick,
-        loading,
-        loadingText = "Loading...",
-        defaultText = "Refresh",
-        disabled = false,
-        variant = "primary",
-    }: Props = $props();
+    let { onClick, loading, disabled = false }: Props = $props();
 
     async function handleClick() {
         await onClick();
-    }
-
-    function getButtonClasses(variant: string) {
-        const baseClasses =
-            "px-2 py-1.5 sm:px-4 sm:py-2 rounded text-fg font-medium disabled:opacity-50 transition-colors text-sm sm:text-base";
-
-        switch (variant) {
-            case "secondary":
-                return `${baseClasses} bg-surface-3 hover:bg-surface-3 border border-line-strong`;
-            case "primary":
-            default:
-                return `${baseClasses} bg-primary-500 hover:bg-primary-600`;
-        }
     }
 </script>
 
 <button
     onclick={handleClick}
-    class={getButtonClasses(variant)}
     disabled={loading || disabled}
+    aria-label="Refresh data"
+    title="Refresh"
+    class="h-9 px-3 inline-flex items-center gap-1.5 bg-surface-2 border border-line rounded-lg text-fg-muted hover:bg-surface-3 hover:text-fg disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-xs font-medium"
 >
-    {loading ? loadingText : defaultText}
+    <RefreshCw class="w-3.5 h-3.5 {loading ? 'animate-spin' : ''}" />
+    <span class="hidden sm:inline">{loading ? 'Refreshing' : 'Refresh'}</span>
 </button>
