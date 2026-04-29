@@ -126,6 +126,7 @@
 <FaqJsonLd faqData={faqJsonLd} />
 
 <ToolPage
+  eyebrow="dns · all records"
   title="{domain.name} DNS Lookup"
   description="DNS lookup results for {domain.name} — live records using the {queryConfig.endpointName} endpoint"
   domainName={domain.name}
