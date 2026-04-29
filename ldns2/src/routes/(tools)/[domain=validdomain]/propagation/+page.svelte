@@ -74,11 +74,11 @@
         <div class="space-y-4">
             {#each allTypes as type}
                 {@const mismatch = hasDiscrepancy(type)}
-                <div class="bg-gray-800 rounded-lg overflow-hidden border {mismatch ? 'border-yellow-500/50' : 'border-line'}">
-                    <div class="px-6 py-3 bg-gray-900 flex items-center justify-between">
-                        <span class="text-sm font-medium text-white">{type} Records</span>
+                <div class="bg-surface-2 rounded-lg overflow-hidden border {mismatch ? 'border-warn-500/50' : 'border-line'}">
+                    <div class="px-6 py-3 bg-surface flex items-center justify-between">
+                        <span class="text-sm font-medium text-fg">{type} Records</span>
                         {#if mismatch}
-                            <span class="text-xs font-medium text-yellow-400 bg-yellow-400/10 px-2 py-0.5 rounded">Mismatch</span>
+                            <span class="text-xs font-medium text-warn-400 bg-warn-400/10 px-2 py-0.5 rounded">Mismatch</span>
                         {/if}
                     </div>
                     <div class="grid grid-cols-3 divide-x divide-line">
@@ -88,10 +88,10 @@
                                 <p class="text-xs text-fg-muted font-medium mb-2">{endpointNames[ep]}</p>
                                 {#if records.length > 0}
                                     {#each records as record}
-                                        <p class="text-sm text-white font-mono break-all leading-relaxed">{record.data}</p>
+                                        <p class="text-sm text-fg font-mono break-all leading-relaxed">{record.data}</p>
                                     {/each}
                                 {:else}
-                                    <p class="text-sm text-gray-600 italic">No records</p>
+                                    <p class="text-sm text-fg-subtle italic">No records</p>
                                 {/if}
                             </div>
                         {/each}

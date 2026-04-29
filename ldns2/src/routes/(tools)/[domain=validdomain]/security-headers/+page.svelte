@@ -22,9 +22,9 @@
   onMount(() => { if (!result) load(); });
 
   const auditClass = {
-    ok: 'bg-green-500/15 text-green-400 border-green-500/30',
-    warn: 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30',
-    bad: 'bg-red-500/15 text-red-400 border-red-500/30'
+    ok: 'bg-ok-500/15 text-ok-400 border-ok-500/30',
+    warn: 'bg-warn-500/15 text-warn-400 border-warn-500/30',
+    bad: 'bg-bad-500/15 text-bad-400 border-bad-500/30'
   } as const;
 
   const okCount = $derived(result ? result.audit.filter((c) => c.level === 'ok').length : 0);
@@ -51,16 +51,16 @@
   {:else if result}
     <div class="space-y-3">
       {#each result.audit as check}
-        <div class="bg-gray-900 border border-gray-700 rounded-xl p-4">
+        <div class="bg-surface border border-line rounded-xl p-4">
           <div class="flex items-center justify-between mb-2">
-            <span class="font-mono text-sm text-gray-100">{check.label}</span>
+            <span class="font-mono text-sm text-fg">{check.label}</span>
             <span class="px-2 py-0.5 text-[11px] rounded border {auditClass[check.level]}">
               {check.level === 'ok' ? '✓ Good' : check.level === 'warn' ? '! Weak' : '× Missing'}
             </span>
           </div>
-          <p class="text-[11px] text-gray-400">{check.hint}</p>
+          <p class="text-[11px] text-fg-muted">{check.hint}</p>
           {#if check.value}
-            <p class="text-[11px] font-mono text-gray-300 mt-2 break-all p-2 bg-gray-950 rounded">{check.value}</p>
+            <p class="text-[11px] font-mono text-fg-muted mt-2 break-all p-2 bg-surface rounded">{check.value}</p>
           {/if}
         </div>
       {/each}

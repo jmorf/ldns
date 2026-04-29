@@ -29,12 +29,12 @@
         type="text"
         bind:value={domain}
         placeholder="Example.com, domain.net, name.org..."
-        class="w-full bg-gray-900 text-white border border-gray-700 rounded-md px-4 py-2 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:primary"
+        class="w-full bg-surface text-fg border border-line rounded-md px-4 py-2 placeholder-fg-subtle focus:outline-none focus:ring-2 focus:primary"
     />
 
     <button
         type="submit"
-        class="w-full sm:w-auto bg-primary hover:primary text-white font-semibold py-2 px-6 rounded-md transition-colors focus:outline-none focus:ring-2 focus:primary focus:ring-offset-2"
+        class="w-full sm:w-auto bg-primary hover:primary text-fg font-semibold py-2 px-6 rounded-md transition-colors focus:outline-none focus:ring-2 focus:primary focus:ring-offset-2"
     >
         DNS Lookup
     </button>

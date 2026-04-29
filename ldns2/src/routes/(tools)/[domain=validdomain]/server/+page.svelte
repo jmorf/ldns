@@ -61,24 +61,24 @@
     if (!result) load();
   });
 
-  const colorMap = { green: 'text-green-400', yellow: 'text-yellow-400', red: 'text-red-400', gray: 'text-gray-400' } as const;
+  const colorMap = { green: 'text-ok-400', yellow: 'text-warn-400', red: 'text-bad-400', gray: 'text-fg-muted' } as const;
   const bgMap = {
-    green: 'bg-green-500/15 border-green-500/30 text-green-400',
-    yellow: 'bg-yellow-500/15 border-yellow-500/30 text-yellow-400',
-    red: 'bg-red-500/15 border-red-500/30 text-red-400',
-    gray: 'bg-gray-700 border-gray-600 text-gray-400'
+    green: 'bg-ok-500/15 border-ok-500/30 text-ok-400',
+    yellow: 'bg-warn-500/15 border-warn-500/30 text-warn-400',
+    red: 'bg-bad-500/15 border-bad-500/30 text-bad-400',
+    gray: 'bg-surface-3 border-line-strong text-fg-muted'
   } as const;
   const techCategoryClass = {
     cdn: 'bg-primary-500/10 text-primary-300 border-primary-500/30',
-    server: 'bg-gray-700 text-gray-200 border-gray-600',
-    framework: 'bg-green-500/10 text-green-400 border-green-500/30',
-    platform: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
-    hosting: 'bg-gray-700 text-gray-300 border-gray-600'
+    server: 'bg-surface-3 text-fg border-line-strong',
+    framework: 'bg-ok-500/10 text-ok-400 border-ok-500/30',
+    platform: 'bg-warn-500/10 text-warn-400 border-warn-500/30',
+    hosting: 'bg-surface-3 text-fg-muted border-line-strong'
   } as const;
   const auditClass = {
-    ok: 'bg-green-500/15 text-green-400 border-green-500/30',
-    warn: 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30',
-    bad: 'bg-red-500/15 text-red-400 border-red-500/30'
+    ok: 'bg-ok-500/15 text-ok-400 border-ok-500/30',
+    warn: 'bg-warn-500/15 text-warn-400 border-warn-500/30',
+    bad: 'bg-bad-500/15 text-bad-400 border-bad-500/30'
   } as const;
 
   const success = $derived(result && result.ok ? result : null);
@@ -121,7 +121,7 @@
 >
   {#snippet actions()}
     <div class="flex gap-2">
-      <label class="flex items-center gap-1.5 text-[11px] text-gray-400 cursor-pointer">
+      <label class="flex items-center gap-1.5 text-[11px] text-fg-muted cursor-pointer">
         <input type="checkbox" checked={useHttp} onchange={toggleHttp} class="w-3.5 h-3.5" />
         Start from HTTP
       </label>
@@ -136,10 +136,10 @@
     {@const info = success.info}
     <div class="space-y-6">
       <!-- Hero stat block -->
-      <div class="bg-gray-900 border border-gray-700 rounded-xl p-5">
+      <div class="bg-surface border border-line rounded-xl p-5">
         <div class="flex items-end justify-between">
           <div>
-            <p class="text-[10px] uppercase tracking-wider text-gray-500">Response time</p>
+            <p class="text-[10px] uppercase tracking-wider text-fg-subtle">Response time</p>
             <p class="text-4xl font-semibold tabular-nums mt-1 {colorMap[getResponseTimeColor(info.responseTime)]}">
               {formatResponseTime(info.responseTime)}
             </p>
@@ -148,7 +148,7 @@
             {info.status} {info.statusText}
           </span>
         </div>
-        <p class="text-[11px] text-gray-500 mt-3 truncate font-mono" title={info.url}>{info.url}</p>
+        <p class="text-[11px] text-fg-subtle mt-3 truncate font-mono" title={info.url}>{info.url}</p>
       </div>
 
       <!-- Tech stack -->
@@ -158,7 +158,7 @@
             <span class="px-2 py-0.5 text-[11px] font-medium rounded-full border {techCategoryClass[t.category]}">{t.name}</span>
           {/each}
           {#if success.altSvc.http3}
-            <span class="px-2 py-0.5 text-[11px] font-medium rounded-full border bg-green-500/10 text-green-400 border-green-500/30" title={success.altSvc.raw ?? ''}>HTTP/3</span>
+            <span class="px-2 py-0.5 text-[11px] font-medium rounded-full border bg-ok-500/10 text-ok-400 border-ok-500/30" title={success.altSvc.raw ?? ''}>HTTP/3</span>
           {/if}
         </div>
       {/if}
@@ -166,7 +166,7 @@
       <!-- Security headers -->
       <div>
         <SectionHeader id="security-headers" title="Security Headers" />
-        <div class="bg-gray-900 border border-gray-700 rounded-xl p-4">
+        <div class="bg-surface border border-line rounded-xl p-4">
           <div class="flex flex-wrap gap-1.5">
             {#each success.securityHeaders as check}
               <span class="px-2 py-0.5 text-[11px] rounded-md border {auditClass[check.level]}" title="{check.key}: {check.hint}">{check.label}</span>
@@ -179,12 +179,12 @@
       {#if ipv4.length > 0 || ipv6.length > 0}
         <div>
           <SectionHeader id="ip-addresses" title="IP Addresses" />
-          <div class="bg-gray-900 border border-gray-700 rounded-xl divide-y divide-gray-800">
+          <div class="bg-surface border border-line rounded-xl divide-y divide-line">
             {#each ipv4 as ip}
               <div class="flex items-center justify-between gap-3 p-3">
                 <div>
-                  <span class="text-[10px] uppercase tracking-wider text-gray-500 mr-2">IPv4</span>
-                  <span class="font-mono text-sm text-white">{ip}</span>
+                  <span class="text-[10px] uppercase tracking-wider text-fg-subtle mr-2">IPv4</span>
+                  <span class="font-mono text-sm text-fg">{ip}</span>
                 </div>
                 <AsnInline info={asnByIp[ip] ?? null} />
               </div>
@@ -192,8 +192,8 @@
             {#each ipv6 as ip}
               <div class="flex items-center justify-between gap-3 p-3">
                 <div class="min-w-0">
-                  <span class="text-[10px] uppercase tracking-wider text-gray-500 mr-2">IPv6</span>
-                  <span class="font-mono text-sm text-white truncate inline-block max-w-[260px] align-middle" title={ip}>{ip}</span>
+                  <span class="text-[10px] uppercase tracking-wider text-fg-subtle mr-2">IPv6</span>
+                  <span class="font-mono text-sm text-fg truncate inline-block max-w-[260px] align-middle" title={ip}>{ip}</span>
                 </div>
                 <AsnInline info={asnByIp[ip] ?? null} />
               </div>
@@ -205,7 +205,7 @@
       <!-- Redirect chain -->
       <div>
         <SectionHeader id="redirect-chain" title="Redirect Chain" />
-        <div class="bg-gray-900 border border-gray-700 rounded-xl p-4">
+        <div class="bg-surface border border-line rounded-xl p-4">
           {#if success.redirects && success.redirects.redirectCount > 0}
             <div class="space-y-2">
               {#each success.redirects.hops as hop, i}
@@ -214,10 +214,10 @@
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2">
                       <span class="text-xs font-mono tabular-nums {colorMap[getStatusColor(hop.status)]}">{hop.status}</span>
-                      <span class="text-[10px] text-gray-500 tabular-nums">{formatResponseTime(hop.responseTime)}</span>
+                      <span class="text-[10px] text-fg-subtle tabular-nums">{formatResponseTime(hop.responseTime)}</span>
                     </div>
-                    <p class="text-xs text-gray-400 truncate" title={hop.url}>{hop.url}</p>
-                    <p class="text-[11px] text-gray-500 truncate" title={hop.location}>→ {hop.location}</p>
+                    <p class="text-xs text-fg-muted truncate" title={hop.url}>{hop.url}</p>
+                    <p class="text-[11px] text-fg-subtle truncate" title={hop.location}>→ {hop.location}</p>
                   </div>
                 </div>
               {/each}
@@ -231,12 +231,12 @@
                   <span class="text-xs font-mono tabular-nums {colorMap[getStatusColor(success.redirects.finalStatus)]}">
                     {success.redirects.finalStatus} {success.redirects.finalStatusText}
                   </span>
-                  <p class="text-xs text-gray-400 truncate" title={success.redirects.finalUrl}>{success.redirects.finalUrl}</p>
+                  <p class="text-xs text-fg-muted truncate" title={success.redirects.finalUrl}>{success.redirects.finalUrl}</p>
                 </div>
               </div>
             </div>
           {:else}
-            <p class="text-xs text-gray-500">No redirects detected — direct connection to {info.url}.</p>
+            <p class="text-xs text-fg-subtle">No redirects detected — direct connection to {info.url}.</p>
           {/if}
         </div>
       </div>
@@ -245,38 +245,38 @@
       {#if info.cacheControl || info.etag || info.age !== null || info.lastModified}
         <div>
           <SectionHeader id="cache" title="Cache" />
-          <div class="bg-gray-900 border border-gray-700 rounded-xl divide-y divide-gray-800">
+          <div class="bg-surface border border-line rounded-xl divide-y divide-line">
             {#if info.cacheControl}
-              <div class="flex justify-between items-start gap-3 p-3 text-xs"><span class="text-[10px] text-gray-500 uppercase tracking-wider">Cache-Control</span><span class="font-mono text-gray-200 text-right">{info.cacheControl}</span></div>
+              <div class="flex justify-between items-start gap-3 p-3 text-xs"><span class="text-[10px] text-fg-subtle uppercase tracking-wider">Cache-Control</span><span class="font-mono text-fg text-right">{info.cacheControl}</span></div>
             {/if}
             {#if info.age !== null}
-              <div class="flex justify-between items-center gap-3 p-3 text-xs"><span class="text-[10px] text-gray-500 uppercase tracking-wider">Age</span><span class="font-mono text-gray-200 tabular-nums">{info.age}s</span></div>
+              <div class="flex justify-between items-center gap-3 p-3 text-xs"><span class="text-[10px] text-fg-subtle uppercase tracking-wider">Age</span><span class="font-mono text-fg tabular-nums">{info.age}s</span></div>
             {/if}
             {#if info.etag}
-              <div class="flex justify-between items-center gap-3 p-3 text-xs"><span class="text-[10px] text-gray-500 uppercase tracking-wider">ETag</span><span class="font-mono text-gray-200 truncate max-w-[260px]" title={info.etag}>{info.etag}</span></div>
+              <div class="flex justify-between items-center gap-3 p-3 text-xs"><span class="text-[10px] text-fg-subtle uppercase tracking-wider">ETag</span><span class="font-mono text-fg truncate max-w-[260px]" title={info.etag}>{info.etag}</span></div>
             {/if}
             {#if info.lastModified}
-              <div class="flex justify-between items-center gap-3 p-3 text-xs"><span class="text-[10px] text-gray-500 uppercase tracking-wider">Last-Modified</span><span class="font-mono text-gray-200">{info.lastModified}</span></div>
+              <div class="flex justify-between items-center gap-3 p-3 text-xs"><span class="text-[10px] text-fg-subtle uppercase tracking-wider">Last-Modified</span><span class="font-mono text-fg">{info.lastModified}</span></div>
             {/if}
           </div>
         </div>
       {/if}
 
       <!-- Full headers -->
-      <details class="bg-gray-900 border border-gray-700 rounded-xl">
-        <summary class="p-4 cursor-pointer text-[11px] font-semibold uppercase tracking-wider text-primary-400 hover:text-white list-none">All Headers ({Object.keys(info.headers).length})</summary>
+      <details class="bg-surface border border-line rounded-xl">
+        <summary class="p-4 cursor-pointer text-[11px] font-semibold uppercase tracking-wider text-primary-400 hover:text-fg list-none">All Headers ({Object.keys(info.headers).length})</summary>
         <div class="px-4 pb-4 space-y-1 max-h-72 overflow-y-auto">
           {#each Object.entries(info.headers).sort((a, b) => a[0].localeCompare(b[0])) as [k, v]}
             <div class="flex justify-between items-start gap-2 text-[11px]">
-              <span class="text-gray-500 font-mono shrink-0">{k}</span>
-              <span class="font-mono text-gray-300 text-right break-all">{v}</span>
+              <span class="text-fg-subtle font-mono shrink-0">{k}</span>
+              <span class="font-mono text-fg-muted text-right break-all">{v}</span>
             </div>
           {/each}
         </div>
       </details>
 
       <!-- Powered-by footer -->
-      <p class="text-[10px] text-gray-600 text-center pt-2">
+      <p class="text-[10px] text-fg-subtle text-center pt-2">
         Headers fetched server-side via ldns.com. <a class="text-primary-500 hover:underline" href="/{domain.name}/headers">View raw headers →</a>
       </p>
     </div>

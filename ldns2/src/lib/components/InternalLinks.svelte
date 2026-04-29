@@ -38,34 +38,34 @@
 </script>
 
 <div>
-    <h3 class="text-lg font-semibold text-white mb-4">More tools for {domain}</h3>
+    <h3 class="text-lg font-semibold text-fg mb-4">More tools for {domain}</h3>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {#each links as link}
             <a
                 href={link.href}
-                class="group flex items-center gap-3 p-3 bg-gray-800 border border-gray-700 rounded-lg hover:border-primary-500 hover:bg-gray-750 transition-colors"
+                class="group flex items-center gap-3 p-3 bg-surface-2 border border-line rounded-lg hover:border-primary-500 hover:bg-surface-3 transition-colors"
             >
                 <div class="flex-1 min-w-0">
-                    <div class="text-sm font-medium text-white group-hover:text-primary-400 transition-colors">
+                    <div class="text-sm font-medium text-fg group-hover:text-primary-400 transition-colors">
                         {link.label}
                     </div>
-                    <div class="text-xs text-gray-400">{link.description}</div>
+                    <div class="text-xs text-fg-muted">{link.description}</div>
                 </div>
-                <ArrowRight class="w-4 h-4 text-gray-500 group-hover:text-primary-400 flex-shrink-0 transition-colors" />
+                <ArrowRight class="w-4 h-4 text-fg-subtle group-hover:text-primary-400 flex-shrink-0 transition-colors" />
             </a>
         {/each}
         {#each existingLinks as link}
             <a
                 href={link.href}
-                class="group flex items-center gap-3 p-3 bg-gray-800 border border-gray-700 rounded-lg hover:border-primary-500 hover:bg-gray-750 transition-colors"
+                class="group flex items-center gap-3 p-3 bg-surface-2 border border-line rounded-lg hover:border-primary-500 hover:bg-surface-3 transition-colors"
             >
                 <div class="flex-1 min-w-0">
-                    <div class="text-sm font-medium text-white group-hover:text-primary-400 transition-colors">
+                    <div class="text-sm font-medium text-fg group-hover:text-primary-400 transition-colors">
                         {link.label}
                     </div>
-                    <div class="text-xs text-gray-400">{link.description}</div>
+                    <div class="text-xs text-fg-muted">{link.description}</div>
                 </div>
-                <ArrowRight class="w-4 h-4 text-gray-500 group-hover:text-primary-400 flex-shrink-0 transition-colors" />
+                <ArrowRight class="w-4 h-4 text-fg-subtle group-hover:text-primary-400 flex-shrink-0 transition-colors" />
             </a>
         {/each}
     </div>

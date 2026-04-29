@@ -39,11 +39,11 @@
 {#if generatedDomains.length > 0}
     <div class="mt-8 mb-8">
         <div class="mb-4">
-            <h3 class="text-xl font-semibold text-white flex items-center gap-2">
+            <h3 class="text-xl font-semibold text-fg flex items-center gap-2">
                 <Link class="w-5 h-5" />
                 Related Domains
             </h3>
-            <p class="text-sm text-gray-400 mt-1">
+            <p class="text-sm text-fg-muted mt-1">
                 Explore related domains, subdomains, and alternative TLDs
             </p>
         </div>
@@ -53,7 +53,7 @@
                 <a
                     href="/{related.domain}"
                     data-sveltekit-preload-data="off"
-                    class="group relative flex flex-col bg-gray-800 border border-gray-700 rounded-lg p-3 hover:bg-gray-700 hover:border-gray-600 transition-all duration-200 will-change-[background-color,border-color]"
+                    class="group relative flex flex-col bg-surface-2 border border-line rounded-lg p-3 hover:bg-surface-3 hover:border-line-strong transition-all duration-200 will-change-[background-color,border-color]"
                     title={related.description}
                     style="transform: translateZ(0)"
                 >
@@ -65,14 +65,14 @@
                                 </Badge>
                             </div>
                         </div>
-                        <ExternalLink class="w-4 h-4 text-gray-500 group-hover:text-gray-300 flex-shrink-0" />
+                        <ExternalLink class="w-4 h-4 text-fg-subtle group-hover:text-fg-muted flex-shrink-0" />
                     </div>
-                    
-                    <div class="font-mono text-sm text-white break-all">
+
+                    <div class="font-mono text-sm text-fg break-all">
                         {related.domain}
                     </div>
-                    
-                    <div class="text-xs text-gray-500 mt-1">
+
+                    <div class="text-xs text-fg-subtle mt-1">
                         {related.description}
                     </div>
                 </a>
@@ -80,7 +80,7 @@
         </div>
 
         {#if Object.keys(groupedDomainsData).length > 1}
-            <div class="mt-4 flex flex-wrap gap-2 text-xs text-gray-500">
+            <div class="mt-4 flex flex-wrap gap-2 text-xs text-fg-subtle">
                 <span>Found:</span>
                 {#each Object.entries(groupedDomainsData) as [type, domains]}
                     <span>

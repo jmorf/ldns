@@ -87,7 +87,7 @@
                             <CopyButton text={record.data} size="sm" variant="compact" />
                         </div>
                     </div>
-                    <p class="text-white font-mono text-sm break-all">{record.data}</p>
+                    <p class="text-fg font-mono text-sm break-all">{record.data}</p>
                 </div>
             {/each}
         </div>

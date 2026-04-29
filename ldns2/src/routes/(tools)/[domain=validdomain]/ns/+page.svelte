@@ -54,7 +54,7 @@
     {#if nsRecords.length > 0}
         <div class="bg-surface-2 border border-line rounded-xl overflow-hidden">
             <table class="w-full">
-                <thead class="bg-gray-900">
+                <thead class="bg-surface">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-fg-muted uppercase tracking-wider">Nameserver</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-fg-muted uppercase tracking-wider">TTL</th>
@@ -63,8 +63,8 @@
                 </thead>
                 <tbody class="divide-y divide-line">
                     {#each nsRecords as record}
-                        <tr class="hover:bg-gray-750 transition-colors">
-                            <td class="px-6 py-4 text-white font-mono text-sm">{record.data}</td>
+                        <tr class="hover:bg-surface-3 transition-colors">
+                            <td class="px-6 py-4 text-fg font-mono text-sm">{record.data}</td>
                             <td class="px-6 py-4 text-fg-muted font-mono text-sm">{record.ttl}s</td>
                             <td class="px-6 py-4">
                                 <CopyButton text={record.data} size="sm" variant="compact" />

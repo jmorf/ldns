@@ -113,10 +113,10 @@
     // Get progress bar color
     function getProgressColor() {
         const percentage = getProgressPercentage();
-        if (percentage < 8) return "bg-red-500"; // <30 days
-        if (percentage < 25) return "bg-orange-500"; // <90 days  
-        if (percentage < 50) return "bg-yellow-500"; // <180 days
-        return "bg-green-500";
+        if (percentage < 8) return "bg-bad-500"; // <30 days
+        if (percentage < 25) return "bg-warn-500"; // <90 days
+        if (percentage < 50) return "bg-warn-500"; // <180 days
+        return "bg-ok-500";
     }
 </script>
 
@@ -132,41 +132,41 @@
             <Badge variant={getStatusColor()} class="text-xs">
                 {formatTimeRemaining()}
             </Badge>
-            <span class="text-xs text-gray-400">
+            <span class="text-xs text-fg-muted">
                 ({getStatusText()})
             </span>
         </div>
     {:else}
         <!-- Detailed view -->
-        <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+        <div class="bg-surface-2 rounded-lg p-4 border border-line">
             <div class="flex items-center gap-2 mb-3">
                 {#if expirationData()?.isExpired || expirationData()?.isCritical || expirationData()?.isUrgent}
                     <AlertCircle class="w-5 h-5 text-{getStatusColor()}-400" />
                 {:else}
                     <CheckCircle class="w-5 h-5 text-{getStatusColor()}-400" />
                 {/if}
-                <h3 class="text-lg font-semibold text-white">Domain Expiration</h3>
+                <h3 class="text-lg font-semibold text-fg">Domain Expiration</h3>
                 <Badge variant={getStatusColor()} class="text-sm">
                     {getStatusText()}
                 </Badge>
             </div>
-            
+
             <div class="space-y-4">
                 <!-- Main expiration display -->
                 <div class="flex items-center justify-between">
                     <div>
-                        <div class="text-2xl font-bold text-white">
+                        <div class="text-2xl font-bold text-fg">
                             {formatTimeRemaining()}
                         </div>
-                        <div class="text-sm text-gray-400">
+                        <div class="text-sm text-fg-muted">
                             {expirationData()?.isExpired ? 'Expired on' : 'Expires on'} {expirationData()?.expirationDate.toLocaleDateString()}
                         </div>
                     </div>
                     <div class="text-right">
-                        <div class="text-lg font-semibold text-white">
+                        <div class="text-lg font-semibold text-fg">
                             {expirationData()?.totalDays}
                         </div>
-                        <div class="text-xs text-gray-400">
+                        <div class="text-xs text-fg-muted">
                             {expirationData()?.isExpired ? 'days ago' : 'days left'}
                         </div>
                     </div>
@@ -175,12 +175,12 @@
                 <!-- Progress bar -->
                 {#if showProgressBar && !expirationData()?.isExpired}
                     <div class="space-y-2">
-                        <div class="flex justify-between text-xs text-gray-400">
+                        <div class="flex justify-between text-xs text-fg-muted">
                             <span>Time Remaining</span>
                             <span>{Math.round(getProgressPercentage())}%</span>
                         </div>
-                        <div class="w-full bg-gray-700 rounded-full h-2">
-                            <div 
+                        <div class="w-full bg-surface-3 rounded-full h-2">
+                            <div
                                 class="h-2 rounded-full transition-all duration-300 {getProgressColor()}"
                                 style="width: {getProgressPercentage()}%"
                             ></div>
@@ -219,23 +219,23 @@
 
                 <!-- Action recommendations -->
                 {#if expirationData()?.isExpired}
-                    <div class="bg-red-900/20 border border-red-800 rounded p-3">
-                        <div class="text-xs text-red-400 font-medium">Immediate Action Required</div>
-                        <div class="text-xs text-red-300 mt-1">
+                    <div class="bg-bad-500/10 border border-bad-500/30 rounded p-3">
+                        <div class="text-xs text-bad-400 font-medium">Immediate Action Required</div>
+                        <div class="text-xs text-bad-400 mt-1">
                             Domain has expired! Contact your registrar immediately to renew and prevent loss of domain.
                         </div>
                     </div>
                 {:else if expirationData()?.isCritical}
-                    <div class="bg-red-900/20 border border-red-800 rounded p-3">
-                        <div class="text-xs text-red-400 font-medium">Critical Action Required</div>
-                        <div class="text-xs text-red-300 mt-1">
+                    <div class="bg-bad-500/10 border border-bad-500/30 rounded p-3">
+                        <div class="text-xs text-bad-400 font-medium">Critical Action Required</div>
+                        <div class="text-xs text-bad-400 mt-1">
                             Domain expires within 7 days. Renew immediately to avoid service disruption.
                         </div>
                     </div>
                 {:else if expirationData()?.isUrgent}
-                    <div class="bg-orange-900/20 border border-orange-800 rounded p-3">
-                        <div class="text-xs text-orange-400 font-medium">Renewal Recommended</div>
-                        <div class="text-xs text-orange-300 mt-1">
+                    <div class="bg-warn-500/10 border border-warn-500/30 rounded p-3">
+                        <div class="text-xs text-warn-400 font-medium">Renewal Recommended</div>
+                        <div class="text-xs text-warn-400 mt-1">
                             Domain expires within 30 days. Plan renewal to ensure continuity.
                         </div>
                     </div>
@@ -247,16 +247,16 @@
     <!-- No expiration date available -->
     {#if variant === "compact"}
         <div class="flex items-center gap-2">
-            <Clock class="w-4 h-4 text-gray-500" />
-            <span class="text-xs text-gray-500">Expiration unknown</span>
+            <Clock class="w-4 h-4 text-fg-subtle" />
+            <span class="text-xs text-fg-subtle">Expiration unknown</span>
         </div>
     {:else}
-        <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+        <div class="bg-surface-2 rounded-lg p-4 border border-line">
             <div class="flex items-center gap-2 mb-2">
-                <Clock class="w-5 h-5 text-gray-500" />
-                <h3 class="text-lg font-semibold text-white">Domain Expiration</h3>
+                <Clock class="w-5 h-5 text-fg-subtle" />
+                <h3 class="text-lg font-semibold text-fg">Domain Expiration</h3>
             </div>
-            <div class="text-gray-400 text-sm">
+            <div class="text-fg-muted text-sm">
                 Expiration date not available in RDAP data
             </div>
         </div>

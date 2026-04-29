@@ -184,7 +184,7 @@
     <div class="relative zone-export-dropdown">
         <button
             onclick={() => showDropdown = !showDropdown}
-            class={`${getSizeClasses()} flex items-center gap-1 bg-gray-600 hover:bg-gray-700 text-white rounded transition-colors`}
+            class={`${getSizeClasses()} flex items-center gap-1 bg-surface-3 hover:bg-surface-3 text-fg rounded transition-colors`}
             disabled={!dnsData}
             title="Export BIND-compatible zone file"
         >
@@ -194,16 +194,16 @@
         </button>
 
         {#if showDropdown}
-            <div class="absolute right-0 mt-1 w-40 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-50">
+            <div class="absolute right-0 mt-1 w-40 bg-surface-2 border border-line rounded-md shadow-lg z-50">
                 <button
                     onclick={exportZoneFile}
-                    class="w-full px-3 py-2 text-left text-sm text-white hover:bg-gray-700 rounded-t-md transition-colors"
+                    class="w-full px-3 py-2 text-left text-sm text-fg hover:bg-surface-3 rounded-t-md transition-colors"
                 >
                     Download Zone File
                 </button>
                 <button
                     onclick={copyZoneFile}
-                    class="w-full px-3 py-2 text-left text-sm text-white hover:bg-gray-700 rounded-b-md transition-colors"
+                    class="w-full px-3 py-2 text-left text-sm text-fg hover:bg-surface-3 rounded-b-md transition-colors"
                 >
                     Copy to Clipboard
                 </button>
@@ -214,7 +214,7 @@
     <!-- Icon variant - just download -->
     <button
         onclick={exportZoneFile}
-        class={`${getSizeClasses()} flex items-center gap-1 bg-gray-600 hover:bg-gray-700 text-white rounded transition-colors`}
+        class={`${getSizeClasses()} flex items-center gap-1 bg-surface-3 hover:bg-surface-3 text-fg rounded transition-colors`}
         disabled={!dnsData}
         title="Download BIND zone file"
     >

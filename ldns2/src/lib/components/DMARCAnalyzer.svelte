@@ -319,10 +319,10 @@
     </div>
 {:else}
     <!-- Detailed view -->
-    <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+    <div class="bg-surface-2 rounded-lg p-4 border border-line">
         <div class="flex items-center gap-2 mb-3">
             <Shield class="w-5 h-5 text-blue-400" />
-            <h3 class="text-lg font-semibold text-white">DMARC Record Analysis</h3>
+            <h3 class="text-lg font-semibold text-fg">DMARC Record Analysis</h3>
             {#if dmarcAnalysis().hasDmarc}
                 <Badge variant={dmarcAnalysis().valid ? 'green' : 'red'} class="text-sm">
                     {dmarcAnalysis().valid ? 'Valid' : 'Invalid'}
@@ -333,13 +333,13 @@
                 </Badge>
             {/if}
         </div>
-        
+
         {#if !dmarcAnalysis().hasDmarc}
             <!-- No DMARC record -->
-            <div class="text-gray-400 text-sm">
+            <div class="text-fg-muted text-sm">
                 No DMARC record was found. This means the domain has no email authentication policy.
             </div>
-            <div class="text-gray-400 text-sm mt-2">
+            <div class="text-fg-muted text-sm mt-2">
                 <strong>Recommendation:</strong> Add a DMARC record to protect against email spoofing.
             </div>
         {:else}
@@ -349,8 +349,8 @@
                     <div class="space-y-2 mb-4">
                         {#each dmarcAnalysis().issues as issue}
                             <div class="flex items-start gap-2 text-sm">
-                                <AlertCircle class="w-4 h-4 text-yellow-400 mt-0.5" />
-                                <div class="text-yellow-300">{issue}</div>
+                                <AlertCircle class="w-4 h-4 text-warn-400 mt-0.5" />
+                                <div class="text-warn-400">{issue}</div>
                             </div>
                         {/each}
                     </div>
@@ -359,24 +359,24 @@
                 <!-- Parsed tags -->
                 {#each dmarcAnalysis().records as record}
                     <div class="space-y-2 mb-4">
-                        <div class="text-sm font-medium text-white mb-2">DMARC Tags</div>
+                        <div class="text-sm font-medium text-fg mb-2">DMARC Tags</div>
                         <div class="grid gap-2">
                             {#each record.parsed.tags as tag}
-                                <div class="bg-gray-900 rounded p-2 flex items-start gap-2">
+                                <div class="bg-surface rounded p-2 flex items-start gap-2">
                                     <div class="flex-shrink-0">
                                         {#if tag.valid}
-                                            <CheckCircle class="w-4 h-4 text-green-400 mt-0.5" />
+                                            <CheckCircle class="w-4 h-4 text-ok-400 mt-0.5" />
                                         {:else}
-                                            <AlertCircle class="w-4 h-4 text-red-400 mt-0.5" />
+                                            <AlertCircle class="w-4 h-4 text-bad-400 mt-0.5" />
                                         {/if}
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center gap-2">
                                             <span class="font-mono text-sm text-blue-400">{tag.name}={tag.value}</span>
                                         </div>
-                                        <div class="text-xs text-gray-400 mt-1">{tag.description}</div>
+                                        <div class="text-xs text-fg-muted mt-1">{tag.description}</div>
                                         {#if tag.errorDetail}
-                                            <div class="text-xs text-red-400 mt-1">{tag.errorDetail}</div>
+                                            <div class="text-xs text-bad-400 mt-1">{tag.errorDetail}</div>
                                         {/if}
                                     </div>
                                 </div>
@@ -387,33 +387,33 @@
 
                 <!-- DMARC records table -->
                 <div class="mt-4">
-                    <div class="text-sm font-medium text-white mb-2">DNS Record</div>
-                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                    <div class="text-sm font-medium text-fg mb-2">DNS Record</div>
+                    <div class="bg-surface rounded-lg overflow-hidden">
                         <table class="w-full">
-                            <thead class="bg-gray-800">
+                            <thead class="bg-surface-2">
                                 <tr>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Type</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Data</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">TTL</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-fg-muted uppercase tracking-wider">Type</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-fg-muted uppercase tracking-wider">Data</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-fg-muted uppercase tracking-wider">TTL</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-fg-muted uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-gray-900 divide-y divide-gray-700">
+                            <tbody class="bg-surface divide-y divide-line">
                                 {#each dmarcRecords as record, index}
-                                    <tr class="hover:bg-gray-800 transition-colors">
-                                        <td class="px-4 py-3 text-sm text-gray-300">
+                                    <tr class="hover:bg-surface-3 transition-colors">
+                                        <td class="px-4 py-3 text-sm text-fg-muted">
                                             <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100">
                                                 TXT
                                             </span>
                                         </td>
-                                        <td class="px-4 py-3 text-sm font-medium text-white break-words">
+                                        <td class="px-4 py-3 text-sm font-medium text-fg break-words">
                                             <span class="font-mono">{record.data}</span>
                                         </td>
-                                        <td class="px-4 py-3 text-sm text-gray-300">
+                                        <td class="px-4 py-3 text-sm text-fg-muted">
                                             <span class="font-mono">{record.ttl}</span>
                                         </td>
-                                        <td class="px-4 py-3 text-sm text-gray-300">
-                                            <CopyButton 
+                                        <td class="px-4 py-3 text-sm text-fg-muted">
+                                            <CopyButton
                                                 text={record.data}
                                                 size="sm"
                                                 variant="compact"

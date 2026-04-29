@@ -40,7 +40,7 @@
     <form
         class={`flex rounded-lg focus-within:ring-2 ${
             isValidDomain
-                ? "ring-2 ring-green-500 focus-within:ring-green-500"
+                ? "ring-2 ring-ok-500 focus-within:ring-ok-500"
                 : "ring-0 focus-within:ring-primary-500"
         }`}
         onsubmit={handleSubmit}
@@ -51,15 +51,15 @@
             placeholder="Example.com, domain.net, name.org…"
             title="Enter a domain name to query"
             required
-            class={`flex-1 py-4 px-6 text-lg rounded-s-lg bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-0 ${
+            class={`flex-1 py-4 px-6 text-lg rounded-s-lg bg-surface-2 border border-line-strong text-fg placeholder-fg-subtle focus:outline-none focus:ring-0 ${
                 isValidDomain
-                    ? "border-green-500 focus:border-green-500"
-                    : "focus:border-gray-300"
+                    ? "border-ok-500/30 focus:border-ok-500/30"
+                    : "focus:border-line-strong"
             }`}
         />
         <button
-            class={`rounded-e-lg py-4 px-6 bg-primary-600 hover:bg-primary-700 text-white transition-colors border-l-0 ${
-                isValidDomain ? "border-green-500" : ""
+            class={`rounded-e-lg py-4 px-6 bg-primary-600 hover:bg-primary-700 text-fg transition-colors border-l-0 ${
+                isValidDomain ? "border-ok-500/30" : ""
             }`}
             type="submit"
         >

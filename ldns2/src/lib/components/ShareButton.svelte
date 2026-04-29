@@ -38,14 +38,14 @@
     }
 
     function getButtonClasses(variant: string) {
-        const baseClasses = "px-2 py-1.5 sm:px-4 sm:py-2 rounded text-white font-medium transition-colors flex items-center gap-2 relative text-sm sm:text-base";
-        
+        const baseClasses = "px-2 py-1.5 sm:px-4 sm:py-2 rounded text-fg font-medium transition-colors flex items-center gap-2 relative text-sm sm:text-base";
+
         switch (variant) {
             case "primary":
                 return `${baseClasses} bg-primary-500 hover:bg-primary-600`;
             case "secondary":
             default:
-                return `${baseClasses} bg-gray-600 hover:bg-gray-700 border border-gray-500`;
+                return `${baseClasses} bg-surface-3 hover:bg-surface-3 border border-line-strong`;
         }
     }
 </script>
@@ -59,7 +59,7 @@
     Share
     
     {#if showCopiedTooltip}
-        <div class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-sm px-2 py-1 rounded whitespace-nowrap pointer-events-none">
+        <div class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-surface-2 text-fg text-sm px-2 py-1 rounded whitespace-nowrap pointer-events-none">
             Link copied!
         </div>
     {/if}

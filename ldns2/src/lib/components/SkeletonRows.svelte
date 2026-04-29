@@ -8,8 +8,8 @@
 
 <div class="py-4 space-y-2">
   {#each Array(rows) as _, i}
-    <div class={`h-3 bg-gray-800 rounded ${widths[i % widths.length]} relative overflow-hidden`}>
-      <div class="absolute inset-0 bg-gradient-to-r from-transparent via-gray-700/50 to-transparent shimmer"></div>
+    <div class={`h-3 bg-surface-2 rounded ${widths[i % widths.length]} relative overflow-hidden`}>
+      <div class="absolute inset-0 bg-gradient-to-r from-transparent via-surface-3/50 to-transparent shimmer"></div>
     </div>
   {/each}
 </div>

@@ -52,20 +52,20 @@
     {/snippet}
 
     {#if aRecords.length > 0}
-        <div class="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+        <div class="bg-surface-2 rounded-lg overflow-hidden border border-line">
             <table class="w-full">
-                <thead class="bg-gray-900">
+                <thead class="bg-surface">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">IPv4 Address</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">TTL</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-fg-muted uppercase tracking-wider">IPv4 Address</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-fg-muted uppercase tracking-wider">TTL</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-fg-muted uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-700">
+                <tbody class="divide-y divide-line">
                     {#each aRecords as record}
-                        <tr class="hover:bg-gray-750 transition-colors">
-                            <td class="px-6 py-4 text-white font-mono text-sm">{record.data}</td>
-                            <td class="px-6 py-4 text-gray-300 font-mono text-sm">{record.ttl}s</td>
+                        <tr class="hover:bg-surface-3 transition-colors">
+                            <td class="px-6 py-4 text-fg font-mono text-sm">{record.data}</td>
+                            <td class="px-6 py-4 text-fg-muted font-mono text-sm">{record.ttl}s</td>
                             <td class="px-6 py-4">
                                 <CopyButton text={record.data} size="sm" variant="compact" />
                             </td>
@@ -75,8 +75,8 @@
             </table>
         </div>
     {:else if domain.toolState.dns.hasData}
-        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 text-center">
-            <p class="text-gray-400">No A records found for {domain.name}. This domain may not have an IPv4 address configured.</p>
+        <div class="bg-surface-2 rounded-lg p-6 border border-line text-center">
+            <p class="text-fg-muted">No A records found for {domain.name}. This domain may not have an IPv4 address configured.</p>
         </div>
     {/if}
 </SEOToolPage>

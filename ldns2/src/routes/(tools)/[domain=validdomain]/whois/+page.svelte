@@ -66,19 +66,19 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <div class="bg-surface-2 border border-line rounded-xl p-4">
                 <div class="text-xs text-fg-muted uppercase mb-1">Registered</div>
-                <div class="text-white font-medium text-sm">{formatDate(registrationDate)}</div>
+                <div class="text-fg font-medium text-sm">{formatDate(registrationDate)}</div>
             </div>
             <div class="bg-surface-2 border border-line rounded-xl p-4">
                 <div class="text-xs text-fg-muted uppercase mb-1">Expires</div>
-                <div class="text-white font-medium text-sm">{formatDate(expirationDate)}</div>
+                <div class="text-fg font-medium text-sm">{formatDate(expirationDate)}</div>
             </div>
             <div class="bg-surface-2 border border-line rounded-xl p-4">
                 <div class="text-xs text-fg-muted uppercase mb-1">Last Updated</div>
-                <div class="text-white font-medium text-sm">{formatDate(lastUpdated)}</div>
+                <div class="text-fg font-medium text-sm">{formatDate(lastUpdated)}</div>
             </div>
             <div class="bg-surface-2 border border-line rounded-xl p-4">
                 <div class="text-xs text-fg-muted uppercase mb-1">Registrar</div>
-                <div class="text-white font-medium text-sm truncate">{registrar || 'N/A'}</div>
+                <div class="text-fg font-medium text-sm truncate">{registrar || 'N/A'}</div>
             </div>
         </div>
 
@@ -88,7 +88,7 @@
                 <h3 class="text-sm font-medium text-fg-muted uppercase mb-3">Domain Status</h3>
                 <div class="flex flex-wrap gap-2">
                     {#each rdapData.status as status}
-                        <Badge color={undefined} class="text-xs bg-gray-700 text-gray-100 border border-gray-600">{status}</Badge>
+                        <Badge color={undefined} class="text-xs bg-surface-3 text-fg border border-line-strong">{status}</Badge>
                     {/each}
                 </div>
             </div>
@@ -97,13 +97,13 @@
         <!-- Nameservers -->
         {#if rdapData.nameservers && rdapData.nameservers.length > 0}
             <div class="bg-surface-2 border border-line rounded-xl overflow-hidden mb-6">
-                <div class="px-4 py-3 bg-gray-900">
+                <div class="px-4 py-3 bg-surface">
                     <h3 class="text-sm font-medium text-fg-muted uppercase">Nameservers</h3>
                 </div>
                 <div class="divide-y divide-line">
                     {#each rdapData.nameservers as ns}
                         <div class="px-4 py-3 flex items-center justify-between">
-                            <span class="text-white font-mono text-sm">{ns}</span>
+                            <span class="text-fg font-mono text-sm">{ns}</span>
                             <CopyButton text={ns} size="sm" variant="compact" />
                         </div>
                     {/each}

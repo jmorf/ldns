@@ -3,7 +3,7 @@
  * that DNS data renders identically across the popup and the website.
  *
  * Surfaces are CSS custom properties that switch on the html.dark / html.light
- * class. The `theme.ts` module sets that class based on user pref + OS.
+ * class. The `theme.svelte.ts` module sets that class based on user pref + OS.
  */
 
 :root,

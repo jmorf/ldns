@@ -213,7 +213,7 @@
     <div class="relative export-dropdown">
         <button
             onclick={() => showDropdown = !showDropdown}
-            class={`${getSizeClasses()} flex items-center gap-1 bg-gray-600 hover:bg-gray-700 text-white rounded transition-colors`}
+            class={`${getSizeClasses()} flex items-center gap-1 bg-surface-3 hover:bg-surface-3 text-fg rounded transition-colors`}
             disabled={!data || data.length === 0}
         >
             <File class="w-3 h-3" />
@@ -222,23 +222,23 @@
         </button>
 
         {#if showDropdown}
-            <div class="absolute right-0 mt-1 w-32 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-50">
+            <div class="absolute right-0 mt-1 w-32 bg-surface-2 border border-line rounded-md shadow-lg z-50">
                 <button
                     onclick={exportToJSON}
-                    class="w-full px-3 py-2 text-left text-sm text-white hover:bg-gray-700 rounded-t-md transition-colors"
+                    class="w-full px-3 py-2 text-left text-sm text-fg hover:bg-surface-3 rounded-t-md transition-colors"
                 >
                     Export JSON
                 </button>
                 <button
                     onclick={exportToCSV}
-                    class="w-full px-3 py-2 text-left text-sm text-white hover:bg-gray-700 transition-colors"
+                    class="w-full px-3 py-2 text-left text-sm text-fg hover:bg-surface-3 transition-colors"
                 >
                     Export CSV
                 </button>
                 {#if pdfData && domain && pdfTitle}
                     <button
                         onclick={exportToPDF}
-                        class="w-full px-3 py-2 text-left text-sm text-white hover:bg-gray-700 rounded-b-md transition-colors"
+                        class="w-full px-3 py-2 text-left text-sm text-fg hover:bg-surface-3 rounded-b-md transition-colors"
                     >
                         Export PDF
                     </button>
@@ -250,7 +250,7 @@
     <!-- Icon variant - just JSON export -->
     <button
         onclick={exportToJSON}
-        class={`${getSizeClasses()} flex items-center gap-1 bg-gray-600 hover:bg-gray-700 text-white rounded transition-colors`}
+        class={`${getSizeClasses()} flex items-center gap-1 bg-surface-3 hover:bg-surface-3 text-fg rounded transition-colors`}
         disabled={!data || data.length === 0}
         title="Export as JSON"
     >

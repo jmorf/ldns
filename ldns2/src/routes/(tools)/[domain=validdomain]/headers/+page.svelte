@@ -62,14 +62,14 @@
       <input
         bind:value={filter}
         placeholder="Filter headers…"
-        class="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+        class="w-full px-3 py-2 bg-surface border border-line rounded-lg text-sm text-fg placeholder-fg-subtle focus:outline-none focus:border-primary-500"
       />
-      <div class="bg-gray-900 border border-gray-700 rounded-xl divide-y divide-gray-800">
+      <div class="bg-surface border border-line rounded-xl divide-y divide-line">
         {#each filtered as [k, v]}
           <div class="flex items-start justify-between gap-3 p-3 group">
             <div class="flex-1 min-w-0">
               <p class="font-mono text-[11px] text-primary-400">{k}</p>
-              <p class="font-mono text-xs text-gray-200 break-all mt-1">{v}</p>
+              <p class="font-mono text-xs text-fg break-all mt-1">{v}</p>
             </div>
             <CopyButton text={v} />
           </div>

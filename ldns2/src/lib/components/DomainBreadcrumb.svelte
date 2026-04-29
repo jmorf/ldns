@@ -49,18 +49,18 @@
             {#each domainParts as part, index}
                 <li class="inline-flex items-center">
                     {#if index > 0}
-                        <ChevronRight class="w-3 h-3 mx-2 text-gray-600" />
+                        <ChevronRight class="w-3 h-3 mx-2 text-fg-subtle" />
                     {/if}
                     {#if index < domainParts.length - 1}
                         <a
                             href="/{part}"
-                            class="text-gray-400 hover:text-primary-400 transition-colors text-sm"
+                            class="text-fg-muted hover:text-primary-400 transition-colors text-sm"
                             data-sveltekit-preload-data="off"
                         >
                             {index === 0 ? part : part.split('.')[0]}
                         </a>
                     {:else}
-                        <span class="text-gray-300 font-medium text-sm">
+                        <span class="text-fg-muted font-medium text-sm">
                             {index === 0 ? part : part.split('.')[0]}
                         </span>
                     {/if}

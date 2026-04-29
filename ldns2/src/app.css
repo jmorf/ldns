@@ -34,8 +34,3 @@
         display: none;
     }
 }
-
-/* Ensure MetricsGrid titles are always white */
-.dark .bg-gray-900 h3 {
-    color: white !important;
-}

@@ -23,11 +23,11 @@
 
     function getButtonClasses(variant: string) {
         const baseClasses =
-            "px-2 py-1.5 sm:px-4 sm:py-2 rounded text-white font-medium disabled:opacity-50 transition-colors text-sm sm:text-base";
+            "px-2 py-1.5 sm:px-4 sm:py-2 rounded text-fg font-medium disabled:opacity-50 transition-colors text-sm sm:text-base";
 
         switch (variant) {
             case "secondary":
-                return `${baseClasses} bg-gray-600 hover:bg-gray-700 border border-gray-500`;
+                return `${baseClasses} bg-surface-3 hover:bg-surface-3 border border-line-strong`;
             case "primary":
             default:
                 return `${baseClasses} bg-primary-500 hover:bg-primary-600`;

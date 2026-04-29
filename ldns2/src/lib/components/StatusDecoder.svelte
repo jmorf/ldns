@@ -235,48 +235,48 @@
         </div>
     {:else}
         <!-- Detailed view -->
-        <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+        <div class="bg-surface-2 rounded-lg p-4 border border-line">
             <div class="flex items-center gap-2 mb-3">
                 <Info class="w-5 h-5 text-blue-400" />
-                <h3 class="text-lg font-semibold text-white">Domain Status Codes</h3>
+                <h3 class="text-lg font-semibold text-fg">Domain Status Codes</h3>
                 <Badge variant={overallAssessment().color} class="text-sm">
                     {overallAssessment().level}
                 </Badge>
             </div>
-            
+
             <div class="space-y-4">
                 <!-- Overall assessment -->
-                <div class="bg-gray-900 rounded p-3">
-                    <div class="text-sm font-medium text-white mb-1">Overall Assessment</div>
-                    <div class="text-sm text-gray-300">{overallAssessment().message}</div>
+                <div class="bg-surface rounded p-3">
+                    <div class="text-sm font-medium text-fg mb-1">Overall Assessment</div>
+                    <div class="text-sm text-fg-muted">{overallAssessment().message}</div>
                 </div>
 
                 <!-- Status codes grouped by category -->
                 {#each Object.entries(groupedStatuses()) as [category, statusList]}
                     <div class="space-y-2">
-                        <h4 class="text-md font-medium text-white border-b border-gray-600 pb-1">
+                        <h4 class="text-md font-medium text-fg border-b border-line pb-1">
                             {category} Status
                         </h4>
-                        
+
                         <div class="space-y-2">
                             {#each statusList as { status, info }}
                                 {@const SeverityIcon = getSeverityIcon(info.severity)}
-                                <div class="bg-gray-900 rounded p-3">
+                                <div class="bg-surface rounded p-3">
                                     <div class="flex items-start gap-3">
                                         <SeverityIcon class="w-5 h-5 text-{getSeverityColor(info.severity)}-400 mt-0.5 flex-shrink-0" />
                                         <div class="flex-1 min-w-0">
                                             <div class="flex items-center gap-2 mb-1">
-                                                <code class="text-sm font-mono bg-gray-800 px-2 py-1 rounded text-blue-300">
+                                                <code class="text-sm font-mono bg-surface-2 px-2 py-1 rounded text-blue-300">
                                                     {status}
                                                 </code>
                                                 <Badge variant={getSeverityColor(info.severity)} class="text-xs">
                                                     {info.severity.toUpperCase()}
                                                 </Badge>
                                             </div>
-                                            <div class="text-sm text-white font-medium mb-1">
+                                            <div class="text-sm text-fg font-medium mb-1">
                                                 {info.description}
                                             </div>
-                                            <div class="text-xs text-gray-400">
+                                            <div class="text-xs text-fg-muted">
                                                 {info.details}
                                             </div>
                                         </div>
@@ -288,11 +288,11 @@
                 {/each}
 
                 <!-- Status legend -->
-                <div class="bg-gray-900 rounded p-3">
-                    <div class="text-sm font-medium text-white mb-2">Status Severity Legend</div>
+                <div class="bg-surface rounded p-3">
+                    <div class="text-sm font-medium text-fg mb-2">Status Severity Legend</div>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         <div class="flex items-center gap-1">
-                            <CheckCircle class="w-4 h-4 text-green-400" />
+                            <CheckCircle class="w-4 h-4 text-ok-400" />
                             <Badge variant="green" class="text-xs">Good</Badge>
                         </div>
                         <div class="flex items-center gap-1">
@@ -300,11 +300,11 @@
                             <Badge variant="blue" class="text-xs">Neutral</Badge>
                         </div>
                         <div class="flex items-center gap-1">
-                            <AlertCircle class="w-4 h-4 text-yellow-400" />
+                            <AlertCircle class="w-4 h-4 text-warn-400" />
                             <Badge variant="yellow" class="text-xs">Warning</Badge>
                         </div>
                         <div class="flex items-center gap-1">
-                            <AlertCircle class="w-4 h-4 text-red-400" />
+                            <AlertCircle class="w-4 h-4 text-bad-400" />
                             <Badge variant="red" class="text-xs">Critical</Badge>
                         </div>
                     </div>
@@ -316,16 +316,16 @@
     <!-- No status codes available -->
     {#if variant === "compact"}
         <div class="flex items-center gap-2">
-            <Info class="w-4 h-4 text-gray-500" />
-            <span class="text-xs text-gray-500">No status codes</span>
+            <Info class="w-4 h-4 text-fg-subtle" />
+            <span class="text-xs text-fg-subtle">No status codes</span>
         </div>
     {:else}
-        <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+        <div class="bg-surface-2 rounded-lg p-4 border border-line">
             <div class="flex items-center gap-2 mb-2">
-                <Info class="w-5 h-5 text-gray-500" />
-                <h3 class="text-lg font-semibold text-white">Domain Status Codes</h3>
+                <Info class="w-5 h-5 text-fg-subtle" />
+                <h3 class="text-lg font-semibold text-fg">Domain Status Codes</h3>
             </div>
-            <div class="text-gray-400 text-sm">
+            <div class="text-fg-muted text-sm">
                 No status codes available in RDAP data
             </div>
         </div>

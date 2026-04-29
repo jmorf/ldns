@@ -532,7 +532,7 @@
             <Badge variant={spfAnalysis().valid ? 'green' : 'red'} class="text-xs">
                 SPF {spfAnalysis().valid ? 'Valid' : 'Invalid'}
             </Badge>
-            <span class="text-xs text-gray-400">
+            <span class="text-xs text-fg-muted">
                 {spfRecords().length} record{spfRecords().length !== 1 ? 's' : ''}
             </span>
         {:else}
@@ -543,10 +543,10 @@
     </div>
 {:else}
     <!-- Detailed view -->
-    <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+    <div class="bg-surface-2 rounded-lg p-4 border border-line">
         <div class="flex items-center gap-2 mb-3">
             <ShieldCheck class="w-5 h-5 text-blue-400" />
-            <h3 class="text-lg font-semibold text-white">SPF Record Analysis</h3>
+            <h3 class="text-lg font-semibold text-fg">SPF Record Analysis</h3>
             {#if spfAnalysis().hasSpf}
                 <Badge variant={spfAnalysis().valid ? 'green' : 'red'} class="text-sm">
                     {spfAnalysis().valid ? 'Valid' : 'Invalid'}
@@ -557,34 +557,34 @@
                 </Badge>
             {/if}
         </div>
-        
+
         {#if !spfAnalysis().hasSpf}
             <!-- No SPF record -->
-            <div class="text-gray-400 text-sm">
+            <div class="text-fg-muted text-sm">
                 No SPF (Sender Policy Framework) record was found. This means anyone can send emails claiming to be from this domain.
             </div>
-            <div class="text-gray-400 text-sm mt-2">
+            <div class="text-fg-muted text-sm mt-2">
                 <strong>Recommendation:</strong> Add an SPF record to prevent email spoofing.
             </div>
         {:else}
             <div class="space-y-4">
                 <!-- SPF records found -->
-                <div class="bg-gray-900 rounded p-3">
-                    <div class="text-sm font-medium text-white mb-2">Analysis Summary</div>
+                <div class="bg-surface rounded p-3">
+                    <div class="text-sm font-medium text-fg mb-2">Analysis Summary</div>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
                         <div>
-                            <div class="text-xs text-gray-400">Records Found</div>
-                            <div class="text-lg font-semibold text-white">{spfRecords().length}</div>
+                            <div class="text-xs text-fg-muted">Records Found</div>
+                            <div class="text-lg font-semibold text-fg">{spfRecords().length}</div>
                         </div>
                         <div>
-                            <div class="text-xs text-gray-400">Validity Status</div>
-                            <div class="text-lg font-semibold {spfAnalysis().valid ? 'text-green-400' : 'text-red-400'}">
+                            <div class="text-xs text-fg-muted">Validity Status</div>
+                            <div class="text-lg font-semibold {spfAnalysis().valid ? 'text-ok-400' : 'text-bad-400'}">
                                 {spfAnalysis().valid ? 'Valid' : 'Invalid'}
                             </div>
                         </div>
                         <div>
-                            <div class="text-xs text-gray-400">Issues Found</div>
-                            <div class="text-lg font-semibold text-white">{spfAnalysis().issues.length}</div>
+                            <div class="text-xs text-fg-muted">Issues Found</div>
+                            <div class="text-lg font-semibold text-fg">{spfAnalysis().issues.length}</div>
                         </div>
                     </div>
                 </div>
@@ -592,11 +592,11 @@
                 <!-- Issues -->
                 {#if spfAnalysis().issues.length > 0}
                     <div class="space-y-2">
-                        <h4 class="text-md font-medium text-white">Issues & Warnings</h4>
+                        <h4 class="text-md font-medium text-fg">Issues & Warnings</h4>
                         {#each spfAnalysis().issues as issue}
                             {@const isError = issue.includes('Invalid') || issue.includes('Multiple SPF records')}
-                            <div class="bg-{isError ? 'red' : 'yellow'}-900/20 border border-{isError ? 'red' : 'yellow'}-800 rounded p-2">
-                                <div class="text-{isError ? 'red' : 'yellow'}-300 text-sm">{issue}</div>
+                            <div class="{isError ? 'bg-bad-500/10 border border-bad-500/30' : 'bg-warn-500/10 border border-warn-500/30'} rounded p-2">
+                                <div class="{isError ? 'text-bad-400' : 'text-warn-400'} text-sm">{issue}</div>
                             </div>
                         {/each}
                     </div>
@@ -605,13 +605,13 @@
                 <!-- SPF Records -->
                 {#each spfAnalysis().records as record, index}
                     <div class="space-y-3">
-                        <h4 class="text-md font-medium text-white border-b border-gray-600 pb-1">
+                        <h4 class="text-md font-medium text-fg border-b border-line-strong pb-1">
                             SPF Record {index + 1} {record.ttl ? `(TTL: ${record.ttl})` : ''}
                         </h4>
-                        
+
                         <!-- Raw record -->
-                        <div class="bg-gray-900 rounded p-3">
-                            <div class="text-xs text-gray-400 mb-1">Raw SPF Record</div>
+                        <div class="bg-surface rounded p-3">
+                            <div class="text-xs text-fg-muted mb-1">Raw SPF Record</div>
                             <code class="text-sm font-mono text-blue-300 break-all">
                                 {record.record}
                             </code>
@@ -620,18 +620,18 @@
                         <!-- Mechanisms -->
                         {#if record.parsed.mechanisms.length > 0}
                             <div class="space-y-2">
-                                <div class="text-sm font-medium text-white">Mechanisms</div>
+                                <div class="text-sm font-medium text-fg">Mechanisms</div>
                                 {#each record.parsed.mechanisms as mechanism}
-                                    <div class="bg-gray-900 rounded p-3">
+                                    <div class="bg-surface rounded p-3">
                                         <div class="flex items-start gap-3">
                                             {#if mechanism.severity === 'good'}
-                                                <CheckCircle class="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
+                                                <CheckCircle class="w-5 h-5 text-ok-400 mt-0.5 flex-shrink-0" />
                                             {:else}
-                                                <AlertCircle class="w-5 h-5 text-{mechanism.severity === 'error' ? 'red' : 'yellow'}-400 mt-0.5 flex-shrink-0" />
+                                                <AlertCircle class="w-5 h-5 {mechanism.severity === 'error' ? 'text-bad-400' : 'text-warn-400'} mt-0.5 flex-shrink-0" />
                                             {/if}
                                             <div class="flex-1">
                                                 <div class="flex items-center gap-2 mb-1">
-                                                    <code class="text-sm font-mono bg-gray-800 px-2 py-1 rounded text-blue-300">
+                                                    <code class="text-sm font-mono bg-surface-2 px-2 py-1 rounded text-blue-300">
                                                         {mechanism.type}{mechanism.value ? ':' + mechanism.value : ''}
                                                     </code>
                                                     <Badge variant={getQualifierColor(mechanism.qualifier)} class="text-xs">
@@ -641,11 +641,11 @@
                                                         <Badge variant="red" class="text-xs">Invalid</Badge>
                                                     {/if}
                                                 </div>
-                                                <div class="text-sm text-gray-300">
+                                                <div class="text-sm text-fg-muted">
                                                     {mechanism.description}
                                                 </div>
                                                 {#if mechanism.errorDetail}
-                                                    <div class="text-sm text-red-400 mt-1">
+                                                    <div class="text-sm text-bad-400 mt-1">
                                                         <span class="font-medium">Error:</span> {mechanism.errorDetail}
                                                     </div>
                                                 {/if}
@@ -659,22 +659,22 @@
                         <!-- Modifiers -->
                         {#if record.parsed.modifiers.length > 0}
                             <div class="space-y-2">
-                                <div class="text-sm font-medium text-white">Modifiers</div>
+                                <div class="text-sm font-medium text-fg">Modifiers</div>
                                 {#each record.parsed.modifiers as modifier}
-                                    <div class="bg-gray-900 rounded p-3">
+                                    <div class="bg-surface rounded p-3">
                                         <div class="flex items-center gap-2 mb-1">
-                                            <code class="text-sm font-mono bg-gray-800 px-2 py-1 rounded text-purple-300">
+                                            <code class="text-sm font-mono bg-surface-2 px-2 py-1 rounded text-purple-300">
                                                 {modifier.type}={modifier.value}
                                             </code>
                                             {#if !modifier.valid}
                                                 <Badge variant="red" class="text-xs">Invalid</Badge>
                                             {/if}
                                         </div>
-                                        <div class="text-sm text-gray-300">
+                                        <div class="text-sm text-fg-muted">
                                             {modifier.description}
                                         </div>
                                         {#if modifier.errorDetail}
-                                            <div class="text-sm text-red-400 mt-1">
+                                            <div class="text-sm text-bad-400 mt-1">
                                                 <span class="font-medium">Error:</span> {modifier.errorDetail}
                                             </div>
                                         {/if}

@@ -159,8 +159,8 @@
             <button
                 class={`px-3 py-1 text-xs font-medium rounded-full cursor-pointer transition-colors ${
                     filterType === "ALL"
-                        ? "bg-primary-500 hover:bg-primary-600 text-white"
-                        : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
+                        ? "bg-primary-500 hover:bg-primary-600 text-fg"
+                        : "bg-surface-2 text-fg-muted hover:bg-surface-3"
                 }`}
                 onclick={() => onFilterChange?.("ALL")}
             >
@@ -172,8 +172,8 @@
                     <button
                         class={`px-3 py-1 text-xs font-medium rounded-full cursor-pointer transition-colors ${
                             filterType === type
-                                ? "bg-primary-500 hover:bg-primary-600 text-white"
-                                : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
+                                ? "bg-primary-500 hover:bg-primary-600 text-fg"
+                                : "bg-surface-2 text-fg-muted hover:bg-surface-3"
                         }`}
                         onclick={() => onFilterChange?.(type)}
                     >
@@ -216,20 +216,20 @@
             <!-- Search and page size controls -->
             <div class="flex flex-wrap items-center justify-between gap-4">
                 <div class="relative flex-1 max-w-sm">
-                    <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-fg-muted" />
                     <input
                         type="text"
                         placeholder="Search DNS records..."
                         bind:value={globalFilter}
-                        class="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 placeholder-gray-500 focus:outline-none focus:border-primary-500 text-sm"
+                        class="w-full pl-10 pr-4 py-2 bg-surface-2 border border-line rounded-lg text-fg placeholder-fg-subtle focus:outline-none focus:border-primary-500 text-sm"
                     />
                 </div>
-                <div class="flex items-center gap-2 text-sm text-gray-400">
+                <div class="flex items-center gap-2 text-sm text-fg-muted">
                     <span>Show</span>
                     <select
                         value={table.getState().pagination.pageSize}
                         onchange={(e) => table.setPageSize(Number(e.currentTarget.value))}
-                        class="bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-200 focus:outline-none focus:border-primary-500"
+                        class="bg-surface-2 border border-line rounded px-2 py-1 text-fg focus:outline-none focus:border-primary-500"
                     >
                         {#each [10, 25, 50, 100] as size}
                             <option value={size}>{size}</option>
@@ -240,9 +240,9 @@
             </div>
 
             <!-- Table -->
-            <div class="overflow-x-auto rounded-lg border border-gray-700">
-                <table class="w-full text-left text-sm text-gray-300">
-                    <thead class="bg-gray-800 text-xs uppercase text-gray-400">
+            <div class="overflow-x-auto rounded-lg border border-line">
+                <table class="w-full text-left text-sm text-fg-muted">
+                    <thead class="bg-surface-2 text-xs uppercase text-fg-muted">
                         {#each table.getHeaderGroups() as headerGroup}
                             <tr>
                                 {#each headerGroup.headers as header}
@@ -278,9 +278,9 @@
                             </tr>
                         {/each}
                     </thead>
-                    <tbody class="divide-y divide-gray-700">
+                    <tbody class="divide-y divide-line">
                         {#each table.getRowModel().rows as row}
-                            <tr class="hover:bg-gray-800/50 transition-colors">
+                            <tr class="hover:bg-surface-2/50 transition-colors">
                                 {#each row.getVisibleCells() as cell}
                                     <td class="px-4 py-3">
                                         {#if cell.column.id === 'type'}
@@ -288,7 +288,7 @@
                                                 {cell.getValue()}
                                             </Badge>
                                         {:else if cell.column.id === 'data'}
-                                            <span class="text-white font-medium">{cell.getValue()}</span>
+                                            <span class="text-fg font-medium">{cell.getValue()}</span>
                                         {:else if cell.column.id === 'ttl'}
                                             {cell.getValue()}
                                         {:else if cell.column.id === 'actions'}
@@ -296,8 +296,8 @@
                                                 onclick={() => copyToClipboard(row.original.data)}
                                                 class={`px-2 py-1 text-xs rounded transition-colors min-w-[70px] ${
                                                     copiedData === row.original.data
-                                                        ? 'bg-green-600 hover:bg-green-700 text-white'
-                                                        : 'bg-gray-600 hover:bg-gray-700 text-white'
+                                                        ? 'bg-ok-500 hover:bg-ok-500/80 text-fg'
+                                                        : 'bg-surface-3 hover:bg-surface-3 text-fg'
                                                 }`}
                                             >
                                                 {#if copiedData === row.original.data}
@@ -323,7 +323,7 @@
 
             <!-- Pagination -->
             {#if table.getPageCount() > 1}
-                <div class="flex flex-wrap items-center justify-between gap-4 text-sm text-gray-400">
+                <div class="flex flex-wrap items-center justify-between gap-4 text-sm text-fg-muted">
                     <div>
                         Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to {Math.min(
                             (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
@@ -334,7 +334,7 @@
                         <button
                             onclick={() => table.previousPage()}
                             disabled={!table.getCanPreviousPage()}
-                            class="px-3 py-1 rounded bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            class="px-3 py-1 rounded bg-surface-2 hover:bg-surface-3 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                             Previous
                         </button>
@@ -344,9 +344,9 @@
                                     onclick={() => table.setPageIndex(pageIndex)}
                                     class="px-3 py-1 rounded transition-colors"
                                     class:bg-primary-600={pageIndex === table.getState().pagination.pageIndex}
-                                    class:text-white={pageIndex === table.getState().pagination.pageIndex}
-                                    class:bg-gray-800={pageIndex !== table.getState().pagination.pageIndex}
-                                    class:hover:bg-gray-700={pageIndex !== table.getState().pagination.pageIndex}
+                                    class:text-fg={pageIndex === table.getState().pagination.pageIndex}
+                                    class:bg-surface-2={pageIndex !== table.getState().pagination.pageIndex}
+                                    class:hover:bg-surface-3={pageIndex !== table.getState().pagination.pageIndex}
                                 >
                                     {pageIndex + 1}
                                 </button>
@@ -357,7 +357,7 @@
                         <button
                             onclick={() => table.nextPage()}
                             disabled={!table.getCanNextPage()}
-                            class="px-3 py-1 rounded bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            class="px-3 py-1 rounded bg-surface-2 hover:bg-surface-3 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                             Next
                         </button>
@@ -367,7 +367,7 @@
         </div>
     {:else if domain.toolState.dns.hasData}
         <div class="text-center py-8">
-            <p class="text-gray-500 dark:text-gray-400">
+            <p class="text-fg-subtle">
                 {filterType !== "ALL"
                     ? `No ${filterType} records found`
                     : "No DNS records found"}
@@ -376,7 +376,7 @@
     {/if}
 
     <!-- Record count -->
-    <div class="text-xs text-gray-400 mt-2">
+    <div class="text-xs text-fg-muted mt-2">
         Showing {filteredRecords.length}
         {filteredRecords.length === 1 ? "record" : "records"}
         {#if filterType !== "ALL"}

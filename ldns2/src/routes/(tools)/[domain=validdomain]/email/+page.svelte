@@ -181,7 +181,7 @@
         <!-- Mobile view - compact summary -->
         <div class="sm:hidden">
             <div class="flex items-center justify-between mb-2">
-                <h3 class="text-base font-semibold text-white">Email Security</h3>
+                <h3 class="text-base font-semibold text-fg">Email Security</h3>
                 <Badge color="gray" class="text-xs">
                     {emailSummary().filter(item => item.hasData).length} of {emailSummary().length} configured
                 </Badge>
@@ -213,8 +213,8 @@
             {:else}
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                     {#each emailSummary() as item (item.type)}
-                        <button 
-                            class="bg-gray-800 rounded-lg p-3 border border-line cursor-pointer hover:bg-gray-700 hover:border-gray-600 transition-colors w-full text-left"
+                        <button
+                            class="bg-surface-2 rounded-lg p-3 border border-line cursor-pointer hover:bg-surface-3 hover:border-line-strong transition-colors w-full text-left"
                             onclick={() => navigateToSection(item.sectionId)}
                             type="button"
                         >
@@ -222,7 +222,7 @@
                                 <Badge color={item.hasData ? item.color : 'gray'} class="text-sm font-medium">
                                     {item.type}
                                 </Badge>
-                                <span class="text-lg font-bold {item.hasData ? 'text-green-400' : 'text-fg-muted'}">
+                                <span class="text-lg font-bold {item.hasData ? 'text-ok-400' : 'text-fg-muted'}">
                                     {item.hasData ? '✓' : '✗'}
                                 </span>
                             </div>

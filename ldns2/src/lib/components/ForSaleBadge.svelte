@@ -40,9 +40,9 @@
 
 {#if loading}
   <!-- Loading state -->
-  <div class="animate-pulse flex items-center gap-2 px-3 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg">
-    <div class="w-4 h-4 bg-gray-300 dark:bg-gray-600 rounded"></div>
-    <div class="h-4 w-24 bg-gray-300 dark:bg-gray-600 rounded"></div>
+  <div class="animate-pulse flex items-center gap-2 px-3 py-2 bg-surface-2 rounded-lg">
+    <div class="w-4 h-4 bg-surface-3 rounded"></div>
+    <div class="h-4 w-24 bg-surface-3 rounded"></div>
   </div>
 {:else if hasListings}
   {#if compact}
@@ -79,10 +79,10 @@
                 href={listing.listingUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="flex items-center justify-between gap-3 p-2 bg-white/60 dark:bg-gray-800/40 rounded-lg hover:bg-white dark:hover:bg-gray-800/60 transition-colors group"
+                class="flex items-center justify-between gap-3 p-2 bg-surface-2/40 rounded-lg hover:bg-surface-2/60 transition-colors group"
               >
                 <div class="flex items-center gap-2">
-                  <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                  <span class="text-xs font-medium text-fg-subtle uppercase tracking-wide">
                     {getMarketplaceName(listing.marketplace)}
                   </span>
                   {#if listing.buyNowAvailable}
@@ -98,11 +98,11 @@
                       {formatPrice(listing)}
                     </span>
                   {:else}
-                    <span class="text-sm text-gray-500 dark:text-gray-400">
+                    <span class="text-sm text-fg-subtle">
                       Contact for price
                     </span>
                   {/if}
-                  <ExternalLink class="w-4 h-4 text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors" />
+                  <ExternalLink class="w-4 h-4 text-fg-muted group-hover:text-primary-400 transition-colors" />
                 </div>
               </a>
             {/each}

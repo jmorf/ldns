@@ -59,7 +59,7 @@
                 <h3 class="text-sm font-medium text-fg-muted uppercase">SPF Record</h3>
                 <CopyButton text={spfRecords[0]?.data ?? ''} size="sm" variant="compact" />
             </div>
-            <p class="text-white font-mono text-sm break-all">{spfRecords[0]?.data}</p>
+            <p class="text-fg font-mono text-sm break-all">{spfRecords[0]?.data}</p>
         </div>
 
         <!-- SPF Analyzer -->

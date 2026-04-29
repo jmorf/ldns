@@ -53,33 +53,33 @@
   {#if loading && Object.keys(results).length === 0}
     <SkeletonRows rows={3} />
   {:else if Object.keys(results).length > 0}
-    <div class="bg-gray-900 border border-gray-700 rounded-xl divide-y divide-gray-800">
+    <div class="bg-surface border border-line rounded-xl divide-y divide-line">
       {#each Object.entries(results) as [ip, info]}
         <div class="p-4 grid grid-cols-2 md:grid-cols-5 gap-3">
           <div>
-            <p class="text-[10px] uppercase tracking-wider text-gray-500">IP</p>
-            <p class="font-mono text-sm text-white truncate" title={ip}>{ip}</p>
+            <p class="text-[10px] uppercase tracking-wider text-fg-subtle">IP</p>
+            <p class="font-mono text-sm text-fg truncate" title={ip}>{ip}</p>
           </div>
           <div>
-            <p class="text-[10px] uppercase tracking-wider text-gray-500">ASN</p>
-            <p class="font-mono text-sm text-gray-200">{info.asn ? `AS${info.asn}` : '—'}</p>
+            <p class="text-[10px] uppercase tracking-wider text-fg-subtle">ASN</p>
+            <p class="font-mono text-sm text-fg">{info.asn ? `AS${info.asn}` : '—'}</p>
           </div>
           <div class="md:col-span-2">
-            <p class="text-[10px] uppercase tracking-wider text-gray-500">AS Name</p>
-            <p class="text-sm text-gray-200 truncate" title={info.asName ?? ''}>{info.asName ?? '—'}</p>
+            <p class="text-[10px] uppercase tracking-wider text-fg-subtle">AS Name</p>
+            <p class="text-sm text-fg truncate" title={info.asName ?? ''}>{info.asName ?? '—'}</p>
           </div>
           <div>
-            <p class="text-[10px] uppercase tracking-wider text-gray-500">Country</p>
-            <p class="font-mono text-sm text-gray-200">{info.country ?? '—'}</p>
+            <p class="text-[10px] uppercase tracking-wider text-fg-subtle">Country</p>
+            <p class="font-mono text-sm text-fg">{info.country ?? '—'}</p>
           </div>
           {#if info.prefix}
             <div class="md:col-span-5 -mt-2">
-              <p class="text-[10px] text-gray-500">Announced prefix: <span class="font-mono text-gray-400">{info.prefix}</span></p>
+              <p class="text-[10px] text-fg-subtle">Announced prefix: <span class="font-mono text-fg-muted">{info.prefix}</span></p>
             </div>
           {/if}
         </div>
       {/each}
     </div>
-    <p class="text-[10px] text-gray-600 text-center mt-4">Origin lookup via Team Cymru DNS service · cached 1 hour at the edge.</p>
+    <p class="text-[10px] text-fg-subtle text-center mt-4">Origin lookup via Team Cymru DNS service · cached 1 hour at the edge.</p>
   {/if}
 </ToolPage>

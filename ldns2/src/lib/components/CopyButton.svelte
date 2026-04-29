@@ -94,8 +94,8 @@
     onclick={copyToClipboard}
     class={`${getSizeClasses(size, variant)} rounded transition-colors ${
         copied
-            ? "bg-green-600 hover:bg-green-700 text-white"
-            : "bg-gray-600 hover:bg-gray-700 text-white"
+            ? "bg-ok-500 hover:bg-ok-500 text-fg"
+            : "bg-surface-3 hover:bg-surface-3 text-fg"
     }`}
 >
     {#if copied}

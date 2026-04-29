@@ -58,7 +58,7 @@
                 <h3 class="text-sm font-medium text-fg-muted uppercase">DMARC Record</h3>
                 <CopyButton text={dmarcRecords[0]?.data ?? ''} size="sm" variant="compact" />
             </div>
-            <p class="text-white font-mono text-sm break-all">{dmarcRecords[0]?.data}</p>
+            <p class="text-fg font-mono text-sm break-all">{dmarcRecords[0]?.data}</p>
         </div>
 
         <!-- DMARC Analyzer -->

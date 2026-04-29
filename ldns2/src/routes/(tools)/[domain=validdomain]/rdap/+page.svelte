@@ -280,23 +280,23 @@
             
             <div class="space-y-3 mb-8">
                 <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-semibold text-white">RDAP Lookup Summary</h3>
+                    <h3 class="text-lg font-semibold text-fg">RDAP Lookup Summary</h3>
                 </div>
-                
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     <!-- Domain Age Card -->
-                    <div class="bg-gray-800 rounded-lg p-3 border border-gray-700">
+                    <div class="bg-surface-2 rounded-lg p-3 border border-line">
                         <Badge color="blue" class="text-sm font-medium mb-2">
                             Age
                         </Badge>
-                        <p class="text-lg font-bold text-white">
+                        <p class="text-lg font-bold text-fg">
                             {#if domainAge}
                                 {domainAge.years} years, {domainAge.months} months
                             {:else}
-                                <span class="text-gray-500">Unknown</span>
+                                <span class="text-fg-subtle">Unknown</span>
                             {/if}
                         </p>
-                        <p class="text-xs text-gray-400">
+                        <p class="text-xs text-fg-muted">
                             {#if domainAge}
                                 Since {domainAge.createdDate}
                             {:else}
@@ -306,11 +306,11 @@
                     </div>
 
                     <!-- Domain Expiration Card -->
-                    <div class="bg-gray-800 rounded-lg p-3 border border-gray-700">
+                    <div class="bg-surface-2 rounded-lg p-3 border border-line">
                         <Badge color={expiration?.expired ? 'red' : expiration?.isCritical ? 'red' : expiration?.isUrgent ? 'yellow' : 'green'} class="text-sm font-medium mb-2">
                             Expires
                         </Badge>
-                        <p class="text-lg font-bold {expiration?.expired ? 'text-red-400' : expiration?.isCritical ? 'text-red-400' : expiration?.isUrgent ? 'text-yellow-400' : 'text-white'}">
+                        <p class="text-lg font-bold {expiration?.expired ? 'text-bad-400' : expiration?.isCritical ? 'text-bad-400' : expiration?.isUrgent ? 'text-warn-400' : 'text-fg'}">
                             {#if expiration}
                                 {#if expiration.expired}
                                     Expired
@@ -318,10 +318,10 @@
                                     {expiration.months} months, {expiration.days} days
                                 {/if}
                             {:else}
-                                <span class="text-gray-500">Unknown</span>
+                                <span class="text-fg-subtle">Unknown</span>
                             {/if}
                         </p>
-                        <p class="text-xs text-gray-400">
+                        <p class="text-xs text-fg-muted">
                             {#if expiration}
                                 Expires {expiration.expirationDate}
                             {:else}
@@ -331,31 +331,31 @@
                     </div>
 
                     <!-- Registrar Card -->
-                    <div class="bg-gray-800 rounded-lg p-3 border border-gray-700">
+                    <div class="bg-surface-2 rounded-lg p-3 border border-line">
                         <Badge color="purple" class="text-sm font-medium mb-2">
                             Registrar
                         </Badge>
-                        <p class="text-lg font-bold text-white truncate" title={registrar || domain.toolState.rdap.data?.registrar || 'Unknown'}>
+                        <p class="text-lg font-bold text-fg truncate" title={registrar || domain.toolState.rdap.data?.registrar || 'Unknown'}>
                             {#if registrar || domain.toolState.rdap.data?.registrar}
                                 {registrar || domain.toolState.rdap.data?.registrar}
                             {:else}
-                                <span class="text-gray-500">Unknown</span>
+                                <span class="text-fg-subtle">Unknown</span>
                             {/if}
                         </p>
-                        <p class="text-xs text-gray-400">
+                        <p class="text-xs text-fg-muted">
                             Domain registrar
                         </p>
                     </div>
 
                     <!-- DNSSEC Card -->
-                    <div class="bg-gray-800 rounded-lg p-3 border border-gray-700">
+                    <div class="bg-surface-2 rounded-lg p-3 border border-line">
                         <Badge color={domain.toolState.rdap.data?.dnssecEnabled ? 'green' : 'red'} class="text-sm font-medium mb-2">
                             DNSSEC
                         </Badge>
-                        <p class="text-lg font-bold text-white">
+                        <p class="text-lg font-bold text-fg">
                             {domain.toolState.rdap.data?.dnssecEnabled ? 'Enabled' : 'Disabled'}
                         </p>
-                        <p class="text-xs text-gray-400">
+                        <p class="text-xs text-fg-muted">
                             {#if domain.toolState.rdap.data?.dnssecEnabled}
                                 Domain signatures verified
                             {:else}

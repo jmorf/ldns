@@ -41,13 +41,13 @@
 <div class="mb-8">
     <div class="flex items-center space-x-3 mb-4">
         <Badge text={recordType.toUpperCase()} {color} size="sm" />
-        <h3 class="text-lg font-semibold text-white">{title}</h3>
+        <h3 class="text-lg font-semibold text-fg">{title}</h3>
     </div>
 
     {#if records.length > 0}
         <div class="space-y-3">
             {#each records as record, index}
-                <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                <div class="bg-surface-2 rounded-lg p-4 border border-line">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
                             <div
@@ -57,7 +57,7 @@
                             >
                                 {record.data}
                             </div>
-                            <div class="text-xs text-gray-500 mt-2">
+                            <div class="text-xs text-fg-subtle mt-2">
                                 TTL: {record.ttl}s
                             </div>
                         </div>
@@ -71,8 +71,8 @@
             {/each}
         </div>
     {:else}
-        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
-            <p class="text-gray-500 italic text-center">{emptyMessage}</p>
+        <div class="bg-surface-2 rounded-lg p-6 border border-line">
+            <p class="text-fg-subtle italic text-center">{emptyMessage}</p>
         </div>
     {/if}
 </div>

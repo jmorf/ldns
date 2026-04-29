@@ -31,10 +31,10 @@
 </script>
 
 <div class="flex items-center gap-2">
-    <label for="dns-endpoint" class="text-xs text-gray-500">DNS:</label>
+    <label for="dns-endpoint" class="text-xs text-fg-subtle">DNS:</label>
     <select
         id="dns-endpoint"
-        class="px-2 py-1 text-xs rounded bg-gray-700 text-gray-200 border border-gray-600 hover:border-gray-500 focus:border-primary-500 focus:outline-none cursor-pointer"
+        class="px-2 py-1 text-xs rounded bg-surface-3 text-fg border border-line-strong hover:border-line-strong focus:border-primary-500 focus:outline-none cursor-pointer"
         value={queryConfig.endpoint}
         onchange={handleChange}
     >

@@ -104,13 +104,13 @@
     {#if variant === "compact"}
         <!-- Compact view - just badges -->
         <div class="flex flex-wrap gap-2 items-center">
-            <span class="text-sm text-gray-300 font-medium">Records:</span>
+            <span class="text-sm text-fg-muted font-medium">Records:</span>
             {#each recordSummary() as record (record.type)}
                 <Badge variant={record.color} class="text-xs">
                     {record.type} ({record.count})
                 </Badge>
             {/each}
-            <span class="text-xs text-gray-400 ml-2">
+            <span class="text-xs text-fg-muted ml-2">
                 Total: {totalRecords()}
             </span>
         </div>
@@ -118,7 +118,7 @@
         <!-- Mobile view - compact summary -->
         <div class="sm:hidden">
             <div class="flex items-center justify-between mb-2">
-                <h3 class="text-base font-semibold text-white">DNS Summary</h3>
+                <h3 class="text-base font-semibold text-fg">DNS Summary</h3>
                 <Badge variant="gray" class="text-xs">
                     {totalRecords()} records
                 </Badge>
@@ -142,30 +142,30 @@
                     {/if}
                 {/each}
                 {#if recordSummary().length > 6}
-                    <span class="text-xs text-gray-400">+{recordSummary().length - 6} more</span>
+                    <span class="text-xs text-fg-muted">+{recordSummary().length - 6} more</span>
                 {/if}
             </div>
         </div>
-        
+
         <!-- Desktop view - full micro cards -->
         <div class="hidden sm:block space-y-3">
             <div class="flex items-center justify-between">
-                <h3 class="text-lg font-semibold text-white">DNS Records Summary</h3>
+                <h3 class="text-lg font-semibold text-fg">DNS Records Summary</h3>
                 <Badge variant="gray" class="text-xs">
                     {totalRecords()} total records
                 </Badge>
             </div>
-            
+
             {#if recordSummary().length === 0}
-                <div class="text-gray-400 text-sm italic">
+                <div class="text-fg-muted text-sm italic">
                     No DNS records found
                 </div>
             {:else}
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {#each recordSummary() as record (record.type)}
                         {#if onRecordClick}
-                            <button 
-                                class="bg-gray-800 rounded-lg p-3 border border-gray-700 cursor-pointer hover:bg-gray-700 hover:border-gray-600 transition-colors w-full text-left"
+                            <button
+                                class="bg-surface-2 rounded-lg p-3 border border-line cursor-pointer hover:bg-surface-3 hover:border-line-strong transition-colors w-full text-left"
                                 onclick={() => onRecordClick(record.type)}
                                 type="button"
                             >
@@ -173,26 +173,26 @@
                                     <Badge variant={record.color} class="text-sm font-medium">
                                         {record.type}
                                     </Badge>
-                                    <span class="text-lg font-bold text-white">
+                                    <span class="text-lg font-bold text-fg">
                                         {record.count}
                                     </span>
                                 </div>
-                                <p class="text-xs text-gray-400">
+                                <p class="text-xs text-fg-muted">
                                     {getRecordDescription(record.type)}
-                                    <span class="block mt-1 text-xs text-gray-500">Click to filter</span>
+                                    <span class="block mt-1 text-xs text-fg-subtle">Click to filter</span>
                                 </p>
                             </button>
                         {:else}
-                            <div class="bg-gray-800 rounded-lg p-3 border border-gray-700">
+                            <div class="bg-surface-2 rounded-lg p-3 border border-line">
                                 <div class="flex items-center justify-between mb-2">
                                     <Badge variant={record.color} class="text-sm font-medium">
                                         {record.type}
                                     </Badge>
-                                    <span class="text-lg font-bold text-white">
+                                    <span class="text-lg font-bold text-fg">
                                         {record.count}
                                     </span>
                                 </div>
-                                <p class="text-xs text-gray-400">
+                                <p class="text-xs text-fg-muted">
                                     {getRecordDescription(record.type)}
                                 </p>
                             </div>

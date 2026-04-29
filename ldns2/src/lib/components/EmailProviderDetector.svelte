@@ -292,7 +292,7 @@
             <Badge variant={getSetupColor(providerAnalysis().setup)} class="text-xs">
                 {providerAnalysis().primaryProvider?.name || 'Unknown'}
             </Badge>
-            <span class="text-xs text-gray-400">
+            <span class="text-xs text-fg-muted">
                 {mxRecords.length} MX record{mxRecords.length !== 1 ? 's' : ''}
             </span>
         {:else}
@@ -303,10 +303,10 @@
     </div>
 {:else}
     <!-- Detailed view -->
-    <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+    <div class="bg-surface-2 rounded-lg p-4 border border-line">
         <div class="flex items-center gap-2 mb-3">
             <Mail class="w-5 h-5 text-blue-400" />
-            <h3 class="text-lg font-semibold text-white">Email Provider Detection</h3>
+            <h3 class="text-lg font-semibold text-fg">Email Provider Detection</h3>
             {#if providerAnalysis().primaryProvider}
                 <Badge variant={getSetupColor(providerAnalysis().setup)} class="text-sm">
                     {getSetupDescription(providerAnalysis().setup)}
@@ -317,31 +317,31 @@
                 </Badge>
             {/if}
         </div>
-        
+
         {#if !providerAnalysis().primaryProvider}
             <!-- No email setup -->
-            <div class="text-gray-400 text-sm">
+            <div class="text-fg-muted text-sm">
                 No MX records found. Email delivery is not configured for this domain.
             </div>
         {:else}
             <div class="space-y-4">
                 <!-- Email setup summary -->
-                <div class="bg-gray-900 rounded p-3">
-                    <div class="text-sm font-medium text-white mb-2">Email Setup Overview</div>
+                <div class="bg-surface rounded p-3">
+                    <div class="text-sm font-medium text-fg mb-2">Email Setup Overview</div>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                         <div>
-                            <div class="text-xs text-gray-400">Primary Provider</div>
-                            <div class="text-sm font-semibold text-white truncate">
+                            <div class="text-xs text-fg-muted">Primary Provider</div>
+                            <div class="text-sm font-semibold text-fg truncate">
                                 {providerAnalysis().primaryProvider?.name || 'Unknown'}
                             </div>
                         </div>
                         <div>
-                            <div class="text-xs text-gray-400">MX Records</div>
-                            <div class="text-sm font-semibold text-white">{mxRecords.length}</div>
+                            <div class="text-xs text-fg-muted">MX Records</div>
+                            <div class="text-sm font-semibold text-fg">{mxRecords.length}</div>
                         </div>
                         <div>
-                            <div class="text-xs text-gray-400">Redundancy</div>
-                            <div class="text-sm font-semibold text-white">
+                            <div class="text-xs text-fg-muted">Redundancy</div>
+                            <div class="text-sm font-semibold text-fg">
                                 {providerAnalysis().redundancy ? 'Yes' : 'No'}
                             </div>
                         </div>
@@ -350,29 +350,29 @@
 
                 <!-- Detected providers -->
                 <div class="space-y-3">
-                    <h4 class="text-md font-medium text-white">Detected Email Providers</h4>
-                    
+                    <h4 class="text-md font-medium text-fg">Detected Email Providers</h4>
+
                     {#each providerAnalysis().providers as provider, index}
-                        <div class="bg-gray-900 rounded p-3">
+                        <div class="bg-surface rounded p-3">
                             <div class="flex items-start gap-3">
                                 {#if provider.type === 'cloud'}
                                     <Globe class="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
                                 {:else if provider.type === 'hosting'}
-                                    <Building class="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0" />
+                                    <Building class="w-5 h-5 text-warn-400 mt-0.5 flex-shrink-0" />
                                 {:else}
-                                    <Mail class="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
+                                    <Mail class="w-5 h-5 text-ok-400 mt-0.5 flex-shrink-0" />
                                 {/if}
-                                
+
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-2 mb-2">
-                                        <div class="text-white font-medium">
+                                        <div class="text-fg font-medium">
                                             {provider.name}
                                             {#if index === 0}
                                                 <Badge variant="primary" class="text-xs ml-1">Primary</Badge>
                                             {/if}
                                         </div>
                                     </div>
-                                    
+
                                     {#if provider.website}
                                         <div class="text-xs text-blue-400 mb-2">
                                             <a href="https://{provider.website}" target="_blank" rel="noopener noreferrer" class="hover:underline">
@@ -380,15 +380,15 @@
                                             </a>
                                         </div>
                                     {/if}
-                                    
-                                    <div class="text-sm text-gray-300 mb-2">
+
+                                    <div class="text-sm text-fg-muted mb-2">
                                         Matched records: {provider.matchedRecords.join(', ')}
                                     </div>
-                                    
-                                    <div class="text-sm text-gray-300 mb-2">
+
+                                    <div class="text-sm text-fg-muted mb-2">
                                         Priority: {provider.priority.join(', ')}
                                     </div>
-                                    
+
                                 </div>
                             </div>
                         </div>
@@ -397,33 +397,33 @@
 
                 <!-- MX Records Table -->
                 <div class="space-y-3">
-                    <h4 class="text-md font-medium text-white">MX Records</h4>
-                    
-                    <div class="bg-gray-900 rounded-lg overflow-hidden">
+                    <h4 class="text-md font-medium text-fg">MX Records</h4>
+
+                    <div class="bg-surface rounded-lg overflow-hidden">
                         {#if mxRecords && mxRecords.length > 0}
                             <table class="w-full">
-                                <thead class="bg-gray-800">
+                                <thead class="bg-surface-2">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Type</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Data</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">TTL</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-fg-muted uppercase tracking-wider">Type</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-fg-muted uppercase tracking-wider">Data</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-fg-muted uppercase tracking-wider">TTL</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-fg-muted uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-gray-900 divide-y divide-gray-700">
+                                <tbody class="bg-surface divide-y divide-line">
                                     {#each mxRecords as record, index}
-                                        <tr class="hover:bg-gray-800 transition-colors">
-                                            <td class="px-6 py-4 text-sm text-gray-300">
+                                        <tr class="hover:bg-surface-3 transition-colors">
+                                            <td class="px-6 py-4 text-sm text-fg-muted">
                                                 <CustomBadge text="MX" color="orange" size="sm" />
                                             </td>
-                                            <td class="px-6 py-4 text-base font-medium text-white break-words">
+                                            <td class="px-6 py-4 text-base font-medium text-fg break-words">
                                                 <span class="font-mono">{record.data}</span>
                                             </td>
-                                            <td class="px-6 py-4 text-sm text-gray-300">
+                                            <td class="px-6 py-4 text-sm text-fg-muted">
                                                 <span class="font-mono">{record.ttl}</span>
                                             </td>
-                                            <td class="px-6 py-4 text-sm text-gray-300">
-                                                <CopyButton 
+                                            <td class="px-6 py-4 text-sm text-fg-muted">
+                                                <CopyButton
                                                     text={record.data}
                                                     size="sm"
                                                     variant="compact"
@@ -435,7 +435,7 @@
                             </table>
                         {:else}
                             <div class="p-8 text-center">
-                                <p class="text-gray-500 italic">No MX records found</p>
+                                <p class="text-fg-subtle italic">No MX records found</p>
                             </div>
                         {/if}
                     </div>

@@ -22,18 +22,18 @@
 		{#each items as item, index}
 			<li class="inline-flex items-center">
 				{#if index > 0}
-					<Separator class="w-3 h-3 mx-2 text-gray-600" />
+					<Separator class="w-3 h-3 mx-2 text-fg-subtle" />
 				{/if}
 				{#if item.href && index < items.length - 1}
 					<a
 						href={item.href}
-						class="text-gray-400 hover:text-primary-400 transition-colors text-sm"
+						class="text-fg-muted hover:text-primary-400 transition-colors text-sm"
 						data-sveltekit-preload-data="off"
 					>
 						{item.label}
 					</a>
 				{:else}
-					<span class="text-gray-300 font-medium text-sm">
+					<span class="text-fg-muted font-medium text-sm">
 						{item.label}
 					</span>
 				{/if}

@@ -93,30 +93,30 @@
     {#if variant === "compact"}
         <!-- Compact view -->
         <div class="flex items-center gap-2">
-            <Clock class="w-4 h-4 text-gray-400" />
+            <Clock class="w-4 h-4 text-fg-muted" />
             <Badge variant={getAgeBadgeColor()} class="text-xs">
                 {formatAge()}
             </Badge>
-            <span class="text-xs text-gray-400">
+            <span class="text-xs text-fg-muted">
                 ({getAgeDescription()})
             </span>
         </div>
     {:else}
         <!-- Detailed view -->
-        <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+        <div class="bg-surface-2 rounded-lg p-4 border border-line">
             <div class="flex items-center gap-2 mb-3">
                 <CalendarPlus class="w-5 h-5 text-primary-400" />
-                <h3 class="text-lg font-semibold text-white">Domain Age Analysis</h3>
+                <h3 class="text-lg font-semibold text-fg">Domain Age Analysis</h3>
             </div>
-            
+
             <div class="space-y-4">
                 <!-- Main age display -->
                 <div class="flex items-center justify-between">
                     <div>
-                        <div class="text-2xl font-bold text-white">
+                        <div class="text-2xl font-bold text-fg">
                             {formatAge()}
                         </div>
-                        <div class="text-sm text-gray-400">
+                        <div class="text-sm text-fg-muted">
                             Since {domainAge()?.createdDate.toLocaleDateString()}
                         </div>
                     </div>
@@ -127,17 +127,17 @@
 
                 <!-- Age metrics -->
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-gray-900 rounded p-3">
-                        <div class="text-xs text-gray-400 uppercase tracking-wide">Total Days</div>
-                        <div class="text-lg font-semibold text-white">
+                    <div class="bg-surface rounded p-3">
+                        <div class="text-xs text-fg-muted uppercase tracking-wide">Total Days</div>
+                        <div class="text-lg font-semibold text-fg">
                             {domainAge()?.totalDays.toLocaleString()}
                         </div>
                     </div>
-                    
-                    <div class="bg-gray-900 rounded p-3">
-                        <div class="text-xs text-gray-400 uppercase tracking-wide">Trust Level</div>
+
+                    <div class="bg-surface rounded p-3">
+                        <div class="text-xs text-fg-muted uppercase tracking-wide">Trust Level</div>
                         <div class="flex items-center gap-2">
-                            <div class="text-lg font-semibold text-white">
+                            <div class="text-lg font-semibold text-fg">
                                 {getTrustLevel().level}
                             </div>
                             <Badge variant={getTrustLevel().score > 75 ? "green" : getTrustLevel().score > 50 ? "yellow" : "red"} class="text-xs">
@@ -154,19 +154,19 @@
                             ⚠️ Very New Domain
                         </Badge>
                     {/if}
-                    
+
                     {#if domainAge()?.isYoung && !domainAge()?.isNew}
                         <Badge variant="yellow" class="text-xs">
                             🌱 Young Domain
                         </Badge>
                     {/if}
-                    
+
                     {#if domainAge()?.isEstablished}
                         <Badge variant="green" class="text-xs">
                             ✅ Established Domain
                         </Badge>
                     {/if}
-                    
+
                     {#if domainAge()?.isMature}
                         <Badge variant="blue" class="text-xs">
                             🏆 Mature Domain
@@ -176,9 +176,9 @@
 
                 <!-- Security note for new domains -->
                 {#if domainAge()?.isNew}
-                    <div class="bg-red-900/20 border border-red-800 rounded p-3">
-                        <div class="text-xs text-red-400 font-medium">Security Note</div>
-                        <div class="text-xs text-red-300 mt-1">
+                    <div class="bg-bad-500/10 border border-bad-500/30 rounded p-3">
+                        <div class="text-xs text-bad-400 font-medium">Security Note</div>
+                        <div class="text-xs text-bad-400 mt-1">
                             Very new domains (less than 90 days) may pose higher security risks. Exercise caution and verify legitimacy.
                         </div>
                     </div>
@@ -190,16 +190,16 @@
     <!-- No creation date available -->
     {#if variant === "compact"}
         <div class="flex items-center gap-2">
-            <Clock class="w-4 h-4 text-gray-500" />
-            <span class="text-xs text-gray-500">Age unknown</span>
+            <Clock class="w-4 h-4 text-fg-subtle" />
+            <span class="text-xs text-fg-subtle">Age unknown</span>
         </div>
     {:else}
-        <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+        <div class="bg-surface-2 rounded-lg p-4 border border-line">
             <div class="flex items-center gap-2 mb-2">
-                <CalendarPlus class="w-5 h-5 text-gray-500" />
-                <h3 class="text-lg font-semibold text-white">Domain Age Analysis</h3>
+                <CalendarPlus class="w-5 h-5 text-fg-subtle" />
+                <h3 class="text-lg font-semibold text-fg">Domain Age Analysis</h3>
             </div>
-            <div class="text-gray-400 text-sm">
+            <div class="text-fg-muted text-sm">
                 Creation date not available in RDAP data
             </div>
         </div>

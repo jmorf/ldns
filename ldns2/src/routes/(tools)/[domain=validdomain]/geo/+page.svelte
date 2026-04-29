@@ -51,29 +51,29 @@
   {:else}
     <div class="space-y-4">
       {#each Object.entries(results) as [ip, info]}
-        <div class="bg-gray-900 border border-gray-700 rounded-xl p-4">
+        <div class="bg-surface border border-line rounded-xl p-4">
           <div class="flex items-center justify-between mb-3">
-            <p class="font-mono text-sm text-white">{ip}</p>
+            <p class="font-mono text-sm text-fg">{ip}</p>
             {#if info.ok}
-              <span class="text-[11px] text-gray-400">{info.city || info.region}, {info.country}</span>
+              <span class="text-[11px] text-fg-muted">{info.city || info.region}, {info.country}</span>
             {/if}
           </div>
           {#if info.ok}
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-              <div><p class="text-[10px] uppercase tracking-wider text-gray-500">Country</p><p class="text-gray-200 mt-0.5">{info.country} <span class="text-[11px] text-gray-500 font-mono">{info.countryCode}</span></p></div>
-              <div><p class="text-[10px] uppercase tracking-wider text-gray-500">Region</p><p class="text-gray-200 mt-0.5">{info.region || '—'}</p></div>
-              <div><p class="text-[10px] uppercase tracking-wider text-gray-500">City</p><p class="text-gray-200 mt-0.5">{info.city || '—'}</p></div>
-              <div><p class="text-[10px] uppercase tracking-wider text-gray-500">Timezone</p><p class="text-gray-200 mt-0.5 font-mono text-xs">{info.timezone ?? '—'}</p></div>
-              {#if info.org}<div class="md:col-span-2"><p class="text-[10px] uppercase tracking-wider text-gray-500">Organization</p><p class="text-gray-200 mt-0.5">{info.org}</p></div>{/if}
-              {#if info.isp}<div class="md:col-span-2"><p class="text-[10px] uppercase tracking-wider text-gray-500">ISP</p><p class="text-gray-200 mt-0.5">{info.isp}</p></div>{/if}
+              <div><p class="text-[10px] uppercase tracking-wider text-fg-subtle">Country</p><p class="text-fg mt-0.5">{info.country} <span class="text-[11px] text-fg-subtle font-mono">{info.countryCode}</span></p></div>
+              <div><p class="text-[10px] uppercase tracking-wider text-fg-subtle">Region</p><p class="text-fg mt-0.5">{info.region || '—'}</p></div>
+              <div><p class="text-[10px] uppercase tracking-wider text-fg-subtle">City</p><p class="text-fg mt-0.5">{info.city || '—'}</p></div>
+              <div><p class="text-[10px] uppercase tracking-wider text-fg-subtle">Timezone</p><p class="text-fg mt-0.5 font-mono text-xs">{info.timezone ?? '—'}</p></div>
+              {#if info.org}<div class="md:col-span-2"><p class="text-[10px] uppercase tracking-wider text-fg-subtle">Organization</p><p class="text-fg mt-0.5">{info.org}</p></div>{/if}
+              {#if info.isp}<div class="md:col-span-2"><p class="text-[10px] uppercase tracking-wider text-fg-subtle">ISP</p><p class="text-fg mt-0.5">{info.isp}</p></div>{/if}
             </div>
             <a class="block mt-3 text-[11px] text-primary-400 hover:underline" href={`https://www.openstreetmap.org/?mlat=${info.lat}&mlon=${info.lon}#map=10/${info.lat}/${info.lon}`} target="_blank" rel="noopener noreferrer">View on OpenStreetMap →</a>
           {:else}
-            <p class="text-sm text-gray-400">{info.error}</p>
+            <p class="text-sm text-fg-muted">{info.error}</p>
           {/if}
         </div>
       {/each}
-      <p class="text-[10px] text-gray-600 text-center">Geolocation is approximate (country/region usually accurate, city often not).</p>
+      <p class="text-[10px] text-fg-subtle text-center">Geolocation is approximate (country/region usually accurate, city often not).</p>
     </div>
   {/if}
 </ToolPage>
