@@ -3,11 +3,12 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { proxy, type DkimResponse } from '$lib/proxy-client';
-  import ToolPage from '$lib/components/ToolPage.svelte';
+  import SEOToolPage from '$lib/components/SEOToolPage.svelte';
   import RefreshButton from '$lib/components/RefreshButton.svelte';
   import ShareButton from '$lib/components/ShareButton.svelte';
   import SkeletonRows from '$lib/components/SkeletonRows.svelte';
   import SEO from '$lib/components/SEO.svelte';
+  import { DKIM_PAGE } from '$lib/utils/seoContent';
 
   let result = $state<DkimResponse | null>(null);
   let loading = $state(false);
@@ -24,9 +25,8 @@
 
 <SEO title="{$page.params.domain} DKIM Selectors" description="Discovered DKIM selectors with algorithm and key length for {$page.params.domain}." />
 
-<ToolPage
-  title="{domain.name} DKIM Selectors"
-  description="Probe results across {result?.probed ?? 22} common selectors."
+<SEOToolPage
+  config={DKIM_PAGE}
   domainName={domain.name}
   isLoading={loading}
   error={error}
@@ -63,4 +63,4 @@
       </div>
     {/if}
   {/if}
-</ToolPage>
+</SEOToolPage>

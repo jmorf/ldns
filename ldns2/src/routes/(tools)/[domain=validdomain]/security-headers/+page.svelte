@@ -3,11 +3,12 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { proxy, type SecurityHeadersResponse } from '$lib/proxy-client';
-  import ToolPage from '$lib/components/ToolPage.svelte';
+  import SEOToolPage from '$lib/components/SEOToolPage.svelte';
   import RefreshButton from '$lib/components/RefreshButton.svelte';
   import ShareButton from '$lib/components/ShareButton.svelte';
   import SkeletonRows from '$lib/components/SkeletonRows.svelte';
   import SEO from '$lib/components/SEO.svelte';
+  import { SECURITY_HEADERS_PAGE } from '$lib/utils/seoContent';
 
   let result = $state<SecurityHeadersResponse | null>(null);
   let loading = $state(false);
@@ -33,9 +34,8 @@
 
 <SEO title="{$page.params.domain} Security Headers" description="HSTS, CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, and Permissions-Policy audit for {$page.params.domain}." />
 
-<ToolPage
-  title="{domain.name} Security Headers"
-  description="Audit of HSTS, CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, and Permissions-Policy."
+<SEOToolPage
+  config={SECURITY_HEADERS_PAGE}
   domainName={domain.name}
   isLoading={loading}
   error={error}
@@ -66,4 +66,4 @@
       {/each}
     </div>
   {/if}
-</ToolPage>
+</SEOToolPage>

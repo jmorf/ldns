@@ -3,12 +3,13 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { proxy, type HeadersResponse } from '$lib/proxy-client';
-  import ToolPage from '$lib/components/ToolPage.svelte';
+  import SEOToolPage from '$lib/components/SEOToolPage.svelte';
   import RefreshButton from '$lib/components/RefreshButton.svelte';
   import ShareButton from '$lib/components/ShareButton.svelte';
   import SkeletonRows from '$lib/components/SkeletonRows.svelte';
   import SEO from '$lib/components/SEO.svelte';
   import CopyButton from '$lib/components/CopyButton.svelte';
+  import { HEADERS_PAGE } from '$lib/utils/seoContent';
 
   let result = $state<HeadersResponse | null>(null);
   let loading = $state(false);
@@ -42,9 +43,8 @@
 
 <SEO title="{$page.params.domain} HTTP Response Headers" description="Inspect every HTTP response header returned by {$page.params.domain}." />
 
-<ToolPage
-  title="{domain.name} HTTP Headers"
-  description="Every response header returned by {domain.name}, fetched server-side."
+<SEOToolPage
+  config={HEADERS_PAGE}
   domainName={domain.name}
   isLoading={loading}
   error={error}
@@ -77,4 +77,4 @@
       </div>
     </div>
   {/if}
-</ToolPage>
+</SEOToolPage>

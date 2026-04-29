@@ -7,20 +7,22 @@
   import { domain } from '$lib/state.svelte';
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
-  import ToolPage from './ToolPage.svelte';
+  import SEOToolPage from './SEOToolPage.svelte';
   import RefreshButton from './RefreshButton.svelte';
   import ShareButton from './ShareButton.svelte';
   import CopyButton from './CopyButton.svelte';
   import SkeletonRows from './SkeletonRows.svelte';
   import SEO from './SEO.svelte';
+  import type { SEOPageConfig } from '$lib/utils/seoContent';
 
   interface Props {
     recordType: string;
     title: string;
     description: string;
     emptyMessage: string;
+    config: SEOPageConfig;
   }
-  let { recordType, title, description, emptyMessage }: Props = $props();
+  let { recordType, title, description, emptyMessage, config }: Props = $props();
 
   async function load() {
     if (!domain.name || !domain.isValid) return;
@@ -37,9 +39,8 @@
 
 <SEO title="{$page.params.domain} {recordType} Record Lookup" description={description.replace('{domain}', $page.params.domain ?? '')} />
 
-<ToolPage
-  title="{domain.name} {title}"
-  description={description.replace('{domain}', domain.name)}
+<SEOToolPage
+  {config}
   domainName={domain.name}
   isLoading={domain.toolState.dns?.loading}
   error={domain.toolState.dns?.error}
@@ -69,4 +70,4 @@
       <p class="text-sm text-fg-muted">{emptyMessage}</p>
     </div>
   {/if}
-</ToolPage>
+</SEOToolPage>

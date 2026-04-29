@@ -22,16 +22,22 @@
   let networkError = $state('');
   let filter = $state('');
 
-  async function load() {
+  async function load(force = false) {
     loading = true;
     networkError = '';
     try {
-      result = await proxy.subdomains(domain.name);
+      result = await proxy.subdomains(domain.name, { force });
     } catch (e) {
       networkError = e instanceof Error ? e.message : 'Subdomain discovery failed';
     } finally {
       loading = false;
     }
+  }
+  // Retry from a structured failure must bypass the (short) error cache —
+  // otherwise the user clicks Retry, the CDN serves the same cached failure
+  // for the next 5 minutes, and nothing changes.
+  function retry() {
+    return load(true);
   }
 
   function copyAll() {
@@ -77,6 +83,8 @@
       case 'overloaded':
       case 'rate-limited':
         return Activity;
+      case 'no-results':
+        return Search;
       default:
         return AlertTriangle;
     }
@@ -91,6 +99,8 @@
         return 'crt.sh rate-limited the request';
       case 'bad-gateway':
         return 'crt.sh returned a gateway error';
+      case 'no-results':
+        return 'No subdomains found in CT logs';
       default:
         return 'Subdomain discovery failed';
     }
@@ -102,7 +112,7 @@
 <SEOToolPage config={SUBDOMAINS_PAGE} domainName={domain.name} isLoading={loading && !result} error={networkError}>
   {#snippet actions()}
     <ShareButton />
-    <RefreshButton onClick={load} loading={loading} variant="secondary" />
+    <RefreshButton onClick={retry} loading={loading} variant="secondary" />
   {/snippet}
 
   {#if loading && !result}
@@ -119,10 +129,11 @@
           <p class="mt-2 text-sm text-fg-muted leading-relaxed">{failure.error}</p>
           <div class="mt-5 flex flex-wrap items-center gap-3">
             <button
-              onclick={load}
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs bg-surface-3 border border-line rounded-lg text-fg hover:border-primary-500/30 hover:text-primary-400 transition-colors"
+              onclick={retry}
+              disabled={loading}
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs bg-surface-3 border border-line rounded-lg text-fg hover:border-primary-500/30 hover:text-primary-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              Retry now
+              {loading ? 'Retrying…' : 'Retry now'}
             </button>
             <a
               href="https://crt.sh/?q=%25.{domain.name}"

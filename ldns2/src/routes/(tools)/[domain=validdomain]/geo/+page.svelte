@@ -3,11 +3,12 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { proxy, type GeoResponse } from '$lib/proxy-client';
-  import ToolPage from '$lib/components/ToolPage.svelte';
+  import SEOToolPage from '$lib/components/SEOToolPage.svelte';
   import RefreshButton from '$lib/components/RefreshButton.svelte';
   import ShareButton from '$lib/components/ShareButton.svelte';
   import SkeletonRows from '$lib/components/SkeletonRows.svelte';
   import SEO from '$lib/components/SEO.svelte';
+  import { GEO_PAGE } from '$lib/utils/seoContent';
 
   let results = $state<Record<string, GeoResponse>>({});
   let loading = $state(false);
@@ -34,9 +35,8 @@
 
 <SEO title="{$page.params.domain} IP Geolocation" description="Approximate location, ISP, and ASN for every IP returned by {$page.params.domain}." />
 
-<ToolPage
-  title="{domain.name} IP Geolocation"
-  description="Country, region, city, ISP, and ASN for each IP."
+<SEOToolPage
+  config={GEO_PAGE}
   domainName={domain.name}
   isLoading={loading}
   error={error}
@@ -76,4 +76,4 @@
       <p class="text-[10px] text-fg-subtle text-center">Geolocation is approximate (country/region usually accurate, city often not).</p>
     </div>
   {/if}
-</ToolPage>
+</SEOToolPage>

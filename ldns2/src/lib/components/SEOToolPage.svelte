@@ -9,6 +9,7 @@
         domainName: string;
         isLoading?: boolean;
         error?: string;
+        badge?: { text: string; color: string };
         children?: Snippet;
         actions?: Snippet;
     }
@@ -18,6 +19,7 @@
         domainName,
         isLoading = false,
         error,
+        badge,
         children,
         actions: actionsSnippet,
     }: Props = $props();
@@ -29,6 +31,7 @@
     {domainName}
     {isLoading}
     {error}
+    {badge}
 >
     {#snippet actions()}
         {#if actionsSnippet}

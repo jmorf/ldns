@@ -18,7 +18,7 @@ interface BaseOk {
   ok: true;
   domain: string;
 }
-interface BaseFail {
+export interface BaseFail {
   ok: false;
   error: string;
   domain?: string;
@@ -103,9 +103,24 @@ export type SubdomainsResult = SubdomainsResponse | BaseFail;
 
 export interface DkimResponse extends BaseOk, DkimResult {}
 
-async function api<T>(path: string, params: Record<string, string>): Promise<T> {
-  const qs = new URLSearchParams(params).toString();
-  const res = await fetch(`/api/${path}?${qs}`);
+interface ApiOptions {
+  /**
+   * Bypass browser + CDN caches. Adds a unique query param so the CDN treats
+   * it as a new key, and sets `cache: 'no-store'` so the browser doesn't
+   * serve a previous max-age response. Used by retry buttons after a
+   * transient upstream failure.
+   */
+  force?: boolean;
+}
+
+async function api<T>(
+  path: string,
+  params: Record<string, string>,
+  opts: ApiOptions = {}
+): Promise<T> {
+  const merged = opts.force ? { ...params, _: String(Date.now()) } : params;
+  const qs = new URLSearchParams(merged).toString();
+  const res = await fetch(`/api/${path}?${qs}`, opts.force ? { cache: 'no-store' } : undefined);
   if (!res.ok) {
     const text = await res.text().catch(() => '');
     throw new Error(text || `${path} returned ${res.status}`);
@@ -117,12 +132,13 @@ export const proxy = {
   server: (domain: string, useHttp = false) =>
     api<ServerResult>('server', useHttp ? { domain, http: '1' } : { domain }),
   headers: (domain: string) => api<HeadersResponse>('headers', { domain }),
-  tls: (domain: string) => api<TlsResponse | BaseFail>('tls', { domain }),
+  tls: (domain: string, opts?: ApiOptions) => api<TlsResponse | BaseFail>('tls', { domain }, opts),
   asn: (ip: string) => api<AsnResponse>('asn', { ip }),
   geo: (ip: string) => api<GeoResponse>('geo', { ip }),
   securityHeaders: (domain: string) => api<SecurityHeadersResponse>('security/headers', { domain }),
   hstsPreload: (domain: string) => api<HstsPreloadResponse>('security/hsts-preload', { domain }),
   probes: (domain: string) => api<ProbesResponse>('security/probes', { domain }),
-  subdomains: (domain: string) => api<SubdomainsResult>('subdomains', { domain }),
+  subdomains: (domain: string, opts?: ApiOptions) =>
+    api<SubdomainsResult>('subdomains', { domain }, opts),
   dkim: (domain: string) => api<DkimResponse>('dkim', { domain })
 };

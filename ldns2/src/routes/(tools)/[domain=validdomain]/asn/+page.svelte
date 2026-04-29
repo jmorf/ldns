@@ -3,11 +3,12 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { proxy, type AsnResponse } from '$lib/proxy-client';
-  import ToolPage from '$lib/components/ToolPage.svelte';
+  import SEOToolPage from '$lib/components/SEOToolPage.svelte';
   import RefreshButton from '$lib/components/RefreshButton.svelte';
   import ShareButton from '$lib/components/ShareButton.svelte';
   import SkeletonRows from '$lib/components/SkeletonRows.svelte';
   import SEO from '$lib/components/SEO.svelte';
+  import { ASN_PAGE } from '$lib/utils/seoContent';
 
   let results = $state<Record<string, AsnResponse>>({});
   let loading = $state(false);
@@ -38,9 +39,8 @@
 
 <SEO title="{$page.params.domain} ASN / Origin AS" description="Origin AS number, AS name, country, and announced prefix for every IP returned by {$page.params.domain}." />
 
-<ToolPage
-  title="{domain.name} ASN / Origin AS"
-  description="Origin AS number, name, country, and announced prefix for every IP."
+<SEOToolPage
+  config={ASN_PAGE}
   domainName={domain.name}
   isLoading={loading}
   error={error}
@@ -82,4 +82,4 @@
     </div>
     <p class="text-[10px] text-fg-subtle text-center mt-4">Origin lookup via Team Cymru DNS service · cached 1 hour at the edge.</p>
   {/if}
-</ToolPage>
+</SEOToolPage>
