@@ -4,13 +4,14 @@
     import ThemeToggle from '$lib/components/ThemeToggle.svelte';
     import { page } from '$app/stores';
     import { navigationState } from '$lib/state.svelte';
-    import { getPageGroup } from '$lib/utils/navigation';
     import { Menu } from 'lucide-svelte';
 
     let { children } = $props();
 
     $effect(() => {
-        navigationState.currentPage = getPageGroup($page.url.pathname);
+        // Close mobile sidebar on every navigation. Sidebar itself derives
+        // the active item from the URL — no separate currentPage state needed.
+        $page.url.pathname;
         navigationState.closeSidebar();
     });
 </script>

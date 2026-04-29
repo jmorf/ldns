@@ -1,197 +1,139 @@
 <script lang="ts">
-    import { Globe, GitBranch, Rocket, Mail, ArrowDown } from "lucide-svelte";
-    import SEO from "$lib/components/SEO.svelte";
+  import { Globe, GitBranch, Rocket, Mail, ShieldCheck, Server, Network } from 'lucide-svelte';
+  import SEO from '$lib/components/SEO.svelte';
+  import Eyebrow from '$lib/components/Eyebrow.svelte';
+
+  interface Capability {
+    n: string;
+    name: string;
+    blurb: string;
+    href: string;
+    icon: typeof Globe;
+  }
+
+  const capabilities: Capability[] = [
+    { n: '01', name: 'DNS Records', blurb: 'A, AAAA, MX, TXT, NS, SOA, CAA, CNAME — over encrypted DoH with per-provider latency.', href: '/google.com', icon: Globe },
+    { n: '02', name: 'RDAP & WHOIS', blurb: 'Registration data, registrar, expiry, DNSSEC. WHOIS fallback for ccTLDs that don\'t support RDAP.', href: '/google.com/rdap', icon: GitBranch },
+    { n: '03', name: 'Email security', blurb: 'SPF, DMARC, DKIM, BIMI, MTA-STS — provider detection, policy explanation.', href: '/google.com/email', icon: Mail },
+    { n: '04', name: 'Server response', blurb: 'Headers, redirect chain, TTFB, tech-stack badges, IP/ASN/country per upstream.', href: '/google.com/server', icon: Server },
+    { n: '05', name: 'TLS & security', blurb: 'Cert from CT logs, response security headers, HSTS preload, well-known files.', href: '/google.com/security', icon: ShieldCheck },
+    { n: '06', name: 'Subdomains', blurb: 'Discovery via Certificate Transparency logs, deduplicated and exportable as CSV.', href: '/google.com/subdomains', icon: Network }
+  ];
 </script>
 
-<SEO 
-    title="About | LDNS.com" 
-    description="LDNS is a free DNS lookup and domain analysis tool that runs entirely in your browser. Perform DNS queries, RDAP lookups, email configuration analysis, and security assessments."
+<SEO
+  title="About"
+  description="LDNS is a free, no-account toolkit for inspecting any domain on the internet — DNS, RDAP, email, server, security and subdomains."
 />
 
-<div class="max-w-4xl mx-auto px-4">
-    <!-- Hero Section -->
-    <header class="text-center mb-16">
-        <h1 class="text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            About LDNS
-        </h1>
-        <p class="text-xl text-white dark:text-white max-w-2xl mx-auto">
-            A comprehensive, client-side DNS lookup and domain analysis tool that runs entirely in your browser with no backend dependencies.
-        </p>
-    </header>
+<!-- ─── Hero ─────────────────────────────────────────────────────── -->
+<section class="border-b border-line">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
+    <Eyebrow text="about ldns" />
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-fg leading-[1.05]">
+      One URL,<br />
+      <span class="text-primary-500">every domain tool.</span>
+    </h1>
+    <p class="mt-6 text-lg text-fg-muted leading-relaxed max-w-2xl">
+      LDNS is a free toolkit for inspecting any domain on the internet — DNS records,
+      registration data, email authentication, TLS certificates, security headers,
+      IP geolocation, and subdomains. No accounts. No tracking. Edge-cached on Cloudflare
+      so lookups are fast.
+    </p>
+  </div>
+</section>
 
-    <!-- Features Section -->
-    <section class="mb-16">
-        <h2 class="text-3xl font-bold text-white dark:text-white mb-8 text-center">
-            What LDNS Offers
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            <div class="flex items-start gap-4">
-                <Globe class="w-6 h-6 text-primary-600 dark:text-primary-400 mt-1 flex-shrink-0" />
-                <div>
-                    <h3 class="text-lg font-semibold text-primary-300 dark:text-primary-300 mb-2">
-                        DNS Records Analysis
-                    </h3>
-                    <p class="text-white dark:text-white text-sm">
-                        Complete DNS lookup with clickable record filtering, export capabilities, and real-time validation.
-                    </p>
-                </div>
-            </div>
+<!-- ─── Capabilities ────────────────────────────────────────────── -->
+<section class="border-b border-line">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <Eyebrow text="what's in the box" />
+    <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight text-fg mb-10">
+      Six tools, one workflow.
+    </h2>
+    <div class="grid sm:grid-cols-2 gap-4">
+      {#each capabilities as c}
+        {@const Icon = c.icon}
+        <a
+          href={c.href}
+          class="group bg-surface-2 border border-line rounded-xl p-5 hover:border-primary-500/30 transition-colors"
+        >
+          <div class="flex items-baseline gap-2 mb-3">
+            <span class="font-mono text-primary-500 tnum text-xs">{c.n}</span>
+            <span class="font-mono text-fg-subtle text-xs">—</span>
+            <Icon class="w-4 h-4 text-fg-subtle ml-auto group-hover:text-primary-400 transition-colors" />
+          </div>
+          <h3 class="text-base font-semibold text-fg group-hover:text-primary-400 transition-colors">{c.name}</h3>
+          <p class="text-sm text-fg-muted leading-relaxed mt-1.5">{c.blurb}</p>
+        </a>
+      {/each}
+    </div>
+  </div>
+</section>
 
-            <div class="flex items-start gap-4">
-                <Mail class="w-6 h-6 text-primary-600 dark:text-primary-400 mt-1 flex-shrink-0" />
-                <div>
-                    <h3 class="text-lg font-semibold text-primary-300 dark:text-primary-300 mb-2">
-                        Email Security Checker
-                    </h3>
-                    <p class="text-white dark:text-white text-sm">
-                        SPF, DMARC, MTA-STS, and BIMI analysis with provider detection and security recommendations.
-                    </p>
-                </div>
-            </div>
-
-            <div class="flex items-start gap-4">
-                <GitBranch class="w-6 h-6 text-primary-600 dark:text-primary-400 mt-1 flex-shrink-0" />
-                <div>
-                    <h3 class="text-lg font-semibold text-primary-300 dark:text-primary-300 mb-2">
-                        RDAP Lookup
-                    </h3>
-                    <p class="text-white dark:text-white text-sm">
-                        Domain registration info, DNSSEC status, registrar details, and expiration tracking.
-                    </p>
-                </div>
-            </div>
-
-
-            <div class="flex items-start gap-4">
-                <ArrowDown class="w-6 h-6 text-primary-600 dark:text-primary-400 mt-1 flex-shrink-0" />
-                <div>
-                    <h3 class="text-lg font-semibold text-primary-300 dark:text-primary-300 mb-2">
-                        Export & Share
-                    </h3>
-                    <p class="text-white dark:text-white text-sm">
-                        Export data as JSON, CSV, BIND zone files, or generate PDF reports for documentation.
-                    </p>
-                </div>
-            </div>
-
-            <div class="flex items-start gap-4">
-                <Rocket class="w-6 h-6 text-primary-600 dark:text-primary-400 mt-1 flex-shrink-0" />
-                <div>
-                    <h3 class="text-lg font-semibold text-primary-300 dark:text-primary-300 mb-2">
-                        100% Client-Side
-                    </h3>
-                    <p class="text-white dark:text-white text-sm">
-                        No backend servers - everything runs in your browser with Cloudflare DNS over HTTPS.
-                    </p>
-                </div>
-            </div>
+<!-- ─── How to use ──────────────────────────────────────────────── -->
+<section class="border-b border-line bg-surface-2/30">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <Eyebrow text="how to use it" />
+    <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight text-fg mb-8">
+      Just put the domain in the URL.
+    </h2>
+    <div class="space-y-5">
+      <div>
+        <p class="text-sm text-fg-muted mb-2">All DNS records:</p>
+        <div class="flex items-center justify-between gap-3 bg-surface border border-line rounded-lg px-4 py-2.5 font-mono text-sm">
+          <span class="text-fg truncate">ldns.com<span class="text-primary-500">/google.com</span></span>
+          <a href="/google.com" class="text-[11px] px-2 py-1 bg-surface-2 border border-line text-fg-muted rounded hover:text-primary-400 hover:border-primary-500/40 transition-colors">try it →</a>
         </div>
-    </section>
-
-    <!-- How to Use Section -->
-    <section class="mb-16">
-        <h2 class="text-3xl font-bold text-white dark:text-white mb-8 text-center">
-            How to Use LDNS
-        </h2>
-        <div class="space-y-6 text-white dark:text-white">
-            <div>
-                <h3 class="text-xl font-semibold text-primary-300 dark:text-primary-300 mb-3">
-                    DNS Analysis
-                </h3>
-                <p class="mb-2">
-                    Enter a domain name in the search bar on the homepage, or navigate directly to:
-                </p>
-                <code class="flex items-center justify-between bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded text-sm mb-2">
-                    <span>ldns.com/ldns.com</span>
-                    <a href="/ldns.com" class="px-2 py-1 text-xs bg-gray-600 hover:bg-gray-700 text-white rounded transition-colors">Try it</a>
-                </code>
-                <p class="mb-3">View all DNS records with micro cards summary, clickable filtering, and export options (JSON, CSV, BIND zone files, PDF).</p>
-                
-                <p class="mb-2 text-white dark:text-white">
-                    Features include:
-                </p>
-                <ul class="list-disc list-inside text-sm text-gray-300 space-y-1 mb-3">
-                    <li>Clickable record type cards for instant filtering</li>
-                    <li>Real-time record validation and error detection</li>
-                    <li>Export to multiple formats including PDF reports</li>
-                    <li>Direct links to specific record types</li>
-                </ul>
-            </div>
-
-            <div>
-                <h3 class="text-xl font-semibold text-primary-300 dark:text-primary-300 mb-3">
-                    RDAP/WHOIS Data
-                </h3>
-                <p class="mb-2">
-                    Get comprehensive domain registration information at:
-                </p>
-                <code class="flex items-center justify-between bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded text-sm mb-2">
-                    <span>ldns.com/ldns.com/rdap</span>
-                    <a href="/ldns.com/rdap" class="px-2 py-1 text-xs bg-gray-600 hover:bg-gray-700 text-white rounded transition-colors">Try it</a>
-                </code>
-                <p class="mb-3">Includes micro cards summary showing domain age, expiration countdown, registrar, and DNSSEC status with detailed explanations.</p>
-                
-                <p class="mb-2 text-white dark:text-white">
-                    Key features:
-                </p>
-                <ul class="list-disc list-inside text-sm text-gray-300 space-y-1 mb-3">
-                    <li>Domain age calculator and expiration tracking</li>
-                    <li>DNSSEC status with DS record analysis</li>
-                    <li>Status code explanations (RFC 7483 compliant)</li>
-                    <li>Registrar and nameserver information</li>
-                </ul>
-            </div>
-
-            <div>
-                <h3 class="text-xl font-semibold text-primary-300 dark:text-primary-300 mb-3">
-                    Email Security Analysis
-                </h3>
-                <p class="mb-2">
-                    Comprehensive email configuration and security analysis at:
-                </p>
-                <code class="flex items-center justify-between bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded text-sm mb-2">
-                    <span>ldns.com/ldns.com/email</span>
-                    <a href="/ldns.com/email" class="px-2 py-1 text-xs bg-gray-600 hover:bg-gray-700 text-white rounded transition-colors">Try it</a>
-                </code>
-                <p class="mb-3">Features detailed analysis of all email security protocols with validation and recommendations.</p>
-                
-                <p class="mb-2 text-white dark:text-white">
-                    Analyzes:
-                </p>
-                <ul class="list-disc list-inside text-sm text-gray-300 space-y-1 mb-3">
-                    <li><strong>SPF</strong> - Sender Policy Framework validation and mechanism analysis</li>
-                    <li><strong>DMARC</strong> - Policy validation and tag-by-tag breakdown</li>
-                    <li><strong>MTA-STS</strong> - Mail Transfer Agent Strict Transport Security</li>
-                    <li><strong>BIMI</strong> - Brand Indicators for Message Identification</li>
-                    <li><strong>Email Provider Detection</strong> - Automatic MX provider identification</li>
-                </ul>
-            </div>
-
-            <div>
-                <h3 class="text-xl font-semibold text-primary-300 dark:text-primary-300 mb-3">
-                    Deep Links
-                </h3>
-                <p class="mb-2">
-                    You can link directly to specific sections using hash fragments:
-                </p>
-                <div class="space-y-2">
-                    <code class="flex items-center justify-between bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded text-sm">
-                        <span>ldns.com/ldns.com#mx</span>
-                        <a href="/ldns.com#mx" class="px-2 py-1 text-xs bg-gray-600 hover:bg-gray-700 text-white rounded transition-colors">Try it</a>
-                    </code>
-                    <code class="flex items-center justify-between bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded text-sm">
-                        <span>ldns.com/ldns.com/rdap#summary</span>
-                        <a href="/ldns.com/rdap#summary" class="px-2 py-1 text-xs bg-gray-600 hover:bg-gray-700 text-white rounded transition-colors">Try it</a>
-                    </code>
-                    <code class="flex items-center justify-between bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded text-sm">
-                        <span>ldns.com/ldns.com/email#spf</span>
-                        <a href="/ldns.com/email#spf" class="px-2 py-1 text-xs bg-gray-600 hover:bg-gray-700 text-white rounded transition-colors">Try it</a>
-                    </code>
-                </div>
-                <p class="text-sm text-gray-400 mt-2">
-                    These links will automatically scroll to the specific section after page load.
-                </p>
-            </div>
+      </div>
+      <div>
+        <p class="text-sm text-fg-muted mb-2">Add a tool slug for a focused view:</p>
+        <div class="flex items-center justify-between gap-3 bg-surface border border-line rounded-lg px-4 py-2.5 font-mono text-sm">
+          <span class="text-fg truncate">ldns.com/google.com<span class="text-primary-500">/email</span></span>
+          <a href="/google.com/email" class="text-[11px] px-2 py-1 bg-surface-2 border border-line text-fg-muted rounded hover:text-primary-400 hover:border-primary-500/40 transition-colors">try it →</a>
         </div>
-    </section>
-</div>
+      </div>
+      <div>
+        <p class="text-sm text-fg-muted mb-2">Hash fragments deep-link to specific sections:</p>
+        <div class="flex items-center justify-between gap-3 bg-surface border border-line rounded-lg px-4 py-2.5 font-mono text-sm">
+          <span class="text-fg truncate">ldns.com/google.com/email<span class="text-primary-500">#dmarc</span></span>
+          <a href="/google.com/email#dmarc" class="text-[11px] px-2 py-1 bg-surface-2 border border-line text-fg-muted rounded hover:text-primary-400 hover:border-primary-500/40 transition-colors">try it →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Architecture ────────────────────────────────────────────── -->
+<section class="border-b border-line">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <Eyebrow text="how it's built" />
+    <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight text-fg mb-6">
+      Edge-rendered, cache-first, no database.
+    </h2>
+    <div class="space-y-4 text-fg-muted leading-relaxed max-w-prose">
+      <p>
+        DNS queries go straight to public DoH resolvers (Cloudflare, Google, DNS.SB).
+        Server probes, TLS, ASN, subdomain and email lookups run through SvelteKit endpoints
+        that proxy to public services and cache aggressively at the Cloudflare edge.
+      </p>
+      <p>
+        We don't run a database. We don't track users. Every lookup is a stateless GET
+        against a cached endpoint — that's why the same lookup is essentially free at scale,
+        and why every page is also a public API.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA ─────────────────────────────────────────────────────── -->
+<section class="py-12">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <a
+      href="/"
+      class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-colors"
+    >
+      <Rocket class="w-4 h-4" />
+      Look up a domain
+    </a>
+  </div>
+</section>

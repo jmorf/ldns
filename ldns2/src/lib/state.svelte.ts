@@ -2168,13 +2168,12 @@ class DomainName {
 
 // Navigation state class
 class NavigationState {
-    currentPage = $state<import('$lib/utils/navigation').PageGroup>('dns');
     sidebarOpen = $state(false);
-    
+
     toggleSidebar() {
         this.sidebarOpen = !this.sidebarOpen;
     }
-    
+
     closeSidebar() {
         this.sidebarOpen = false;
     }

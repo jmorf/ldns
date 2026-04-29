@@ -1,5 +1,6 @@
 <script lang="ts">
     import { domain, navigationState } from '$lib/state.svelte';
+    import { page } from '$app/stores';
     import {
         Server,
         Globe,
@@ -10,27 +11,7 @@
     } from 'lucide-svelte';
     import ThemeToggle from './ThemeToggle.svelte';
 
-    let moreToolsOpen = $state(false);
-
     const domainName = $derived(domain.name || 'example.com');
-
-    const isDnsActive = $derived(navigationState.currentPage === 'dns');
-    const isRdapActive = $derived(navigationState.currentPage === 'rdap');
-    const isServerActive = $derived(navigationState.currentPage === 'server');
-    const isSecurityActive = $derived(navigationState.currentPage === 'security');
-    const isEmailActive = $derived(navigationState.currentPage === 'email');
-
-    function handleBackdropClick() {
-        navigationState.closeSidebar();
-    }
-    function handleBackdropKeydown(event: KeyboardEvent) {
-        if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
-            navigationState.closeSidebar();
-        }
-    }
-    function handleNavClick() {
-        navigationState.closeSidebar();
-    }
 
     interface NavItem {
         href: string;
@@ -80,6 +61,47 @@
         { label: 'server', items: resolve(serverTools) },
         { label: 'other', items: resolve(otherTools) }
     ]);
+
+    // Top-level routes the sidebar highlights as primary tools. Anything else
+    // (asn, ip, headers, dkim, …) lives under "more tools" — when we're on one
+    // of those paths we suppress the top-level highlight and auto-expand the
+    // collapsible so the actual current tool can be highlighted there instead.
+    const currentPath = $derived($page.url.pathname);
+    const topLevelPaths = $derived([
+        `/${domainName}`,
+        `/${domainName}/rdap`,
+        `/${domainName}/email`,
+        `/${domainName}/security`,
+        `/${domainName}/server`
+    ]);
+    const isOnTopLevel = $derived(topLevelPaths.includes(currentPath));
+
+    function isActive(href: string): boolean {
+        return currentPath === href;
+    }
+
+    let moreToolsOpen = $state(false);
+    // Auto-expand "more tools" whenever the current page lives in there,
+    // without trapping the user's manual toggle in either direction.
+    let lastAutoPath = '';
+    $effect(() => {
+        const path = currentPath;
+        if (path === lastAutoPath) return;
+        lastAutoPath = path;
+        if (!isOnTopLevel) moreToolsOpen = true;
+    });
+
+    function handleBackdropClick() {
+        navigationState.closeSidebar();
+    }
+    function handleBackdropKeydown(event: KeyboardEvent) {
+        if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
+            navigationState.closeSidebar();
+        }
+    }
+    function handleNavClick() {
+        navigationState.closeSidebar();
+    }
 </script>
 
 {#if navigationState.sidebarOpen}
@@ -114,7 +136,7 @@
                     <a
                         href="/{domainName}"
                         onclick={handleNavClick}
-                        class="flex items-center p-2 rounded-lg transition-colors {isDnsActive
+                        class="flex items-center p-2 rounded-lg transition-colors {isActive(`/${domainName}`)
                             ? 'bg-primary-500/15 text-primary-400'
                             : 'text-fg-muted hover:bg-surface-3 hover:text-fg'}"
                     >
@@ -126,7 +148,7 @@
                     <a
                         href="/{domainName}/rdap"
                         onclick={handleNavClick}
-                        class="flex items-center p-2 rounded-lg transition-colors {isRdapActive
+                        class="flex items-center p-2 rounded-lg transition-colors {isActive(`/${domainName}/rdap`)
                             ? 'bg-primary-500/15 text-primary-400'
                             : 'text-fg-muted hover:bg-surface-3 hover:text-fg'}"
                     >
@@ -138,7 +160,7 @@
                     <a
                         href="/{domainName}/email"
                         onclick={handleNavClick}
-                        class="flex items-center p-2 rounded-lg transition-colors {isEmailActive
+                        class="flex items-center p-2 rounded-lg transition-colors {isActive(`/${domainName}/email`)
                             ? 'bg-primary-500/15 text-primary-400'
                             : 'text-fg-muted hover:bg-surface-3 hover:text-fg'}"
                     >
@@ -150,7 +172,7 @@
                     <a
                         href="/{domainName}/security"
                         onclick={handleNavClick}
-                        class="flex items-center p-2 rounded-lg transition-colors {isSecurityActive
+                        class="flex items-center p-2 rounded-lg transition-colors {isActive(`/${domainName}/security`)
                             ? 'bg-primary-500/15 text-primary-400'
                             : 'text-fg-muted hover:bg-surface-3 hover:text-fg'}"
                     >
@@ -162,7 +184,7 @@
                     <a
                         href="/{domainName}/server"
                         onclick={handleNavClick}
-                        class="flex items-center p-2 rounded-lg transition-colors {isServerActive
+                        class="flex items-center p-2 rounded-lg transition-colors {isActive(`/${domainName}/server`)
                             ? 'bg-primary-500/15 text-primary-400'
                             : 'text-fg-muted hover:bg-surface-3 hover:text-fg'}"
                     >
@@ -192,7 +214,9 @@
                                             <a
                                                 href={item.href}
                                                 onclick={handleNavClick}
-                                                class="block px-2 py-1 text-xs rounded-md text-fg-muted hover:bg-surface-3 hover:text-fg transition-colors"
+                                                class="block px-2 py-1 text-xs rounded-md transition-colors {isActive(item.href)
+                                                    ? 'bg-primary-500/15 text-primary-400'
+                                                    : 'text-fg-muted hover:bg-surface-3 hover:text-fg'}"
                                             >
                                                 {item.label}
                                             </a>
@@ -210,10 +234,10 @@
         <div class="p-3 border-t border-line">
             <a
                 href="/extension"
-                class="flex items-center justify-between p-2 rounded-lg bg-primary-500/10 border border-primary-500/20 text-primary-400 text-xs hover:bg-primary-500/15 transition-colors"
+                class="flex items-center justify-between px-2 py-1.5 text-[11px] text-fg-subtle hover:text-fg-muted transition-colors"
             >
-                <span>Browser extension</span>
-                <span class="font-mono text-[10px]">→</span>
+                <span class="font-mono uppercase tracking-wider">// browser extension</span>
+                <span class="font-mono">→</span>
             </a>
         </div>
     </div>
