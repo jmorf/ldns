@@ -44,7 +44,7 @@ export const MX_PAGE: SEOPageConfig = {
     title: (d) => `${d} MX Lookup — Mail Server Records`,
     description: (d) => `MX lookup for ${d}. Find which mail servers handle email delivery for ${d}, their priorities, and which email provider ${d} uses.`,
     h1: (d) => `${d} MX Lookup`,
-    intro: (d) => `Use this MX lookup tool to see where email for ${d} is delivered. MX (Mail Exchange) records specify which mail servers accept email for ${d} and in what priority order. Below are the current MX records for ${d} along with their priority values.`,
+    intro: (d) => `Use this MX lookup tool to see where email for ${d} is delivered. MX (Mail Exchange) records specify which mail servers accept email for ${d} and in what priority order.`,
     landingDescription: 'Free MX lookup tool — find mail servers, check MX record priorities, and identify email providers for any domain. Instant results, no install required.',
     sections: (d) => [
         {
@@ -80,9 +80,9 @@ export const MX_PAGE: SEOPageConfig = {
         {
             heading: 'Frequently Asked Questions',
             paragraphs: [
-                `What mail server does ${d} use? — The MX records shown above reveal exactly which mail servers handle email for ${d}. The server with the lowest priority number is the primary mail handler.`,
+                `What mail server does ${d} use? — ${d}'s MX records reveal exactly which mail servers handle its email. The server with the lowest priority number is the primary mail handler.`,
                 `How many MX records does ${d} have? — The number of MX records indicates how many mail servers are configured for ${d}. Multiple records provide redundancy and load balancing for incoming email.`,
-                `Does ${d} use Google Workspace or Microsoft 365? — Check the MX record hostnames above. Google Workspace domains point to servers ending in google.com or googlemail.com, while Microsoft 365 domains point to *.mail.protection.outlook.com.`,
+                `Does ${d} use Google Workspace or Microsoft 365? — Check ${d}'s MX record hostnames. Google Workspace domains point to servers ending in google.com or googlemail.com, while Microsoft 365 domains point to *.mail.protection.outlook.com.`,
                 `Why is email to ${d} bouncing? — If email delivery to ${d} is failing, start by verifying that valid MX records exist. Missing or misconfigured MX records are a common cause of email delivery failures.`,
             ],
         },
@@ -149,7 +149,7 @@ export const NS_PAGE: SEOPageConfig = {
     title: (d) => `${d} NS Lookup — Nameserver Records`,
     description: (d) => `NS lookup for ${d}. Find the authoritative nameservers for ${d} and which DNS hosting provider manages DNS resolution and delegation.`,
     h1: (d) => `${d} NS Lookup`,
-    intro: (d) => `Use this NS lookup tool to find the authoritative nameservers for ${d}. NS records indicate which DNS servers respond to all queries for ${d}, including A records, MX records, TXT records, and every other record type. Below are the current nameservers for ${d}.`,
+    intro: (d) => `Use this NS lookup tool to find the authoritative nameservers for ${d}. NS records indicate which DNS servers respond to all queries for ${d}, including A records, MX records, TXT records, and every other record type.`,
     landingDescription: 'Free NS lookup tool — find authoritative nameservers, identify DNS hosting providers, and check domain delegation for any domain.',
     sections: (d) => [
         {
@@ -178,13 +178,13 @@ export const NS_PAGE: SEOPageConfig = {
             heading: 'Why Nameserver Redundancy Matters',
             paragraphs: [
                 `If all nameservers for ${d} become unreachable, the domain effectively disappears from the internet — websites won't load, email won't deliver, and all services depending on DNS will fail. This is why every domain should have nameservers on at least two separate networks.`,
-                `Major DNS outages like the 2016 Dyn attack demonstrated what happens when nameserver infrastructure fails. Modern DNS providers mitigate this with anycast routing, where the same nameserver addresses are served from dozens of data centers worldwide. Check ${d}'s nameservers above to see how many are configured.`,
+                `Major DNS outages like the 2016 Dyn attack demonstrated what happens when nameserver infrastructure fails. Modern DNS providers mitigate this with anycast routing, where the same nameserver addresses are served from dozens of data centers worldwide. ${d}'s nameservers indicate how many are configured.`,
             ],
         },
         {
             heading: 'Frequently Asked Questions',
             paragraphs: [
-                `Who hosts DNS for ${d}? — The nameservers shown above reveal ${d}'s DNS hosting provider. Look at the nameserver hostnames to identify the provider (e.g., cloudflare.com, awsdns, etc.).`,
+                `Who hosts DNS for ${d}? — ${d}'s nameservers reveal its DNS hosting provider. Look at the nameserver hostnames to identify the provider (e.g., cloudflare.com, awsdns, etc.).`,
                 `How many nameservers does ${d} have? — The number of NS records indicates how many nameservers serve ${d}. Most domains have 2–4 nameservers for redundancy and performance.`,
                 `What DNS provider does ${d} use? — The nameserver hostnames identify the provider. Compare them against known DNS provider naming patterns to determine who manages DNS for ${d}.`,
                 `How do I change nameservers for a domain? — Nameserver changes are made at the domain registrar (not the DNS provider). Log into your registrar account, find the nameserver settings, and update them to the new provider's nameservers. Propagation takes up to 48 hours.`,
@@ -253,7 +253,7 @@ export const A_PAGE: SEOPageConfig = {
     title: (d) => `${d} A Record Lookup — IPv4 Addresses`,
     description: (d) => `A record lookup for ${d}. Find the IPv4 addresses that ${d} resolves to and understand its hosting configuration.`,
     h1: (d) => `${d} A Record Lookup`,
-    intro: (d) => `Use this A record lookup tool to find the IPv4 addresses for ${d}. A records map a domain name to its IP addresses — when your browser connects to ${d}, it retrieves these A records first. Below are the current IPv4 addresses for ${d}.`,
+    intro: (d) => `Use this A record lookup tool to find the IPv4 addresses for ${d}. A records map a domain name to its IP addresses — when your browser connects to ${d}, it retrieves these A records first.`,
     landingDescription: 'Free A record lookup tool — find IPv4 addresses, check hosting configuration, and identify CDN or load balancer usage for any domain.',
     sections: (d) => [
         {
@@ -261,14 +261,14 @@ export const A_PAGE: SEOPageConfig = {
             paragraphs: [
                 `An A (Address) record maps ${d} to a 32-bit IPv4 address. When you type ${d} into your browser, the first step is a DNS lookup that returns these A records — the IP addresses your browser connects to in order to load the website.`,
                 `${d} may have one or multiple A records. A single A record means all traffic goes to one server, while multiple A records typically indicate load balancing or CDN usage, distributing visitors across several servers for better performance and reliability.`,
-                `The A records shown above are the current IPv4 addresses that ${d} resolves to. These can change if ${d} switches hosting providers, adds a CDN, or updates its server infrastructure.`,
+                `${d}'s A records are the current IPv4 addresses that the domain resolves to. These can change if ${d} switches hosting providers, adds a CDN, or updates its server infrastructure.`,
             ],
         },
         {
             heading: 'What Are A Records?',
             paragraphs: [
                 `A records are the most fundamental DNS record type. They provide the direct mapping between a human-readable domain name like ${d} and the machine-readable IPv4 address that computers use to route network traffic. Without A records, browsers would have no way to find the server hosting ${d}'s website.`,
-                `Each A record has a TTL (Time To Live) value that tells DNS resolvers how long to cache the result. A short TTL means changes propagate quickly but generate more DNS queries. A long TTL reduces DNS traffic but means changes take longer to take effect. Check the TTL values for ${d}'s A records above.`,
+                `Each A record has a TTL (Time To Live) value that tells DNS resolvers how long to cache the result. A short TTL means changes propagate quickly but generate more DNS queries. A long TTL reduces DNS traffic but means changes take longer to take effect. ${d}'s A records each carry their own TTL value.`,
             ],
         },
         {
@@ -288,10 +288,10 @@ export const A_PAGE: SEOPageConfig = {
         {
             heading: 'Frequently Asked Questions',
             paragraphs: [
-                `What IP address does ${d} resolve to? — The A records shown above list all IPv4 addresses that ${d} currently resolves to. Each address represents a server that can handle requests for ${d}.`,
-                `Does ${d} use multiple IP addresses? — If more than one A record appears above, then yes — ${d} uses multiple IP addresses, likely for load balancing, redundancy, or CDN distribution.`,
+                `What IP address does ${d} resolve to? — ${d}'s A records list all IPv4 addresses that the domain currently resolves to. Each address represents a server that can handle requests for ${d}.`,
+                `Does ${d} use multiple IP addresses? — If more than one A record exists for ${d}, then yes — the domain uses multiple IP addresses, likely for load balancing, redundancy, or CDN distribution.`,
                 `What is a DNS A record? — An A record is a DNS entry that maps a domain name to an IPv4 address. It's the most basic DNS record type and is essential for any domain to be reachable on the web.`,
-                `How do I find who hosts ${d}? — You can perform a reverse IP lookup on the addresses shown above, or check the WHOIS page for ${d} to find registration and hosting information.`,
+                `How do I find who hosts ${d}? — You can perform a reverse IP lookup on ${d}'s IP addresses, or check the WHOIS page for ${d} to find registration and hosting information.`,
             ],
         },
     ],
@@ -357,14 +357,14 @@ export const TXT_PAGE: SEOPageConfig = {
     title: (d) => `${d} TXT Record Lookup — DNS Text Records`,
     description: (d) => `TXT record lookup for ${d}. View SPF, DKIM, DMARC, domain verification, and other text-based DNS records for ${d}.`,
     h1: (d) => `${d} TXT Record Lookup`,
-    intro: (d) => `Use this TXT record lookup tool to view all text-based DNS records for ${d}. TXT records are commonly used for email authentication (SPF, DKIM, DMARC), domain ownership verification, and other purposes. Below are all TXT records currently published for ${d}.`,
+    intro: (d) => `Use this TXT record lookup tool to view all text-based DNS records for ${d}. TXT records are commonly used for email authentication (SPF, DKIM, DMARC), domain ownership verification, and other purposes.`,
     landingDescription: 'Free TXT record lookup tool — view SPF, DKIM, DMARC, domain verification tokens, and all text-based DNS records for any domain.',
     sections: (d) => [
         {
             heading: `What Are ${d}'s TXT Records?`,
             paragraphs: [
                 `TXT (Text) records for ${d} contain text strings published in DNS. While originally designed for human-readable notes, TXT records are now primarily used for machine-readable data like email authentication policies and domain verification tokens.`,
-                `The TXT records for ${d} shown above reveal important information about the domain's email security configuration, which services have verified ownership of ${d}, and any other text-based DNS data the domain administrators have published.`,
+                `${d}'s TXT records reveal important information about the domain's email security configuration, which services have verified ownership of ${d}, and any other text-based DNS data the domain administrators have published.`,
                 `Each TXT record can hold up to 255 characters per string, though a single record can contain multiple strings concatenated together. Large records like DKIM keys often use this multi-string format.`,
             ],
         },
@@ -393,8 +393,8 @@ export const TXT_PAGE: SEOPageConfig = {
         {
             heading: 'Frequently Asked Questions',
             paragraphs: [
-                `Does ${d} have SPF? — Look for a TXT record starting with "v=spf1" in the records above. If present, ${d} has SPF configured to control which servers can send email on its behalf.`,
-                `What TXT records does ${d} have? — All TXT records for ${d} are listed above, categorized by type (SPF, DMARC, DKIM, verification, or generic TXT).`,
+                `Does ${d} have SPF? — Look for a TXT record starting with "v=spf1" among ${d}'s TXT records. If present, ${d} has SPF configured to control which servers can send email on its behalf.`,
+                `What TXT records does ${d} have? — ${d}'s TXT records are categorized by type (SPF, DMARC, DKIM, verification, or generic TXT).`,
                 `What are TXT records used for? — TXT records serve multiple purposes: email authentication (SPF, DKIM, DMARC), domain ownership verification for services like Google and Microsoft, and storing arbitrary configuration data.`,
                 `How do I add a TXT record to my domain? — TXT records are added through your DNS provider's control panel. Log into your DNS hosting dashboard, add a new TXT record with the required value, and save. Changes typically propagate within minutes to hours.`,
             ],
@@ -461,7 +461,7 @@ export const SPF_PAGE: SEOPageConfig = {
     title: (d) => `${d} SPF Record Checker — Email Authentication`,
     description: (d) => `SPF record checker for ${d}. Parse SPF mechanisms, check authorized senders, and verify ${d}'s email authentication setup.`,
     h1: (d) => `${d} SPF Record Checker`,
-    intro: (d) => `Use this SPF record checker to analyze the email authentication setup for ${d}. SPF (Sender Policy Framework) specifies which mail servers are authorized to send email on behalf of ${d}. Below is the parsed SPF record with a breakdown of each mechanism and its effect.`,
+    intro: (d) => `Use this SPF record checker to analyze the email authentication setup for ${d}. SPF (Sender Policy Framework) specifies which mail servers are authorized to send email on behalf of ${d}.`,
     landingDescription: 'Free SPF record checker — parse SPF mechanisms, verify authorized email senders, and check DNS lookup limits for any domain.',
     sections: (d) => [
         {
@@ -497,7 +497,7 @@ export const SPF_PAGE: SEOPageConfig = {
         {
             heading: 'Frequently Asked Questions',
             paragraphs: [
-                `Does ${d} have SPF? — The analysis above shows whether ${d} has a published SPF record and details its contents. If no SPF record is found, ${d} has not configured email sender authorization.`,
+                `Does ${d} have SPF? — The SPF analysis for ${d} shows whether the domain has a published SPF record and details its contents. If no SPF record is found, ${d} has not configured email sender authorization.`,
                 `What is ${d}'s SPF policy? — The SPF policy is determined by the final mechanism in the record. "-all" means hard fail (reject unauthorized senders), "~all" means soft fail (flag but don't reject), and "?all" means neutral (no policy).`,
                 `Is ${d} protected from email spoofing? — SPF alone provides partial protection. Full email spoofing protection for ${d} requires SPF combined with DKIM and a DMARC policy set to "quarantine" or "reject". Check ${d}'s DMARC page for the full picture.`,
                 `Why is email from ${d} going to spam? — If SPF checks are failing, email from ${d} may be flagged as suspicious. Verify that all sending servers and services are included in the SPF record.`,
@@ -565,7 +565,7 @@ export const DMARC_PAGE: SEOPageConfig = {
     title: (d) => `${d} DMARC Checker — Email Policy Analysis`,
     description: (d) => `DMARC checker for ${d}. Check enforcement level, reporting configuration, SPF/DKIM alignment, and email authentication status for ${d}.`,
     h1: (d) => `${d} DMARC Checker`,
-    intro: (d) => `Use this DMARC checker to analyze the email authentication policy for ${d}. DMARC builds on SPF and DKIM to control how receiving servers handle unauthenticated email claiming to come from ${d}. Below is ${d}'s DMARC policy analysis.`,
+    intro: (d) => `Use this DMARC checker to analyze the email authentication policy for ${d}. DMARC builds on SPF and DKIM to control how receiving servers handle unauthenticated email claiming to come from ${d}.`,
     landingDescription: 'Free DMARC checker — analyze DMARC policies, check enforcement levels, SPF/DKIM alignment, and reporting configuration for any domain.',
     sections: (d) => [
         {
@@ -588,7 +588,7 @@ export const DMARC_PAGE: SEOPageConfig = {
             paragraphs: [
                 `DMARC has three policy levels. "p=none" is monitor-only mode — authentication failures are reported but email is delivered normally. This is the recommended starting point for ${d} when first implementing DMARC. "p=quarantine" sends failing emails to the spam/junk folder. "p=reject" blocks them entirely, providing the strongest protection.`,
                 `The "pct" tag controls what percentage of failing messages the policy applies to, allowing a gradual rollout. For example, ${d} could start with "p=reject; pct=10" to reject only 10% of failing messages while monitoring the impact, then gradually increase to 100%.`,
-                `Most organizations roll out DMARC in phases: start with "p=none" to gather data, analyze reports to identify all legitimate email sources, add them to SPF/DKIM, then move to "p=quarantine" and finally "p=reject". Check ${d}'s current policy level above.`,
+                `Most organizations roll out DMARC in phases: start with "p=none" to gather data, analyze reports to identify all legitimate email sources, add them to SPF/DKIM, then move to "p=quarantine" and finally "p=reject". ${d}'s current policy level reveals where it sits in this rollout.`,
             ],
         },
         {
@@ -601,8 +601,8 @@ export const DMARC_PAGE: SEOPageConfig = {
         {
             heading: 'Frequently Asked Questions',
             paragraphs: [
-                `Does ${d} have DMARC? — The analysis above shows whether ${d} has a published DMARC record at _dmarc.${d}. If no record is found, ${d} has not configured a DMARC policy.`,
-                `What is ${d}'s DMARC policy? — The policy level (none, quarantine, or reject) is shown in the analysis above. "reject" provides the strongest protection, while "none" is monitoring-only.`,
+                `Does ${d} have DMARC? — The DMARC analysis for ${d} shows whether the domain has a published DMARC record at _dmarc.${d}. If no record is found, ${d} has not configured a DMARC policy.`,
+                `What is ${d}'s DMARC policy? — The policy level (none, quarantine, or reject) is reported in the DMARC analysis. "reject" provides the strongest protection, while "none" is monitoring-only.`,
                 `Does ${d} enforce email authentication? — A DMARC policy of "quarantine" or "reject" indicates that ${d} actively enforces email authentication. A policy of "none" means ${d} monitors but doesn't enforce.`,
                 `How do I set up DMARC for my domain? — Start by creating a TXT record at _dmarc.yourdomain.com with the value "v=DMARC1; p=none; rua=mailto:dmarc-reports@yourdomain.com". Monitor the reports, then gradually increase enforcement to quarantine and reject.`,
             ],
@@ -669,7 +669,7 @@ export const WHOIS_PAGE: SEOPageConfig = {
     title: (d) => `${d} WHOIS Lookup — Domain Registration Info`,
     description: (d) => `WHOIS information for ${d}. View registration dates, registrar, expiration, nameservers, domain status, and DNSSEC status for ${d}.`,
     h1: (d) => `${d} WHOIS Lookup`,
-    intro: (d) => `Use this WHOIS lookup tool to view public registration information for ${d}, including when the domain was registered, when it expires, which registrar manages it, and the current nameservers. Below is the current WHOIS data for ${d}.`,
+    intro: (d) => `Use this WHOIS lookup tool to view public registration information for ${d}, including when the domain was registered, when it expires, which registrar manages it, and the current nameservers.`,
     landingDescription: 'Free WHOIS lookup tool — check domain registration dates, registrar info, expiration, nameservers, and DNSSEC status for any domain.',
     sections: (d) => [
         {
@@ -711,8 +711,8 @@ export const WHOIS_PAGE: SEOPageConfig = {
         {
             heading: 'Frequently Asked Questions',
             paragraphs: [
-                `When was ${d} registered? — The registration date is shown in the WHOIS data above. This indicates when ${d} was first registered with a domain registrar.`,
-                `When does ${d} expire? — The expiration date in the WHOIS data above shows when ${d}'s current registration period ends. The domain must be renewed before this date to remain active.`,
+                `When was ${d} registered? — The registration date appears in ${d}'s WHOIS data. This indicates when ${d} was first registered with a domain registrar.`,
+                `When does ${d} expire? — The expiration date in ${d}'s WHOIS data shows when its current registration period ends. The domain must be renewed before this date to remain active.`,
                 `Who is the registrar for ${d}? — The registrar name is listed in the WHOIS data. The registrar is the company through which ${d}'s registration is managed (e.g., GoDaddy, Namecheap, Cloudflare, Google Domains).`,
                 `Is ${d} available to register? — If this page shows WHOIS data, ${d} is already registered. If no registration data is found, the domain may be available for registration.`,
             ],
@@ -780,13 +780,13 @@ export const IP_PAGE: SEOPageConfig = {
     title: (d) => `${d} IP Lookup — IPv4 & IPv6 Addresses`,
     description: (d) => `IP lookup for ${d}. View both IPv4 (A record) and IPv6 (AAAA record) addresses, and check whether ${d} supports IPv6.`,
     h1: (d) => `${d} IP Lookup`,
-    intro: (d) => `Use this IP lookup tool to find the IPv4 and IPv6 addresses for ${d}. Every website on the internet is reachable via IP addresses, retrieved from DNS A and AAAA records. Below are the current addresses showing exactly which servers handle traffic for ${d}.`,
+    intro: (d) => `Use this IP lookup tool to find the IPv4 and IPv6 addresses for ${d}. Every website on the internet is reachable via IP addresses, retrieved from DNS A and AAAA records.`,
     landingDescription: 'Free IP lookup tool — find IPv4 and IPv6 addresses, check dual-stack support, and identify hosting infrastructure for any domain.',
     sections: (d) => [
         {
             heading: `${d}'s IP Address Information`,
             paragraphs: [
-                `The IP addresses shown above are the servers that ${d} currently resolves to. IPv4 addresses come from A records and IPv6 addresses come from AAAA records. When your browser connects to ${d}, it uses one of these addresses to establish a connection.`,
+                `${d}'s IP addresses identify the servers that the domain currently resolves to. IPv4 addresses come from A records and IPv6 addresses come from AAAA records. When your browser connects to ${d}, it uses one of these addresses to establish a connection.`,
                 `If ${d} has multiple IP addresses, it typically means the domain uses load balancing or a CDN (Content Delivery Network) to distribute traffic across multiple servers. This improves performance and provides redundancy — if one server goes down, others continue serving ${d}'s content.`,
                 `The presence of both IPv4 and IPv6 addresses indicates that ${d} supports dual-stack networking, making it accessible to users on both protocol versions. This is a best practice for modern internet services.`,
             ],
@@ -802,7 +802,7 @@ export const IP_PAGE: SEOPageConfig = {
             heading: 'IPv4 vs IPv6',
             paragraphs: [
                 `IPv4 supports approximately 4.3 billion unique addresses, which have been fully allocated since 2011. IPv6 was created to solve this exhaustion problem, providing a vastly larger address space of 340 undecillion addresses (3.4 × 10^38).`,
-                `Check whether ${d} supports IPv6 by looking for AAAA records in the results above. If only A records exist, ${d} is IPv4-only and may be unreachable to users on IPv6-only networks. Modern websites should support both protocols for maximum accessibility.`,
+                `Check whether ${d} supports IPv6 by looking for AAAA records. If only A records exist, ${d} is IPv4-only and may be unreachable to users on IPv6-only networks. Modern websites should support both protocols for maximum accessibility.`,
                 `Many CDN and cloud providers automatically provide IPv6 support. If ${d} uses Cloudflare, AWS CloudFront, or similar services, it likely supports IPv6 through the provider's infrastructure even if the origin server is IPv4-only.`,
             ],
         },
@@ -823,8 +823,8 @@ export const IP_PAGE: SEOPageConfig = {
         {
             heading: 'Frequently Asked Questions',
             paragraphs: [
-                `What is ${d}'s IP address? — The current IPv4 and IPv6 addresses for ${d} are shown above, retrieved from DNS A and AAAA records.`,
-                `Does ${d} support IPv6? — If AAAA records appear in the results above, ${d} supports IPv6. If only A records are present, the domain is IPv4-only.`,
+                `What is ${d}'s IP address? — The current IPv4 and IPv6 addresses for ${d} come from its DNS A and AAAA records.`,
+                `Does ${d} support IPv6? — If ${d} has AAAA records, it supports IPv6. If only A records are present, the domain is IPv4-only.`,
                 `How many IP addresses does ${d} have? — The total count of A and AAAA records indicates how many IP addresses ${d} uses. Multiple addresses suggest load balancing or CDN usage.`,
                 `Why does ${d}'s IP address keep changing? — Domains using CDNs or cloud services often return different IP addresses based on your geographic location or current server load. This is normal behavior designed to optimize performance.`,
             ],
@@ -891,7 +891,7 @@ export const RDAP_PAGE: SEOPageConfig = {
     title: (d) => `${d} RDAP Lookup — Full Registration Data`,
     description: (d) => `RDAP lookup for ${d}. View complete domain registration data including registrar, status codes, nameservers, events, contacts, and DNSSEC via the modern RDAP protocol.`,
     h1: (d) => `${d} RDAP Lookup`,
-    intro: (d) => `Use this RDAP lookup tool to retrieve the full registration record for ${d}. RDAP (Registration Data Access Protocol) is the modern successor to WHOIS, providing structured, machine-readable domain registration data. Below is the complete RDAP response for ${d}.`,
+    intro: (d) => `Use this RDAP lookup tool to retrieve the full registration record for ${d}. RDAP (Registration Data Access Protocol) is the modern successor to WHOIS, providing structured, machine-readable domain registration data.`,
     landingDescription: 'Free RDAP lookup tool — view complete domain registration data including registrar, dates, status codes, nameservers, events, and DNSSEC via the modern RDAP protocol.',
     sections: (d) => [
         {
@@ -899,7 +899,7 @@ export const RDAP_PAGE: SEOPageConfig = {
             paragraphs: [
                 `This RDAP lookup retrieves the authoritative registration record for ${d} directly from the domain registry. Unlike legacy WHOIS, RDAP returns structured JSON data with standardized fields, making it easier to parse and process programmatically.`,
                 `The RDAP response for ${d} includes the registrar of record, all registration events (created, updated, expires, transferred), domain status codes, nameserver delegation, and DNSSEC signing information. Contact details may be redacted for privacy compliance.`,
-                `RDAP data for ${d} comes from the registry responsible for the domain's TLD. For .com and .net domains, this is Verisign. For ccTLDs like .uk or .de, it's the respective country's registry. The data shown below is the authoritative source of truth for ${d}'s registration.`,
+                `RDAP data for ${d} comes from the registry responsible for the domain's TLD. For .com and .net domains, this is Verisign. For ccTLDs like .uk or .de, it's the respective country's registry. This data is the authoritative source of truth for ${d}'s registration.`,
             ],
         },
         {
@@ -933,7 +933,7 @@ export const RDAP_PAGE: SEOPageConfig = {
         {
             heading: 'Frequently Asked Questions',
             paragraphs: [
-                `What registrar manages ${d}? — The registrar name and IANA ID are shown in the RDAP response above. The registrar is the company through which ${d}'s registration is maintained.`,
+                `What registrar manages ${d}? — The registrar name and IANA ID appear in ${d}'s RDAP response. The registrar is the company through which ${d}'s registration is maintained.`,
                 `When does ${d} expire? — The expiration event in the RDAP data shows when ${d}'s current registration period ends. The domain must be renewed before this date.`,
                 `Is ${d} DNSSEC signed? — Check the secureDNS section of the RDAP response. If delegation is signed and DS records are present, the domain has DNSSEC enabled.`,
                 `Why is contact information redacted? — GDPR and other privacy regulations require registrars to redact personal data from public RDAP responses. Contact details may show "REDACTED FOR PRIVACY" or similar placeholder text.`,
@@ -1146,7 +1146,7 @@ function stub(slug: string, name: string, blurb: string, dataSource: SEOPageConf
             {
                 heading: `${d} ${name}`,
                 paragraphs: [
-                    `${blurb} Below are the live results for ${d}.`,
+                    `${blurb}`,
                     `Use this tool to inspect the current state of ${d}'s configuration. The data is fetched live and reflects what every DNS resolver and web client sees right now.`
                 ]
             },
@@ -1154,7 +1154,7 @@ function stub(slug: string, name: string, blurb: string, dataSource: SEOPageConf
                 heading: `Why ${name} Matters`,
                 paragraphs: [
                     `Understanding ${name.toLowerCase()} for ${d} helps with debugging email deliverability, diagnosing connectivity issues, auditing security posture, or simply confirming a recent configuration change has propagated.`,
-                    `If you're seeing unexpected results below, double-check the DNS provider that serves ${d} and any recent zone-file edits.`
+                    `If you're seeing unexpected results, double-check the DNS provider that serves ${d} and any recent zone-file edits.`
                 ]
             },
             {
