@@ -5,7 +5,7 @@ import { queryDkim } from '@ldns/core/dkim-query';
 
 const handler = createHandler({
   endpoint: 'dkim',
-  cache: 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400',
+  cache: 'public, max-age=300, s-maxage=86400, stale-while-revalidate=604800',
   async run({ url }) {
     const domain = url.searchParams.get('domain');
     if (!domain) throw error(400, 'Missing domain parameter');

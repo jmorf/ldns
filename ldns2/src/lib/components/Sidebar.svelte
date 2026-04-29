@@ -7,89 +7,173 @@
         FileSearch,
         Mail,
         ShieldCheck,
-        ChevronDown
+        ChevronRight
     } from 'lucide-svelte';
     import ThemeToggle from './ThemeToggle.svelte';
 
     const domainName = $derived(domain.name || 'example.com');
+    const currentPath = $derived($page.url.pathname);
 
-    interface NavItem {
-        href: string;
+    interface SubTool {
+        slug: string;
         label: string;
     }
-
-    const recordTools: NavItem[] = [
-        { href: '/{d}/a', label: 'A Records' },
-        { href: '/{d}/aaaa', label: 'AAAA Records' },
-        { href: '/{d}/mx', label: 'MX' },
-        { href: '/{d}/ns', label: 'NS' },
-        { href: '/{d}/txt', label: 'TXT' },
-        { href: '/{d}/cname', label: 'CNAME' },
-        { href: '/{d}/caa', label: 'CAA' },
-        { href: '/{d}/soa', label: 'SOA' }
-    ];
-    const ipTools: NavItem[] = [
-        { href: '/{d}/ip', label: 'IP Addresses' },
-        { href: '/{d}/asn', label: 'ASN / Origin' },
-        { href: '/{d}/geo', label: 'IP Geolocation' },
-        { href: '/{d}/reverse-dns', label: 'Reverse DNS' }
-    ];
-    const emailTools: NavItem[] = [
-        { href: '/{d}/spf', label: 'SPF' },
-        { href: '/{d}/dmarc', label: 'DMARC' },
-        { href: '/{d}/dkim', label: 'DKIM' }
-    ];
-    const serverTools: NavItem[] = [
-        { href: '/{d}/headers', label: 'HTTP Headers' },
-        { href: '/{d}/security-headers', label: 'Security Headers' },
-        { href: '/{d}/tls', label: 'TLS Certificate' }
-    ];
-    const otherTools: NavItem[] = [
-        { href: '/{d}/whois', label: 'WHOIS' },
-        { href: '/{d}/propagation', label: 'Propagation' },
-        { href: '/{d}/subdomains', label: 'Subdomains' }
-    ];
-
-    function resolve(items: NavItem[]): NavItem[] {
-        return items.map((i) => ({ ...i, href: i.href.replace('{d}', domainName) }));
+    interface SubGroup {
+        label: string;
+        items: SubTool[];
+    }
+    interface TopLevel {
+        slug: string; // empty string for the root /{d}
+        label: string;
+        icon: typeof Globe;
+        groups: SubGroup[];
     }
 
-    const moreGroups = $derived([
-        { label: 'records', items: resolve(recordTools) },
-        { label: 'ip', items: resolve(ipTools) },
-        { label: 'email', items: resolve(emailTools) },
-        { label: 'server', items: resolve(serverTools) },
-        { label: 'other', items: resolve(otherTools) }
-    ]);
+    // The top-level entries map to /{d}, /{d}/rdap, /{d}/email, /{d}/security,
+    // /{d}/server. Sub-tools nest underneath their parent and are arranged in
+    // small subgroups when there are enough of them to warrant labelling.
+    const sections: TopLevel[] = [
+        {
+            slug: '',
+            label: 'DNS',
+            icon: Globe,
+            groups: [
+                {
+                    label: 'records',
+                    items: [
+                        { slug: 'a', label: 'A' },
+                        { slug: 'aaaa', label: 'AAAA' },
+                        { slug: 'mx', label: 'MX' },
+                        { slug: 'ns', label: 'NS' },
+                        { slug: 'txt', label: 'TXT' },
+                        { slug: 'cname', label: 'CNAME' },
+                        { slug: 'caa', label: 'CAA' },
+                        { slug: 'soa', label: 'SOA' }
+                    ]
+                },
+                {
+                    label: 'ip',
+                    items: [
+                        { slug: 'ip', label: 'IP Addresses' },
+                        { slug: 'asn', label: 'ASN / Origin' },
+                        { slug: 'geo', label: 'IP Geolocation' },
+                        { slug: 'reverse-dns', label: 'Reverse DNS' }
+                    ]
+                },
+                {
+                    label: 'discovery',
+                    items: [
+                        { slug: 'propagation', label: 'Propagation' },
+                        { slug: 'subdomains', label: 'Subdomains' }
+                    ]
+                }
+            ]
+        },
+        {
+            slug: 'rdap',
+            label: 'RDAP',
+            icon: FileSearch,
+            groups: [
+                {
+                    label: '',
+                    items: [{ slug: 'whois', label: 'WHOIS Fallback' }]
+                }
+            ]
+        },
+        {
+            slug: 'email',
+            label: 'Email',
+            icon: Mail,
+            groups: [
+                {
+                    label: '',
+                    items: [
+                        { slug: 'spf', label: 'SPF' },
+                        { slug: 'dmarc', label: 'DMARC' },
+                        { slug: 'dkim', label: 'DKIM' }
+                    ]
+                }
+            ]
+        },
+        {
+            slug: 'security',
+            label: 'Security',
+            icon: ShieldCheck,
+            groups: [
+                {
+                    label: '',
+                    items: [
+                        { slug: 'security-headers', label: 'Security Headers' },
+                        { slug: 'tls', label: 'TLS Certificate' }
+                    ]
+                }
+            ]
+        },
+        {
+            slug: 'server',
+            label: 'Server',
+            icon: Server,
+            groups: [
+                {
+                    label: '',
+                    items: [{ slug: 'headers', label: 'HTTP Headers' }]
+                }
+            ]
+        }
+    ];
 
-    // Top-level routes the sidebar highlights as primary tools. Anything else
-    // (asn, ip, headers, dkim, …) lives under "more tools" — when we're on one
-    // of those paths we suppress the top-level highlight and auto-expand the
-    // collapsible so the actual current tool can be highlighted there instead.
-    const currentPath = $derived($page.url.pathname);
-    const topLevelPaths = $derived([
-        `/${domainName}`,
-        `/${domainName}/rdap`,
-        `/${domainName}/email`,
-        `/${domainName}/security`,
-        `/${domainName}/server`
-    ]);
-    const isOnTopLevel = $derived(topLevelPaths.includes(currentPath));
-
-    function isActive(href: string): boolean {
-        return currentPath === href;
+    function pathFor(topSlug: string, subSlug = ''): string {
+        const base = `/${domainName}${topSlug ? `/${topSlug}` : ''}`;
+        return subSlug ? `${base.replace(/\/$/, '')}/${subSlug}` : base;
+        // Note: topSlug is '' for DNS root, so base = `/${domainName}`.
+        // When sub is provided we drop the parent slug and append sub directly,
+        // because all current sub-tools are flat children of /{domainName}.
+    }
+    function subPathFor(subSlug: string): string {
+        return `/${domainName}/${subSlug}`;
     }
 
-    let moreToolsOpen = $state(false);
-    // Auto-expand "more tools" whenever the current page lives in there,
-    // without trapping the user's manual toggle in either direction.
-    let lastAutoPath = '';
+    function topLevelPath(topSlug: string): string {
+        return topSlug ? `/${domainName}/${topSlug}` : `/${domainName}`;
+    }
+
+    // A section is "current" if the URL is its top-level path or any of its
+    // sub-tool paths. Used to auto-expand and to highlight the parent row.
+    function sectionContainsCurrent(s: TopLevel): boolean {
+        if (currentPath === topLevelPath(s.slug)) return true;
+        for (const group of s.groups) {
+            for (const item of group.items) {
+                if (currentPath === subPathFor(item.slug)) return true;
+            }
+        }
+        return false;
+    }
+
+    function isActiveTop(s: TopLevel): boolean {
+        return currentPath === topLevelPath(s.slug);
+    }
+    function isActiveSub(subSlug: string): boolean {
+        return currentPath === subPathFor(subSlug);
+    }
+
+    // Per-section expand state. Default each section open if it contains the
+    // current page; manual toggles win after that.
+    let openSections = $state<Record<string, boolean>>({});
+    let lastSyncedPath = '';
     $effect(() => {
         const path = currentPath;
-        if (path === lastAutoPath) return;
-        lastAutoPath = path;
-        if (!isOnTopLevel) moreToolsOpen = true;
+        if (path === lastSyncedPath) return;
+        lastSyncedPath = path;
+        const next: Record<string, boolean> = { ...openSections };
+        for (const s of sections) {
+            if (sectionContainsCurrent(s)) next[s.slug] = true;
+        }
+        openSections = next;
     });
+
+    function toggleSection(slug: string) {
+        openSections = { ...openSections, [slug]: !openSections[slug] };
+    }
 
     function handleBackdropClick() {
         navigationState.closeSidebar();
@@ -131,103 +215,70 @@
 
         <!-- Primary nav -->
         <nav class="flex-1 overflow-y-auto py-3 px-3">
-            <ul class="space-y-0.5">
-                <li>
-                    <a
-                        href="/{domainName}"
-                        onclick={handleNavClick}
-                        class="flex items-center p-2 rounded-lg transition-colors {isActive(`/${domainName}`)
-                            ? 'bg-primary-500/15 text-primary-400'
-                            : 'text-fg-muted hover:bg-surface-3 hover:text-fg'}"
-                    >
-                        <Globe class="w-4 h-4" />
-                        <span class="ml-3 text-sm">DNS</span>
-                    </a>
-                </li>
-                <li>
-                    <a
-                        href="/{domainName}/rdap"
-                        onclick={handleNavClick}
-                        class="flex items-center p-2 rounded-lg transition-colors {isActive(`/${domainName}/rdap`)
-                            ? 'bg-primary-500/15 text-primary-400'
-                            : 'text-fg-muted hover:bg-surface-3 hover:text-fg'}"
-                    >
-                        <FileSearch class="w-4 h-4" />
-                        <span class="ml-3 text-sm">RDAP</span>
-                    </a>
-                </li>
-                <li>
-                    <a
-                        href="/{domainName}/email"
-                        onclick={handleNavClick}
-                        class="flex items-center p-2 rounded-lg transition-colors {isActive(`/${domainName}/email`)
-                            ? 'bg-primary-500/15 text-primary-400'
-                            : 'text-fg-muted hover:bg-surface-3 hover:text-fg'}"
-                    >
-                        <Mail class="w-4 h-4" />
-                        <span class="ml-3 text-sm">Email</span>
-                    </a>
-                </li>
-                <li>
-                    <a
-                        href="/{domainName}/security"
-                        onclick={handleNavClick}
-                        class="flex items-center p-2 rounded-lg transition-colors {isActive(`/${domainName}/security`)
-                            ? 'bg-primary-500/15 text-primary-400'
-                            : 'text-fg-muted hover:bg-surface-3 hover:text-fg'}"
-                    >
-                        <ShieldCheck class="w-4 h-4" />
-                        <span class="ml-3 text-sm">Security</span>
-                    </a>
-                </li>
-                <li>
-                    <a
-                        href="/{domainName}/server"
-                        onclick={handleNavClick}
-                        class="flex items-center p-2 rounded-lg transition-colors {isActive(`/${domainName}/server`)
-                            ? 'bg-primary-500/15 text-primary-400'
-                            : 'text-fg-muted hover:bg-surface-3 hover:text-fg'}"
-                    >
-                        <Server class="w-4 h-4" />
-                        <span class="ml-3 text-sm">Server</span>
-                    </a>
-                </li>
-            </ul>
+            <ul class="space-y-1">
+                {#each sections as s}
+                    {@const Icon = s.icon}
+                    {@const open = !!openSections[s.slug]}
+                    {@const active = isActiveTop(s)}
+                    {@const containsCurrent = sectionContainsCurrent(s)}
+                    <li>
+                        <div
+                            class="flex items-stretch rounded-lg overflow-hidden {active
+                                ? 'bg-primary-500/15'
+                                : containsCurrent
+                                    ? 'bg-surface-3/40'
+                                    : ''}"
+                        >
+                            <a
+                                href={topLevelPath(s.slug)}
+                                onclick={handleNavClick}
+                                class="flex items-center gap-3 flex-1 p-2 text-sm transition-colors {active
+                                    ? 'text-primary-400'
+                                    : 'text-fg-muted hover:text-fg'}"
+                            >
+                                <Icon class="w-4 h-4" />
+                                <span>{s.label}</span>
+                            </a>
+                            <button
+                                type="button"
+                                onclick={() => toggleSection(s.slug)}
+                                aria-label="{open ? 'Collapse' : 'Expand'} {s.label} tools"
+                                aria-expanded={open}
+                                class="px-2 text-fg-subtle hover:text-fg transition-colors"
+                            >
+                                <ChevronRight class="w-3.5 h-3.5 transition-transform {open ? 'rotate-90' : ''}" />
+                            </button>
+                        </div>
 
-            <!-- More tools -->
-            <div class="mt-3 pt-3 border-t border-line">
-                <button
-                    onclick={() => (moreToolsOpen = !moreToolsOpen)}
-                    class="flex items-center justify-between w-full p-2 rounded-lg text-fg-subtle hover:bg-surface-3 transition-colors"
-                >
-                    <span class="font-mono text-[10px] uppercase tracking-wider">// more tools</span>
-                    <ChevronDown class="w-3 h-3 transition-transform {moreToolsOpen ? 'rotate-180' : ''}" />
-                </button>
-                {#if moreToolsOpen}
-                    <div class="mt-2 space-y-3">
-                        {#each moreGroups as group}
-                            <div>
-                                <p class="px-2 font-mono text-[9px] uppercase tracking-wider text-fg-subtle/70 mb-1">{group.label}</p>
-                                <ul class="space-y-0.5">
-                                    {#each group.items as item}
-                                        <li>
-                                            <a
-                                                href={item.href}
-                                                onclick={handleNavClick}
-                                                class="block px-2 py-1 text-xs rounded-md transition-colors {isActive(item.href)
-                                                    ? 'bg-primary-500/15 text-primary-400'
-                                                    : 'text-fg-muted hover:bg-surface-3 hover:text-fg'}"
-                                            >
-                                                {item.label}
-                                            </a>
-                                        </li>
-                                    {/each}
-                                </ul>
+                        {#if open}
+                            <div class="ml-4 mt-1 mb-2 pl-3 border-l border-line space-y-2">
+                                {#each s.groups as g}
+                                    <div>
+                                        {#if g.label}
+                                            <p class="px-2 font-mono text-[9px] uppercase tracking-wider text-fg-subtle/70 mb-1">// {g.label}</p>
+                                        {/if}
+                                        <ul class="space-y-0.5">
+                                            {#each g.items as item}
+                                                <li>
+                                                    <a
+                                                        href={subPathFor(item.slug)}
+                                                        onclick={handleNavClick}
+                                                        class="block px-2 py-1 text-xs rounded-md transition-colors {isActiveSub(item.slug)
+                                                            ? 'bg-primary-500/15 text-primary-400'
+                                                            : 'text-fg-muted hover:bg-surface-3 hover:text-fg'}"
+                                                    >
+                                                        {item.label}
+                                                    </a>
+                                                </li>
+                                            {/each}
+                                        </ul>
+                                    </div>
+                                {/each}
                             </div>
-                        {/each}
-                    </div>
-                {/if}
-            </div>
+                        {/if}
+                    </li>
+                {/each}
+            </ul>
         </nav>
 
         <!-- Footer with extension link -->

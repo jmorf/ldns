@@ -2,14 +2,14 @@
   import { domain } from '$lib/state.svelte';
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
-  import { proxy, type SubdomainsResponse } from '$lib/proxy-client';
+  import { proxy, type SubdomainsResult } from '$lib/proxy-client';
   import SEOToolPage from '$lib/components/SEOToolPage.svelte';
   import SEO from '$lib/components/SEO.svelte';
   import RefreshButton from '$lib/components/RefreshButton.svelte';
   import ShareButton from '$lib/components/ShareButton.svelte';
   import CopyButton from '$lib/components/CopyButton.svelte';
   import SkeletonRows from '$lib/components/SkeletonRows.svelte';
-  import { Search, Download } from 'lucide-svelte';
+  import { Search, Download, AlertTriangle, Clock, Activity } from 'lucide-svelte';
   import { SUBDOMAINS_PAGE } from '$lib/utils/seoContent';
 
   // Cap rendered rows so domains with massive CT corpora (google.com,
@@ -17,29 +17,29 @@
   // thousands of nodes. Filter and CSV export still operate on the full set.
   const RENDER_CAP = 500;
 
-  let result = $state<SubdomainsResponse | null>(null);
+  let result = $state<SubdomainsResult | null>(null);
   let loading = $state(false);
-  let error = $state('');
+  let networkError = $state('');
   let filter = $state('');
 
   async function load() {
     loading = true;
-    error = '';
+    networkError = '';
     try {
       result = await proxy.subdomains(domain.name);
     } catch (e) {
-      error = e instanceof Error ? e.message : 'Subdomain discovery failed';
+      networkError = e instanceof Error ? e.message : 'Subdomain discovery failed';
     } finally {
       loading = false;
     }
   }
 
   function copyAll() {
-    if (!filtered.length) return;
+    if (!subdomains.length) return;
     navigator.clipboard.writeText(filtered.join('\n'));
   }
   function exportCsv() {
-    if (!filtered.length) return;
+    if (!subdomains.length) return;
     const csv = 'subdomain\n' + filtered.map((s) => `"${s.replace(/"/g, '""')}"`).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -54,19 +54,52 @@
     if (!result) load();
   });
 
+  const success = $derived(result?.ok === true ? result : null);
+  const failure = $derived(result?.ok === false ? result : null);
+  const subdomains = $derived(success?.subdomains ?? []);
+  const total = $derived(success?.total ?? 0);
+
   const filtered = $derived.by(() => {
-    if (!result) return [] as string[];
-    if (!filter) return result.subdomains;
+    if (!subdomains.length) return [] as string[];
+    if (!filter) return subdomains;
     const f = filter.toLowerCase();
-    return result.subdomains.filter((s) => s.toLowerCase().includes(f));
+    return subdomains.filter((s) => s.toLowerCase().includes(f));
   });
   const visible = $derived(filtered.slice(0, RENDER_CAP));
   const truncated = $derived(filtered.length > RENDER_CAP);
+
+  // Map structured failure reasons to a presentable icon + heading.
+  // Body copy comes from the server; this only adds visual hierarchy.
+  function failureIcon(reason: string | undefined) {
+    switch (reason) {
+      case 'timeout':
+        return Clock;
+      case 'overloaded':
+      case 'rate-limited':
+        return Activity;
+      default:
+        return AlertTriangle;
+    }
+  }
+  function failureHeading(reason: string | undefined) {
+    switch (reason) {
+      case 'timeout':
+        return 'crt.sh timed out';
+      case 'overloaded':
+        return 'crt.sh is overloaded right now';
+      case 'rate-limited':
+        return 'crt.sh rate-limited the request';
+      case 'bad-gateway':
+        return 'crt.sh returned a gateway error';
+      default:
+        return 'Subdomain discovery failed';
+    }
+  }
 </script>
 
 <SEO title={SUBDOMAINS_PAGE.title($page.params.domain ?? '')} description={SUBDOMAINS_PAGE.description($page.params.domain ?? '')} />
 
-<SEOToolPage config={SUBDOMAINS_PAGE} domainName={domain.name} isLoading={loading && !result} error={error}>
+<SEOToolPage config={SUBDOMAINS_PAGE} domainName={domain.name} isLoading={loading && !result} error={networkError}>
   {#snippet actions()}
     <ShareButton />
     <RefreshButton onClick={load} loading={loading} variant="secondary" />
@@ -74,12 +107,50 @@
 
   {#if loading && !result}
     <SkeletonRows rows={5} />
-  {:else if result}
+  {:else if failure}
+    {@const Icon = failureIcon(failure.reason)}
+    <div class="bg-surface-2 border border-line rounded-xl p-6">
+      <div class="flex items-start gap-4">
+        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-warn-500/15 border border-warn-500/30 flex items-center justify-center">
+          <Icon class="w-5 h-5 text-warn-400" />
+        </div>
+        <div class="min-w-0 flex-1">
+          <h3 class="text-base font-semibold text-fg">{failureHeading(failure.reason)}</h3>
+          <p class="mt-2 text-sm text-fg-muted leading-relaxed">{failure.error}</p>
+          <div class="mt-5 flex flex-wrap items-center gap-3">
+            <button
+              onclick={load}
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs bg-surface-3 border border-line rounded-lg text-fg hover:border-primary-500/30 hover:text-primary-400 transition-colors"
+            >
+              Retry now
+            </button>
+            <a
+              href="https://crt.sh/?q=%25.{domain.name}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-xs text-fg-subtle hover:text-fg-muted transition-colors"
+            >
+              Check crt.sh directly →
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="mt-5 pt-4 border-t border-line">
+        <p class="text-[11px] text-fg-subtle leading-relaxed">
+          Subdomain discovery uses crt.sh, a free public Certificate Transparency log search.
+          When that service is overloaded or down, no other LDNS data is affected — try the
+          <a href="/{domain.name}" class="text-primary-400 hover:underline">DNS</a>,
+          <a href="/{domain.name}/server" class="text-primary-400 hover:underline">server</a>, or
+          <a href="/{domain.name}/security" class="text-primary-400 hover:underline">security</a> tools instead.
+        </p>
+      </div>
+    </div>
+  {:else if success}
     <div class="space-y-3">
       <div class="flex items-center justify-between gap-3 pb-2 border-b border-line">
         <p class="text-sm text-fg-muted">
           <span class="text-fg font-medium tabular-nums">{filtered.length.toLocaleString()}</span>
-          {#if filter}<span class="text-fg-subtle"> of {result.total.toLocaleString()}</span>{/if}
+          {#if filter}<span class="text-fg-subtle"> of {total.toLocaleString()}</span>{/if}
           subdomain{filtered.length === 1 ? '' : 's'} from CT logs
         </p>
         <div class="flex gap-3">

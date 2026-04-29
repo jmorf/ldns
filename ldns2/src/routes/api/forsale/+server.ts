@@ -5,7 +5,7 @@ import { checkForSale } from '$lib/forsale';
 
 const handler = createHandler({
   endpoint: 'forsale',
-  cache: 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
+  cache: 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800',
   async run({ url, platform }) {
     const domain = url.searchParams.get('domain');
     if (!domain) throw error(400, 'Missing domain parameter');

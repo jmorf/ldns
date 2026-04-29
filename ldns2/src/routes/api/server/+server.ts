@@ -7,7 +7,7 @@ import { auditSecurityHeaders, detectAltSvc } from '@ldns/core/security-checks';
 
 const handler = createHandler({
   endpoint: 'server',
-  cache: 'public, max-age=60, s-maxage=300, stale-while-revalidate=86400',
+  cache: 'public, max-age=300, s-maxage=86400, stale-while-revalidate=604800',
   async run({ url }) {
     const domain = url.searchParams.get('domain');
     const useHttp = url.searchParams.get('http') === '1';

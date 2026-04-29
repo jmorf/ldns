@@ -41,7 +41,7 @@ async function probe(origin: string, p: Probe, signal: AbortSignal): Promise<Pro
 
 const handler = createHandler({
   endpoint: 'security-probes',
-  cache: 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400',
+  cache: 'public, max-age=300, s-maxage=86400, stale-while-revalidate=604800',
   async run({ url }) {
     const domain = url.searchParams.get('domain');
     if (!domain) throw error(400, 'Missing domain parameter');

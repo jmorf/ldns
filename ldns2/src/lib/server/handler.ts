@@ -14,11 +14,20 @@ export interface HandlerOptions<TPayload> {
   endpoint: string;
   /** Optional per-endpoint rate limit (defaults to 30/min). */
   limit?: Limit;
-  /** Cache-Control header for successful responses. */
+  /** Cache-Control header for successful (ok:true) responses. */
   cache?: string;
+  /**
+   * Cache-Control for ok:false structured failures. Defaults to a short
+   * window so a flaky upstream doesn't pin a cached error in the CDN
+   * for the full success TTL.
+   */
+  errorCache?: string;
   /** The actual logic — receives parsed query params. */
   run(event: RequestEvent): Promise<TPayload>;
 }
+
+const DEFAULT_SUCCESS_CACHE = 'public, max-age=300, s-maxage=86400, stale-while-revalidate=604800';
+const DEFAULT_ERROR_CACHE = 'public, max-age=30, s-maxage=300, stale-while-revalidate=600';
 
 export function createHandler<T>(opts: HandlerOptions<T>) {
   return {
@@ -33,10 +42,14 @@ export function createHandler<T>(opts: HandlerOptions<T>) {
       }
 
       const data = await opts.run(event);
+      const isFailure = (data as { ok?: boolean })?.ok === false;
+      const cacheControl = isFailure
+        ? (opts.errorCache ?? DEFAULT_ERROR_CACHE)
+        : (opts.cache ?? DEFAULT_SUCCESS_CACHE);
 
       return json(data, {
         headers: {
-          'Cache-Control': opts.cache ?? 'public, max-age=60, s-maxage=300',
+          'Cache-Control': cacheControl,
           ...corsHeaders(origin)
         }
       });

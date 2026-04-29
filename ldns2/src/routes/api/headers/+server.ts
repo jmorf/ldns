@@ -5,7 +5,7 @@ import { fetchServerInfo } from '@ldns/core/server-info';
 
 const handler = createHandler({
   endpoint: 'headers',
-  cache: 'public, max-age=60, s-maxage=300, stale-while-revalidate=86400',
+  cache: 'public, max-age=300, s-maxage=86400, stale-while-revalidate=604800',
   async run({ url }) {
     const domain = url.searchParams.get('domain');
     if (!domain) throw error(400, 'Missing domain parameter');

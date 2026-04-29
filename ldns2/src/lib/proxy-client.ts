@@ -22,6 +22,8 @@ interface BaseFail {
   ok: false;
   error: string;
   domain?: string;
+  /** Stable code identifying the failure mode, where the endpoint surfaces one. */
+  reason?: string;
 }
 
 export interface ServerResponse extends BaseOk {
@@ -97,6 +99,7 @@ export interface SubdomainsResponse extends BaseOk {
   total: number;
   certificates: SubdomainResult['certificates'];
 }
+export type SubdomainsResult = SubdomainsResponse | BaseFail;
 
 export interface DkimResponse extends BaseOk, DkimResult {}
 
@@ -120,6 +123,6 @@ export const proxy = {
   securityHeaders: (domain: string) => api<SecurityHeadersResponse>('security/headers', { domain }),
   hstsPreload: (domain: string) => api<HstsPreloadResponse>('security/hsts-preload', { domain }),
   probes: (domain: string) => api<ProbesResponse>('security/probes', { domain }),
-  subdomains: (domain: string) => api<SubdomainsResponse>('subdomains', { domain }),
+  subdomains: (domain: string) => api<SubdomainsResult>('subdomains', { domain }),
   dkim: (domain: string) => api<DkimResponse>('dkim', { domain })
 };
