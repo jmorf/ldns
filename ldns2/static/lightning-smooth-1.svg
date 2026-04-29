@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Smoother version 1 - more curved transitions -->
+  <path d="M 72 20 
+         C 70 20 68 21 67 23 
+         L 46 62 
+         C 44 66 46 68 50 68 
+         L 56 68 
+         C 60 68 62 70 61 74 
+         L 52 105 
+         C 50 113 58 116 62 110 
+         L 92 50 
+         C 95 45 92 42 87 42 
+         L 76 42 
+         C 72 42 70 40 72 36 
+         L 82 24 
+         C 84 20 81 20 78 20 
+         Z" 
+        fill="#fc4e09" 
+        stroke="#ed3a09" 
+        stroke-width="2" 
+        stroke-linejoin="round"
+        stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,178 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-50: #fff5ed;
+  --color-primary-100: #ffe8d4;
+  --color-primary-200: #ffcca9;
+  --color-primary-300: #ffa872;
+  --color-primary-400: #fe7939;
+  --color-primary-500: #fc4e09;
+  --color-primary-600: #ed3a09;
+  --color-primary-700: #c52809;
+  --color-primary-800: #9c2110;
+  --color-primary-900: #7d1e11;
+  --color-primary-950: #440c06;
+
+  /* Single signaling triad: emerald / amber / rose */
+  --color-ok-400: #34d399;
+  --color-ok-500: #10b981;
+  --color-warn-400: #fbbf24;
+  --color-warn-500: #f59e0b;
+  --color-bad-400: #fb7185;
+  --color-bad-500: #f43f5e;
+
+  /* Surface system — referenced via bg-surface, bg-surface-2, etc. */
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, 'Cascadia Mono', Consolas, 'Liberation Mono', monospace;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant light (&:where(.light, .light *));
+
+/* ─── Theme variables ─── */
+:root,
+.dark {
+  --surface: #0e1116;          /* warm-charcoal page bg */
+  --surface-2: #161a22;        /* cards */
+  --surface-3: #20242e;        /* nested rows / hover */
+  --line: rgba(255, 255, 255, 0.06);
+  --line-strong: rgba(255, 255, 255, 0.12);
+  --fg: #f5f5f4;
+  --fg-muted: #94a3b8;
+  --fg-subtle: #64748b;
+}
+
+.light {
+  --surface: #fbfaf7;          /* warm off-white, not pure white */
+  --surface-2: #ffffff;
+  --surface-3: #f1efea;
+  --line: rgba(15, 23, 42, 0.07);
+  --line-strong: rgba(15, 23, 42, 0.14);
+  --fg: #0f172a;
+  --fg-muted: #475569;
+  --fg-subtle: #94a3b8;
+}
+
+/* Extension popup specific styles */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  background-color: var(--surface);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Popup mode: fixed-width box, no body scroll */
+html:not(.sidepanel),
+html:not(.sidepanel) body {
+  width: 480px;
+  min-height: 720px;
+  overflow: hidden;
+}
+
+/* Side-panel mode: fluid width, full panel height, allow scroll if content is taller */
+html.sidepanel,
+html.sidepanel body {
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* Tabular numerals for any element marked .tnum */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Mono utility — reuse Geist Mono from CSS var */
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+.light ::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.18);
+  border-radius: 3px;
+}
+.light ::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 23, 42, 0.32);
+}
+
+/* Subtle grain overlay */
+.grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.6'/></svg>");
+  background-size: 256px 256px;
+}
+
+/* Tiny entrance animations (Tailwind v4 has these via animate-in) */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in-up {
+  animation: fade-in-up 240ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, transparent, var(--line-strong), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+/* Toggle button presses */
+button,
+a {
+  transition: background-color 180ms, color 180ms, border-color 180ms, transform 120ms;
+}
+button:active,
+a:active {
+  transform: scale(0.98);
+}
+
+/* Input + select base */
+input,
+select {
+  font-family: var(--font-sans);
+}
+
+/* Focus ring (accessibility) */
+:where(button, a, input, select):focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: 8px;
+}

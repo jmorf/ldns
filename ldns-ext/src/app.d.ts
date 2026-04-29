@@ -1,0 +1,9 @@
+/// <reference types="svelte" />
+/// <reference types="vite/client" />
+
+declare const __APP_VERSION__: string;
+
+declare module '$lib/*' {
+  const content: unknown;
+  export = content;
+}

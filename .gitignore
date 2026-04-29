@@ -1,0 +1,57 @@
+# Dependencies
+node_modules/
+*/node_modules/
+**/node_modules/
+
+# Build output
+*/dist/
+*/dist-firefox/
+**/.svelte-kit/
+**/.cloudflare/
+**/.vercel/
+**/.netlify/
+**/.turbo/
+
+# Wrangler / Cloudflare local state
+.wrangler/
+**/.wrangler/
+
+# Test results
+**/test-results/
+**/coverage/
+
+# Logs
+*.log
+.pnpm-debug.log
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Local env / secrets (NEVER commit)
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+
+# Ignore the legacy per-package lockfiles — the workspace-root one is authoritative
+ldns2/package-lock.json
+ldns-ext/package-lock.json
+
+# Old git directories from when sub-projects were separate repos
+.git-old/
+**/.git-old/
+
+# Built extension archives (regenerated from source)
+ldns-ext/*.zip
+ldns-ext/dist/
+ldns-ext/dist-firefox/
+
+# Hidden DS_Store anywhere
+**/.DS_Store
+
+# Vite timestamp files
+**/vite.config.*.timestamp-*

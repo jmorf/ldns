@@ -1,0 +1,96 @@
+/**
+ * Site-wide design tokens. Mirrors the extension's v1.7 surface system so
+ * that DNS data renders identically across the popup and the website.
+ *
+ * Surfaces are CSS custom properties that switch on the html.dark / html.light
+ * class. The `theme.ts` module sets that class based on user pref + OS.
+ */
+
+:root,
+.dark {
+  --surface: #0e1116;
+  --surface-2: #161a22;
+  --surface-3: #20242e;
+  --line: rgba(255, 255, 255, 0.06);
+  --line-strong: rgba(255, 255, 255, 0.12);
+  --fg: #f5f5f4;
+  --fg-muted: #94a3b8;
+  --fg-subtle: #64748b;
+}
+
+.light {
+  --surface: #fbfaf7;
+  --surface-2: #ffffff;
+  --surface-3: #f1efea;
+  --line: rgba(15, 23, 42, 0.07);
+  --line-strong: rgba(15, 23, 42, 0.14);
+  --fg: #0f172a;
+  --fg-muted: #475569;
+  --fg-subtle: #94a3b8;
+}
+
+@theme inline {
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-ok-400: #34d399;
+  --color-ok-500: #10b981;
+  --color-warn-400: #fbbf24;
+  --color-warn-500: #f59e0b;
+  --color-bad-400: #fb7185;
+  --color-bad-500: #f43f5e;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, 'Cascadia Mono', Consolas, monospace;
+}
+
+/* Tabular numerals utility — applied wherever digits should align column-wise */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Apply theme variables to root */
+html {
+  background-color: var(--surface);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Editorial entrance animation — used on tool result cards */
+@keyframes ldns-fade-in-up {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in-up {
+  animation: ldns-fade-in-up 240ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* Skeleton shimmer */
+@keyframes ldns-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, transparent, var(--line-strong), transparent);
+  background-size: 200% 100%;
+  animation: ldns-shimmer 1.4s infinite;
+}
+
+/* Press feedback */
+button:active,
+a:active {
+  transform: scale(0.99);
+}
+
+/* Focus ring */
+:where(button, a, input, select, summary):focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: 8px;
+}

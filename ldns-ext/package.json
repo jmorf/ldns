@@ -1,0 +1,47 @@
+{
+  "name": "ldns-ext",
+  "version": "1.7.5",
+  "description": "LDNS DNS Lookup Chrome Extension",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "node scripts/generate-store-description.js && vite build",
+    "build:firefox": "node scripts/build-firefox.js",
+    "package:source": "node scripts/package-source.js",
+    "preview": "vite preview",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage --passWithNoTests",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "generate:description": "node scripts/generate-store-description.js"
+  },
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^2.0.0-beta.30",
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "@testing-library/svelte": "^5.2.7",
+    "@tsconfig/svelte": "^5.0.4",
+    "@types/chrome": "^0.0.304",
+    "@types/psl": "^1.1.3",
+    "autoprefixer": "^10.4.20",
+    "canvas": "^3.2.1",
+    "jsdom": "^26.0.0",
+    "postcss": "^8.4.49",
+    "svelte": "^5.19.5",
+    "svelte-check": "^4.1.4",
+    "tailwindcss": "^4.0.6",
+    "typescript": "^5.7.3",
+    "vite": "^6.1.0",
+    "vitest": "^3.0.4"
+  },
+  "dependencies": {
+    "@ldns/core": "*",
+    "@tailwindcss/postcss": "^4.1.18",
+    "@tailwindcss/vite": "^4.1.18",
+    "bits-ui": "^1.3.2",
+    "clsx": "^2.1.1",
+    "lucide-svelte": "^0.474.0",
+    "psl": "^1.15.0",
+    "tailwind-merge": "^3.0.1",
+    "tailwind-variants": "^0.3.1"
+  }
+}

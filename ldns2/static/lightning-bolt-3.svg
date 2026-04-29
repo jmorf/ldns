@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Smoother, more stylized lightning with rounded edges -->
+  <path d="M 75 18 
+         C 73 18 71 19 70 21 
+         L 45 65 
+         C 44 67 45 68 47 68 
+         L 58 68 
+         C 60 68 61 69 60 71 
+         L 48 112 
+         C 46 118 52 120 55 116 
+         L 95 48 
+         C 98 44 96 42 92 42 
+         L 78 42 
+         C 76 42 75 41 76 39 
+         L 86 23 
+         C 87 21 86 18 84 18 
+         Z" 
+        fill="#fc4e09" 
+        stroke="#ed3a09" 
+        stroke-width="2" 
+        stroke-linejoin="round"
+        stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" href="./favicon.ico" />
+	
+		<link href="./_app/immutable/assets/0.e2bef524.css" rel="stylesheet">
+</head>
+
+<body>
+	<div style="display: contents">
+
+
+<div class="container-fluid container-full" id="content-wrapper"><main class="container container-fill"><h1>That&#39;s not good...</h1>
+        Not Found
+        <button>Get me out of here</button></main></div>
+
+
+			
+			<script>
+				{
+					__sveltekit_hkk9th = {
+						base: new URL(".", location).pathname.slice(0, -1),
+						env: {}
+					};
+
+					const element = document.currentScript.parentElement;
+
+					const data = [null,null];
+
+					Promise.all([
+						import("./_app/immutable/entry/start.f1813901.js"),
+						import("./_app/immutable/entry/app.1a531314.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 1],
+							data,
+							form: null,
+							error: {message:"Not Found"},
+							status: 404
+						});
+					});
+				}
+			</script>
+		</div>
+</body>
+
+</html>

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Smoother version 2 - fully curved paths -->
+  <path d="M 70 22 
+         Q 66 22 64 26 
+         L 48 58 
+         Q 44 64 50 64 
+         L 56 64 
+         Q 62 64 60 70 
+         L 54 98 
+         Q 52 108 60 106 
+         L 88 52 
+         Q 92 46 86 46 
+         L 74 46 
+         Q 68 46 70 40 
+         L 78 26 
+         Q 80 22 76 22 
+         Z" 
+        fill="#fc4e09" 
+        stroke="#ed3a09" 
+        stroke-width="2.5" 
+        stroke-linejoin="round"
+        stroke-linecap="round"/>
+</svg>

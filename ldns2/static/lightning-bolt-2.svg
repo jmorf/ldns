@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- More dramatic zig-zag with sharper angles -->
+  <path d="M 65 5 L 35 55 L 50 55 L 30 75 L 45 75 L 25 118 L 85 45 L 65 45 L 80 25 L 65 25 Z" 
+        fill="#fc4e09" 
+        stroke="#ed3a09" 
+        stroke-width="2" 
+        stroke-linejoin="round"/>
+</svg>

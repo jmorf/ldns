@@ -1,0 +1,32 @@
+/**
+ * @ldns/core — pure TypeScript runtime-agnostic modules shared by:
+ *   - the LDNS browser extension (Chrome + Firefox)
+ *   - the LDNS website (SvelteKit on Cloudflare)
+ *   - the /api proxy endpoints
+ *
+ * Every module here uses only `fetch`, `URL`, and standard JS APIs available
+ * in browsers, Workers, and Node 18+. No DOM, no chrome.* APIs, no
+ * SvelteKit-specifics.
+ */
+
+export * from './types';
+export * from './constants';
+
+export * from './dns-query';
+export * from './dns-propagation';
+export * from './rdap-query';
+export * from './email-query';
+export * from './parsers';
+export * from './domain-parser';
+
+export * from './server-info';
+export * from './security-checks';
+export * from './tech-detect';
+export * from './tls-query';
+
+export * from './ptr';
+export * from './asn-query';
+
+export * from './subdomain-query';
+export * from './forsale-query';
+export * from './dkim-query';

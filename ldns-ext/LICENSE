@@ -1,0 +1,38 @@
+LDNS - DNS & Domain Tools
+Copyright (c) 2025 LDNS. All rights reserved.
+
+LICENSE TERMS
+
+1. GRANT OF LICENSE
+   You are granted a non-exclusive, non-transferable license to use this
+   software for personal or commercial purposes, subject to the restrictions
+   below.
+
+2. RESTRICTIONS
+   You may NOT:
+   - Sell, resell, rent, lease, or sublicense this software
+   - Redistribute this software, modified or unmodified
+   - Remove or alter any proprietary notices or labels
+   - Use this software to create a competing product or service
+   - Reverse engineer, decompile, or disassemble this software
+
+3. OWNERSHIP
+   This software and all copies thereof are proprietary to LDNS and title
+   to all copies remains with LDNS. This software is protected by copyright
+   and other intellectual property laws.
+
+4. NO WARRANTY
+   THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+
+5. TERMINATION
+   This license is effective until terminated. It will terminate automatically
+   if you fail to comply with any term of this license. Upon termination, you
+   must destroy all copies of the software.
+
+For licensing inquiries, visit https://ldns.com

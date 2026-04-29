@@ -1,0 +1,13 @@
+node_modules/
+dist/
+dist-firefox/
+ldns-firefox/
+ldns-firefox.zip
+ldns-source.zip
+ldns-ext.zip
+ldns-chrome.zip
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
