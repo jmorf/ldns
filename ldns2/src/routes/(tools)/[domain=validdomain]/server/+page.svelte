@@ -110,6 +110,7 @@
 <FaqJsonLd faqData={faqJsonLd} />
 
 <ToolPage
+  eyebrow="server · response"
   title="{domain.name} Server Information"
   description="Headers, redirects, technology stack, and security signals for {domain.name}"
   domainName={domain.name}

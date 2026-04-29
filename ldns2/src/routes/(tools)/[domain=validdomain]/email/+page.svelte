@@ -151,6 +151,7 @@
 <FaqJsonLd faqData={faqJsonLd} />
 
 <ToolPage
+    eyebrow="email · authentication"
     title="{domain.name} Email Security Checker"
     description="Email security checker for {domain.name} — SPF, DMARC, MTA-STS, and BIMI analysis"
     domainName={domain.name}

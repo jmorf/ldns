@@ -67,6 +67,7 @@
 />
 
 <ToolPage
+  eyebrow="security · overview"
   title="{domain.name} Security"
   description="TLS certificate, response security headers, HSTS preload list status, and well-known files for {domain.name}."
   domainName={domain.name}

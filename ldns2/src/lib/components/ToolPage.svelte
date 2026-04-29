@@ -1,6 +1,7 @@
 <script lang="ts">
   import Badge from '$lib/components/ui/badge.svelte';
   import DomainBreadcrumb from './DomainBreadcrumb.svelte';
+  import Eyebrow from './Eyebrow.svelte';
   import SkeletonRows from './SkeletonRows.svelte';
   import type { Snippet } from 'svelte';
 
@@ -14,6 +15,12 @@
       text: string;
       color: string;
     };
+    /**
+     * Mono caption rendered above the title in homepage-feature style,
+     * e.g. "dns · a records" or "security · tls cert". Optional — when
+     * omitted the header reads as a plain breadcrumb + heading.
+     */
+    eyebrow?: string;
     children: Snippet;
     actions?: Snippet;
   }
@@ -25,11 +32,11 @@
     isLoading = false,
     error,
     badge,
+    eyebrow,
     children,
     actions
   }: Props = $props();
 
-  // Map free-form badge color to ui/badge variant.
   type BadgeColor = 'green' | 'yellow' | 'red' | 'orange' | 'blue' | 'gray' | 'primary';
   const colorMap: Record<string, BadgeColor> = {
     green: 'green',
@@ -43,11 +50,15 @@
 </script>
 
 <div class="w-full max-w-7xl mx-auto">
-  <!-- Page header -->
-  <header class="mb-8 pt-2">
-    <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+  <!-- Page header: mirrors the homepage section rhythm — eyebrow caption,
+       then a large semibold heading, then a muted description paragraph. -->
+  <header class="mb-10 pt-2">
+    <div class="flex flex-wrap items-end justify-between gap-4 mb-4">
       <div class="min-w-0">
-        <div class="flex items-center gap-3 mb-2 flex-wrap">
+        {#if eyebrow}
+          <Eyebrow text={eyebrow} />
+        {/if}
+        <div class="flex items-center gap-3 mb-3 flex-wrap">
           {#if badge}
             <Badge variant={colorMap[badge.color] ?? 'gray'} class="text-[11px] tabular-nums">
               {badge.text}
@@ -55,7 +66,7 @@
           {/if}
           <DomainBreadcrumb domain={domainName} />
         </div>
-        <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight text-fg">
+        <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight text-fg leading-[1.1]">
           {title}
         </h1>
       </div>
@@ -65,7 +76,7 @@
         </div>
       {/if}
     </div>
-    <p class="text-fg-muted text-sm leading-relaxed max-w-3xl">{description}</p>
+    <p class="text-fg-muted text-sm sm:text-base leading-relaxed max-w-3xl">{description}</p>
   </header>
 
   {#if isLoading}

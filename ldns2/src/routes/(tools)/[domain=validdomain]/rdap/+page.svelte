@@ -249,6 +249,7 @@
 <FaqJsonLd faqData={faqJsonLd} />
 
 <ToolPage
+    eyebrow="rdap · registration"
     title="{domain.name} RDAP Lookup"
     description="RDAP lookup for {domain.name} — domain registration data, DNSSEC status, and registrar details"
     domainName={domain.name}
