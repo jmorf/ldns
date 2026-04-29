@@ -1,5 +1,7 @@
 export const WEBSITE = 'https://ldns.com';
-export const DOMAINS_PER_SITEMAP = 1000;
+// 500 domains × 26 tool paths = 13K URLs / ~2 MB per shard. Well under
+// Google's 50K/50MB hard limit and friendlier for crawlers than 4 MB.
+export const DOMAINS_PER_SITEMAP = 500;
 
 export const static_pages = [
   'about', 'extension', 'extension/privacy',
