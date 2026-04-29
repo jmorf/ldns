@@ -101,42 +101,40 @@
 
 <!-- ─── Numbered features ────────────────────────────────────────── -->
 <section class="border-b border-line">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12">
-    {#each features as f, i}
-      {@const Icon = f.icon}
-      <!-- Text dominates (~70%) and the icon tile is capped at ~25% so it
-           reads as an accent, not a hero visual. Alternates left/right. -->
-      <div class="grid gap-6 lg:gap-10 lg:grid-cols-[1fr_auto] items-center {i % 2 ? 'lg:[&>*:first-child]:order-2' : ''}">
-        <div class="min-w-0 max-w-2xl">
-          <div class="flex items-baseline gap-3 mb-2">
-            <span class="font-mono text-primary-500 tnum text-sm">{f.n}</span>
-            <span class="font-mono text-fg-subtle">—</span>
-            <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight text-fg">{f.name}</h2>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <Eyebrow text="what's in the box" />
+    <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight text-fg mb-10">
+      Five tools, one URL.
+    </h2>
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {#each features as f}
+        {@const Icon = f.icon}
+        <a
+          href={f.href}
+          class="group flex flex-col bg-surface-2 border border-line rounded-xl p-5 hover:border-primary-500/30 transition-colors"
+        >
+          <div class="flex items-baseline gap-2 mb-3">
+            <span class="font-mono text-primary-500 tnum text-xs">{f.n}</span>
+            <span class="font-mono text-fg-subtle text-xs">—</span>
+            <h3 class="text-base font-semibold text-fg">{f.name}</h3>
+            <Icon class="w-4 h-4 text-fg-subtle ml-auto group-hover:text-primary-400 transition-colors" />
           </div>
-          <p class="text-base text-fg-muted leading-relaxed">{f.blurb}</p>
-          <ul class="mt-4 space-y-1.5">
+          <p class="text-sm text-fg-muted leading-relaxed">{f.blurb}</p>
+          <ul class="mt-3 space-y-1">
             {#each f.bullets as b}
-              <li class="flex items-start gap-2 text-sm text-fg-muted">
-                <span class="text-primary-500/60 font-mono">·</span>
+              <li class="flex items-start gap-2 text-xs text-fg-muted">
+                <span class="text-primary-500/60 font-mono leading-none mt-0.5">·</span>
                 <span>{b}</span>
               </li>
             {/each}
           </ul>
-          <a
-            href={f.href}
-            class="inline-flex items-center gap-1.5 mt-5 px-3 py-1.5 text-sm bg-surface-2 border border-line rounded-lg text-fg hover:border-primary-500/30 hover:text-primary-400 transition-colors"
-          >
+          <span class="mt-4 pt-3 border-t border-line/60 inline-flex items-center gap-1.5 text-xs text-fg-subtle group-hover:text-primary-400 transition-colors">
             See it on a domain
-            <ArrowRight class="w-3.5 h-3.5" />
-          </a>
-        </div>
-        <div class="lg:w-[200px] xl:w-[240px]">
-          <div class="aspect-square bg-surface-2 border border-line rounded-xl flex items-center justify-center text-fg-subtle">
-            <Icon class="w-12 h-12 opacity-40" />
-          </div>
-        </div>
-      </div>
-    {/each}
+            <ArrowRight class="w-3 h-3" />
+          </span>
+        </a>
+      {/each}
+    </div>
   </div>
 </section>
 
