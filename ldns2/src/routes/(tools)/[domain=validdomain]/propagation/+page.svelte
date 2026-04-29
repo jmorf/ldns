@@ -36,11 +36,32 @@
         });
     }
 
+    // Resolvers return the same record in subtly different shapes:
+    //   - TXT: Cloudflare/DNS.SB wrap each string in double quotes; Google
+    //     emits the bare string. Multi-string TXT (RFC 7208) may come back
+    //     as `"a" "b"` from one resolver and `ab` from another.
+    //   - hostnames in MX/NS/CNAME/SOA/PTR: trailing dot and case differ.
+    // Normalize so cosmetic differences don't trigger a false Mismatch.
+    function normalize(type: string, value: string): string {
+        let v = value.trim();
+        if (type === 'TXT') {
+            // Strip every quoted string's surrounding quotes and concatenate
+            // adjacent strings (RFC 1035 multi-string TXT semantics).
+            v = v.replace(/"\s*"/g, '').replace(/^"|"$/g, '');
+        } else if (type === 'NS' || type === 'CNAME' || type === 'PTR' || type === 'SOA') {
+            v = v.replace(/\.$/, '').toLowerCase();
+        } else if (type === 'MX') {
+            // "10 mx.example.com." → "10 mx.example.com"
+            v = v.replace(/\.$/, '').replace(/\.\s/g, ' ').toLowerCase();
+        }
+        return v;
+    }
+
     function hasDiscrepancy(type: string): boolean {
         if (!data) return false;
         const sets = endpoints.map(ep => {
             const records = data[ep]?.[type] || [];
-            return records.map(r => r.data).sort().join(',');
+            return records.map(r => normalize(type, r.data)).sort().join(',');
         });
         return new Set(sets).size > 1;
     }
@@ -88,7 +109,7 @@
                                 <p class="text-xs text-fg-muted font-medium mb-2">{endpointNames[ep]}</p>
                                 {#if records.length > 0}
                                     {#each records as record}
-                                        <p class="text-sm text-fg font-mono break-all leading-relaxed">{record.data}</p>
+                                        <p class="text-sm text-fg font-mono break-all leading-relaxed">{normalize(type, record.data)}</p>
                                     {/each}
                                 {:else}
                                     <p class="text-sm text-fg-subtle italic">No records</p>
