@@ -9,8 +9,8 @@ describe('isAllowedOrigin', () => {
     ['http://localhost:4173', true],
     ['https://attacker.com', false],
     ['http://ldns.com', false], // http (not https) for the production host
-    ['', false],
-    [null, false],
+    ['', true], // empty same-origin
+    [null, true], // null = same-origin browser fetch; allowed
     ['chrome-extension://ehgkpjkmaichihneengcigkaoejmcofn', true], // published Chrome ID
     ['chrome-extension://caoebmdbbigeealihbnpofijebnoajpm', true], // dev Chrome ID
     ['chrome-extension://abcd', false],

@@ -75,25 +75,25 @@
 
 <!-- ─── Hero ─────────────────────────────────────────────────────── -->
 <section class="border-b border-line">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 grid gap-10 lg:gap-12 lg:grid-cols-[1.05fr_1fr] items-center">
-    <div>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 grid gap-10 lg:gap-12 lg:grid-cols-2 items-center">
+    <div class="min-w-0">
       <Eyebrow text="dns · rdap · email · server · security" />
       <h1 class="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-fg leading-[1.05]">
         Look up any domain<br />
         <span class="text-primary-500">in one place.</span>
       </h1>
-      <p class="mt-5 text-lg text-fg-muted max-w-xl leading-relaxed">
+      <p class="mt-5 text-lg text-fg-muted leading-relaxed">
         DNS records, registration data, email authentication, TLS certificates, security headers, IP geolocation, and subdomains —
         for any domain on the internet. No accounts. No tracking.
       </p>
-      <div class="mt-8 max-w-xl">
+      <div class="mt-8">
         <DomainForm />
         <p class="mt-3 font-mono text-[11px] text-fg-subtle">
           // try <a href="/google.com" class="text-primary-500 hover:underline">ldns.com/google.com</a>, <a href="/cloudflare.com" class="text-primary-500 hover:underline">/cloudflare.com</a>, or <a href="/github.com" class="text-primary-500 hover:underline">/github.com</a>
         </p>
       </div>
     </div>
-    <div class="lg:pl-6">
+    <div class="min-w-0 lg:pl-6">
       <TerminalDemo />
     </div>
   </div>
@@ -104,8 +104,10 @@
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12">
     {#each features as f, i}
       {@const Icon = f.icon}
-      <div class="grid gap-6 lg:gap-12 lg:grid-cols-12 items-start {i % 2 ? 'lg:[&>*:first-child]:order-2' : ''}">
-        <div class="lg:col-span-5">
+      <!-- Text dominates (~70%) and the icon tile is capped at ~25% so it
+           reads as an accent, not a hero visual. Alternates left/right. -->
+      <div class="grid gap-6 lg:gap-10 lg:grid-cols-[1fr_auto] items-center {i % 2 ? 'lg:[&>*:first-child]:order-2' : ''}">
+        <div class="min-w-0 max-w-2xl">
           <div class="flex items-baseline gap-3 mb-2">
             <span class="font-mono text-primary-500 tnum text-sm">{f.n}</span>
             <span class="font-mono text-fg-subtle">—</span>
@@ -128,9 +130,9 @@
             <ArrowRight class="w-3.5 h-3.5" />
           </a>
         </div>
-        <div class="lg:col-span-7">
-          <div class="bg-surface-2 border border-line rounded-xl p-6 min-h-[200px] flex items-center justify-center text-fg-subtle">
-            <Icon class="w-16 h-16 opacity-40" />
+        <div class="lg:w-[200px] xl:w-[240px]">
+          <div class="aspect-square bg-surface-2 border border-line rounded-xl flex items-center justify-center text-fg-subtle">
+            <Icon class="w-12 h-12 opacity-40" />
           </div>
         </div>
       </div>

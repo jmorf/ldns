@@ -87,7 +87,7 @@
 </script>
 
 <div
-  class="bg-surface-2 border border-line rounded-2xl shadow-2xl shadow-primary-500/5 overflow-hidden"
+  class="bg-surface-2 border border-line rounded-2xl shadow-2xl shadow-primary-500/5 overflow-hidden w-full"
 >
   <!-- terminal chrome -->
   <div class="flex items-center justify-between px-4 py-2.5 border-b border-line bg-surface-3/40">
@@ -99,12 +99,13 @@
     <span class="font-mono text-[10px] text-fg-subtle">ldns.com — domain inspector</span>
   </div>
 
-  <!-- body -->
-  <div class="p-4 sm:p-5 font-mono text-[12px] sm:text-[13px] leading-relaxed min-h-[200px]">
-    <p class="text-fg-muted">{current.cmd}</p>
+  <!-- body — fixed height + horizontal overflow truncates so dynamic content
+       doesn't push the surrounding layout around. -->
+  <div class="p-4 sm:p-5 font-mono text-[12px] sm:text-[13px] leading-relaxed h-[260px] overflow-hidden">
+    <p class="text-fg-muted truncate">{current.cmd}</p>
     <div class="mt-2 space-y-0.5">
       {#each typedLines as line}
-        <p class="text-fg whitespace-pre">{line}</p>
+        <p class="text-fg whitespace-pre overflow-hidden text-ellipsis">{line}</p>
       {/each}
       {#if !typingDone}
         <span class="inline-block w-2 h-4 bg-primary-500 align-middle animate-pulse ml-0.5"></span>
