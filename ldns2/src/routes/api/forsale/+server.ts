@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { createHandler } from '$lib/server/handler';
-import { isPlausibleDomain } from '$lib/server/ssrf';
+import { ensurePublicHost } from '$lib/server/ssrf';
 import { checkForSale } from '$lib/forsale';
 
 const handler = createHandler({
@@ -9,7 +9,11 @@ const handler = createHandler({
   async run({ url, platform }) {
     const domain = url.searchParams.get('domain');
     if (!domain) throw error(400, 'Missing domain parameter');
-    if (!isPlausibleDomain(domain)) throw error(400, 'Invalid domain format');
+    // checkForSale now does its own outbound HTTP fetch to the user-supplied
+    // domain (parking-page fingerprinting), so we have to verify the resolved
+    // IP is public — not an internal Cloudflare host or RFC1918 address.
+    const guard = await ensurePublicHost(domain);
+    if (!guard.ok) throw error(400, guard.reason);
 
     const dynadotApiKey = platform?.env?.DYNADOT_API_KEY;
     return await checkForSale(domain.toLowerCase().trim(), { dynadotApiKey });

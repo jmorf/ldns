@@ -1,6 +1,6 @@
 {
   "name": "ldns-ext",
-  "version": "1.7.6",
+  "version": "1.7.7",
   "description": "LDNS DNS Lookup Chrome Extension",
   "type": "module",
   "scripts": {

@@ -11,6 +11,7 @@
   import EmailResults from './components/EmailResults.svelte';
   import RecentSearches from './components/RecentSearches.svelte';
   import SettingsSheet from './components/SettingsSheet.svelte';
+  import SidebarTipBanner from './components/SidebarTipBanner.svelte';
   import LoadingState from './components/LoadingState.svelte';
 
   // Lazy-load heavy tab components
@@ -137,6 +138,11 @@
       </button>
     </div>
   </header>
+
+  <!-- Side-panel mode tip — shown once on the popup, requires explicit
+       dismissal. Never shown inside the side panel itself or on browsers
+       that don't support a side-panel API. -->
+  <SidebarTipBanner onOpenSettings={() => (settingsOpen = true)} />
 
   <!-- Search Form -->
   <div class="px-4 py-3 border-b border-line">

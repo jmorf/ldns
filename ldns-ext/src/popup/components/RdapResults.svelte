@@ -32,8 +32,11 @@
     }).format(listing.price);
   }
 
-  function getMarketplaceName(marketplace: string): string {
-    return marketplace === 'afternic' ? 'Afternic' : marketplace === 'dynadot' ? 'Dynadot' : marketplace;
+  function getMarketplaceName(listing: ForSaleListing): string {
+    if (listing.marketplace === 'afternic') return 'Afternic';
+    if (listing.marketplace === 'dynadot') return 'Dynadot';
+    if (listing.marketplace === 'parking') return listing.platform ?? 'Parked';
+    return listing.marketplace;
   }
 
   const data = $derived(extensionState.rdapState.data);
@@ -106,7 +109,7 @@
             >
               <div class="flex items-center gap-2">
                 <span class="text-[10px] font-semibold text-fg-muted uppercase tracking-wide">
-                  {getMarketplaceName(listing.marketplace)}
+                  {getMarketplaceName(listing)}
                 </span>
                 {#if listing.buyNowAvailable}
                   <span class="px-1 py-0.5 text-[9px] font-medium bg-primary-500/15 text-primary-400 rounded">Buy Now</span>

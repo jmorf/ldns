@@ -114,11 +114,14 @@
         target="_blank"
         rel="noopener noreferrer"
         class="inline-flex items-center gap-1 px-2 py-0.5 bg-primary-500/15 border border-primary-500/30 rounded-lg text-primary-400 text-[11px] hover:bg-primary-500/25 transition-colors"
+        title={firstListing.platform ? `Parked at ${firstListing.platform}` : 'Listed for sale'}
       >
         <Tag class="w-3 h-3" />
-        <span>For Sale</span>
+        <span>{firstListing.marketplace === 'parking' ? 'Parked' : 'For Sale'}</span>
         {#if firstListing.price}
           <span class="text-primary-300 font-semibold tnum">{formatPrice(firstListing)}</span>
+        {:else if firstListing.platform}
+          <span class="text-primary-300/70">· {firstListing.platform}</span>
         {/if}
         <ExternalLink class="w-2.5 h-2.5 opacity-60" />
       </a>

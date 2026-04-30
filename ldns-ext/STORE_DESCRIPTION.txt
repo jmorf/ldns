@@ -252,7 +252,7 @@ Read our full privacy policy at ldns.com/extension/privacy
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📝 CURRENT VERSION: v1.7.6
+📝 CURRENT VERSION: v1.7.7
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

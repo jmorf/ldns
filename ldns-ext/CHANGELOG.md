@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.7.7] - 2026-04-29
+
+### Added
+- **One-time tip banner** in the popup nudging users to try Side panel mode. Only shown on browsers that support a side panel (Chrome via `chrome.sidePanel`, Firefox via `chrome.sidebarAction`), only on the popup itself (not inside the side panel), and only until the user explicitly dismisses it via the X or "Got it" button. Persists in `chrome.storage.local` (key `ldns_sidebar_tip_seen`) — once dismissed, never returns.
+- **Parking-page sale detection.** The for-sale check now fingerprints the apex page against known parking platforms — GoDaddy CashParking, HugeDomains, Sedo, Bodis, ParkingCrew, Dan/Undeveloped, Uniregistry Market, and Afternic landers — plus generic "this domain is for sale" copy as a last-resort catch. Also follows the JS-redirect stub that GoDaddy CashParking serves at the apex (`window.location.href="/lander"`) so the actual lander gets fingerprinted. Result: domains like `ntwd.com` now correctly surface "Parked at GoDaddy CashParking" with a deep link.
+
+### Changed
+- The For Sale chip in the search bar now reads "Parked · {platform}" when the listing comes from a parking-page detection, falling back to "For Sale" for Afternic/Dynadot listings with prices.
+
 ## [1.7.6] - 2026-04-29
 
 ### Fixed

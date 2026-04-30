@@ -5,7 +5,10 @@ const STORAGE_KEYS = {
   RECENT_SEARCHES: 'ldns_recent_searches',
   ENDPOINT: 'ldns_endpoint',
   THEME: 'ldns_theme',
-  SETTINGS: 'ldns_settings'
+  SETTINGS: 'ldns_settings',
+  // First-run banner shown in the popup nudging users to try side-panel mode.
+  // Set to true when the user explicitly dismisses the banner — never reshown.
+  SIDEBAR_TIP_SEEN: 'ldns_sidebar_tip_seen'
 } as const;
 
 const DEFAULT_SETTINGS: Settings = {
@@ -97,6 +100,25 @@ export async function getSettings(): Promise<Settings> {
 export async function setSettings(settings: Settings): Promise<void> {
   try {
     await chrome.storage.local.set({ [STORAGE_KEYS.SETTINGS]: settings });
+  } catch {
+    /* noop */
+  }
+}
+
+// ─── Sidebar-tip dismissal flag ─────────────────────────────────────
+
+export async function getSidebarTipSeen(): Promise<boolean> {
+  try {
+    const result = await chrome.storage.local.get(STORAGE_KEYS.SIDEBAR_TIP_SEEN);
+    return result[STORAGE_KEYS.SIDEBAR_TIP_SEEN] === true;
+  } catch {
+    return false;
+  }
+}
+
+export async function setSidebarTipSeen(): Promise<void> {
+  try {
+    await chrome.storage.local.set({ [STORAGE_KEYS.SIDEBAR_TIP_SEEN]: true });
   } catch {
     /* noop */
   }

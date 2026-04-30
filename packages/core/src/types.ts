@@ -225,7 +225,13 @@ export interface ServerAnalysis {
 
 /** For-sale marketplace listing */
 export interface ForSaleListing {
-  marketplace: 'afternic' | 'dynadot';
+  marketplace: 'afternic' | 'dynadot' | 'parking';
+  /**
+   * Specific platform name when marketplace='parking' — e.g. "GoDaddy
+   * CashParking", "HugeDomains", "Sedo", "Dan", "ParkingCrew". Optional
+   * because Afternic / Dynadot listings don't use it.
+   */
+  platform?: string;
   domain: string;
   forSale: boolean;
   price?: number;
