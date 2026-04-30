@@ -36,6 +36,11 @@ if (!existsSync(iconsDir)) {
 }
 cpSync(join(rootDir, 'public', 'icons'), iconsDir, { recursive: true });
 
+// Step 3b: Copy background script. Firefox loads it via manifest.background.scripts;
+// the action-click listener inside it bridges to sidebarAction.toggle().
+console.log('3b. Copying background.js...');
+cpSync(join(rootDir, 'public', 'background.js'), join(distDir, 'background.js'));
+
 // Step 4: Fix popup HTML paths (extensions need relative paths, not absolute)
 console.log('4. Fixing popup HTML paths...');
 const builtPopupHtml = join(distDir, 'src', 'popup', 'popup.html');

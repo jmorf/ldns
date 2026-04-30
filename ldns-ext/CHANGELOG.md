@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.7.6] - 2026-04-29
+
+### Fixed
+- **Side-panel mode now works on Firefox.** The previous Firefox build silently disabled the side-panel toggle because Firefox doesn't implement Chrome's `chrome.sidePanel` API. Firefox uses the older `sidebar_action` manifest field + `chrome.sidebarAction` API. Added a `sidebar_action` declaration to `manifest.firefox.json` (panel = `popup.html?sp=1`, same query param Chrome uses) and a tiny `background.js` that bridges the toolbar-icon click to `chrome.sidebarAction.toggle()`. UX matches Chrome — single click on the action button opens or closes the panel — even though the underlying APIs are different.
+- Settings → Side-panel mode is no longer hidden on Firefox.
+
 ## [1.7.5] - 2026-04-28
 
 ### Changed
