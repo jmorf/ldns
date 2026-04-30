@@ -273,6 +273,16 @@ Read our full privacy policy at ldns.com/extension/privacy
 
 📋 CHANGELOG
 
+v1.7.8
+• Tightened "For Sale" detection — only flags domains with an explicit marketplace buy CTA (HugeDomains, Sedo, Dan, Afternic, Uniregistry) or a "Buy now $X,XXX" price tag. Generic parked / ad-monetized pages are no longer mislabeled as for sale.
+
+v1.7.7
+• One-time tip banner in the popup suggests trying Side panel mode (dismissable, never returns)
+• For Sale chip now distinguishes "Parked at GoDaddy / HugeDomains / Sedo / etc." from priced marketplace listings
+
+v1.7.6
+• Side panel mode now works on Firefox — previously a silent no-op because Firefox doesn't ship chrome.sidePanel. Single click on the toolbar icon opens or closes the panel, matching Chrome.
+
 v1.7.5
 • Internal: shared logic extracted to a workspace package (no user-facing change)
 • Source archive now bundles the workspace for one-step reviewer builds
