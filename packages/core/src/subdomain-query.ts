@@ -22,11 +22,17 @@ function isAbortOrTimeout(err: unknown): boolean {
 /**
  * Fetch and parse crt.sh results with a single AbortSignal covering the
  * entire operation (connect + body download + JSON parse).
+ *
+ * crt.sh either responds in <3s or hangs essentially forever, so a long
+ * timeout buys nothing — it just burns more of the Cloudflare Worker's
+ * 30-second budget that could be spent on a retry. 12s is generous enough
+ * to cover a slow-but-alive response while leaving room for one retry
+ * within the Worker wall-clock.
  */
-async function fetchCrtSh(domain: string): Promise<CrtShEntry[]> {
+async function fetchCrtSh(domain: string, timeoutMs = 12_000): Promise<CrtShEntry[]> {
   const url = `https://crt.sh/?q=%25.${encodeURIComponent(domain)}&output=json&exclude=expired`;
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 45000);
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     const response = await fetch(url, {
@@ -57,19 +63,22 @@ async function fetchCrtSh(domain: string): Promise<CrtShEntry[]> {
 /**
  * Discover subdomains for a domain using Certificate Transparency logs (crt.sh).
  * Deduplicates, strips wildcards, and sorts alphabetically.
- * Retries once on failure.
+ *
+ * Retry strategy: one quick retry on failure with a shorter timeout. Total
+ * worst-case wall-clock is ~21s (12s + 0.5s sleep + 8s) — inside the
+ * Cloudflare Worker subrequest budget. crt.sh's failures are dominated
+ * by transient 502s and a single fast retry usually rides over them.
  */
 export async function discoverSubdomains(domain: string): Promise<SubdomainResult> {
   let data: CrtShEntry[];
   try {
-    data = await fetchCrtSh(domain);
+    data = await fetchCrtSh(domain, 12_000);
   } catch (firstErr) {
-    // Retry once after a short delay
-    await new Promise(r => setTimeout(r, 2000));
+    await new Promise((r) => setTimeout(r, 500));
     try {
-      data = await fetchCrtSh(domain);
+      data = await fetchCrtSh(domain, 8_000);
     } catch {
-      // Throw the original error — it's more informative
+      // Throw the original error — it's more informative for the classifier.
       throw firstErr;
     }
   }
