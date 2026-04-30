@@ -160,79 +160,87 @@ export async function checkDynadot(domain: string, apiKey?: string): Promise<For
   }
 }
 
-// ─── Parking Page Fingerprint ───────────────────────────────────────
+// ─── For-Sale Lander Fingerprint ────────────────────────────────────
 //
-// Many domains for sale don't appear in Afternic's or Dynadot's APIs because
-// they're parked on a different platform (GoDaddy CashParking, HugeDomains,
-// Sedo, Bodis, ParkingCrew, Dan.com, etc.). All of those serve a recognizable
-// landing page or redirect to a known marketplace host. We do a single HEAD/GET
-// to the apex and inspect the final URL + body for known signatures.
+// Goal: high-precision detection of "this domain is actively listed for sale"
+// — NOT generic parking. A page can be parked (monetized with PPC ads) without
+// being for sale; we don't want false positives like ntwd.com (GoDaddy
+// CashParking, ad-only) showing as For Sale.
+//
+// We only flag when one of these hard signals fires:
+//   1. The page redirects to a known marketplace BUY URL — hostname AND a
+//      buy-style path (e.g. dan.com/buy-domain/, hugedomains.com/buy-domain.aspx,
+//      sedo.com/sales/details/, afternic.com/forsale/).
+//   2. The page body contains an outbound buy-this-domain link with the same
+//      target domain (e.g. `<a href="https://hugedomains.com/buy-domain.aspx?d=…">`).
+//   3. The page body contains explicit buy copy paired with a price tag
+//      ("Buy now $X,XXX", "Make Offer · USD X,XXX") — generic "for sale" copy
+//      alone is too noisy and doesn't fire.
+//
+// Domains that are merely parked on CashParking, ParkingCrew, Bodis, etc.
+// without an explicit buy CTA are intentionally NOT flagged.
 
-interface ParkingSignature {
-  /** Specific platform name, e.g. "GoDaddy CashParking". */
+interface SaleSignature {
+  /** Marketplace name surfaced in the UI (e.g. "HugeDomains", "Sedo"). */
   platform: string;
   /**
-   * Hostnames the response chain may end up on (final URL match). Most
-   * marketplaces redirect the browser to their own buy-this-domain page.
+   * Hostname patterns the response chain ends up on. Combined with
+   * `finalPathPatterns` so we only fire on actual buy URLs, not the
+   * marketplace's homepage.
    */
   finalHostnames?: string[];
-  /** Substrings that, if found in the response body, identify the platform. */
-  bodyPatterns?: RegExp[];
+  /** Path substrings that confirm a buy/listing page on the matched host. */
+  finalPathPatterns?: RegExp[];
+  /**
+   * Body patterns that, on their own (regardless of final URL), confirm an
+   * embedded buy CTA — typically because a parked page links out to the
+   * marketplace's buy URL with the domain as a query param.
+   */
+  bodyBuyLinkPatterns?: RegExp[];
 }
 
-const PARKING_SIGNATURES: ParkingSignature[] = [
-  {
-    // Tiny HTML stub: <script>window.onload=function(){window.location.href="/lander"}</script>
-    // Then `/lander` loads `parking-lander/static/js/main.js` from wsimg.com.
-    platform: 'GoDaddy CashParking',
-    bodyPatterns: [
-      /parking-lander\/static/i,
-      /LANDER_SYSTEM\s*=\s*["']PW["']/,
-      /wsimg\.com\/parking-lander/i
-    ]
-  },
+const SALE_SIGNATURES: SaleSignature[] = [
   {
     platform: 'HugeDomains',
     finalHostnames: ['hugedomains.com', 'www.hugedomains.com'],
-    bodyPatterns: [/hugedomains\.com\/buy-domain/i, /class="[^"]*hd-(header|hero|cta)/i]
-  },
-  {
-    platform: 'Sedo',
-    finalHostnames: ['sedoparking.com', 'www.sedoparking.com', 'sedo.com'],
-    bodyPatterns: [/sedoparking\.com/i, /this domain (?:may be|is) for sale/i]
-  },
-  {
-    platform: 'Bodis',
-    finalHostnames: ['bodis.com'],
-    bodyPatterns: [/bodis\.com/i]
-  },
-  {
-    platform: 'ParkingCrew',
-    finalHostnames: ['parkingcrew.net', 'www.parkingcrew.net'],
-    bodyPatterns: [/parkingcrew\.net/i]
+    // Every HugeDomains page IS a buy-this-domain page — they don't park
+    // ad-only. Match the apex too as a fallback.
+    finalPathPatterns: [/.*/],
+    bodyBuyLinkPatterns: [/href=["']https?:\/\/(?:www\.)?hugedomains\.com\/[^"']*buy[^"']*/i]
   },
   {
     platform: 'Dan',
     finalHostnames: ['dan.com', 'www.dan.com', 'undeveloped.com'],
-    bodyPatterns: [/dan\.com\/buy-domain/i, /undeveloped\.com\/buy-domain/i]
+    finalPathPatterns: [/\/buy-domain\//i],
+    bodyBuyLinkPatterns: [/href=["']https?:\/\/(?:www\.)?(?:dan|undeveloped)\.com\/buy-domain\//i]
+  },
+  {
+    platform: 'Sedo',
+    finalHostnames: ['sedo.com', 'www.sedo.com'],
+    // Real Sedo for-sale URLs follow /search/?keyword= or /sales/details/ paths.
+    finalPathPatterns: [/\/sales\//i, /\/buy-now\//i, /\/auction\//i],
+    bodyBuyLinkPatterns: [/href=["']https?:\/\/(?:www\.)?sedo\.com\/(?:sales|buy-now|auction)\//i]
+  },
+  {
+    platform: 'Afternic',
+    finalHostnames: ['www.afternic.com', 'afternic.com'],
+    finalPathPatterns: [/\/forsale\//i, /\/domain\//i],
+    bodyBuyLinkPatterns: [/href=["']https?:\/\/(?:www\.)?afternic\.com\/(?:forsale|domain)\//i]
   },
   {
     platform: 'Uniregistry Market',
-    finalHostnames: ['uniregistrymarket.link'],
-    bodyPatterns: [/uniregistrymarket\.link/i, /uniregistry\.market/i]
+    finalHostnames: ['uniregistrymarket.link', 'market.uniregistry.com'],
+    finalPathPatterns: [/.*/],
+    bodyBuyLinkPatterns: [/href=["']https?:\/\/(?:[a-z0-9-]+\.)?uniregistrymarket\.link\//i]
   },
   {
-    platform: 'Afternic Lander',
-    bodyPatterns: [/afternic\.com\/domain\//i, /afternic\.com\/forsale/i]
-  },
-  // Generic last-resort signal — many platforms include explicit "this domain
-  // is for sale" / "buy this domain" copy in their landing pages.
-  {
-    platform: 'Generic parking page',
-    bodyPatterns: [
-      /\bthis (?:premium )?domain (?:is|may be) (?:for sale|available)/i,
-      /\bbuy this domain\b/i,
-      /\bdomain is parked\b/i
+    // Last-resort signal: explicit buy CTA + a price tag in the same body.
+    // Requires BOTH so generic ads-only "this domain is for sale" copy
+    // (which appears on CashParking landers as a tagline) doesn't fire.
+    platform: 'Listed for sale',
+    bodyBuyLinkPatterns: [
+      /(?:buy now|buy this domain|make (?:an )?offer)[^<]{0,80}?(?:US?\$|EUR\s|€)\s?\d{2,7}/i,
+      /(?:US?\$|€)\s?\d{2,7}[^<]{0,80}?(?:buy now|buy this domain|make (?:an )?offer)/i
     ]
   }
 ];
@@ -281,9 +289,12 @@ async function fetchSnippet(url: string, signal: AbortSignal): Promise<{ finalUr
 }
 
 /**
- * Detect well-known parking platforms by fetching the apex over HTTPS, then
- * (when the apex returns a tiny JS-redirect stub like GoDaddy CashParking
- * does) the parking-lander URL the stub points at.
+ * Detect domains that are actively listed for sale by fetching the apex and
+ * matching against high-precision marketplace signatures.
+ *
+ * Returns null for domains that are merely parked (PPC ads only) — caller
+ * should not treat absence of a hit as definitive "not for sale", just
+ * "no public sale signal we can detect".
  */
 export async function checkParkingPage(domain: string): Promise<ForSaleListing | null> {
   const controller = new AbortController();
@@ -297,8 +308,9 @@ export async function checkParkingPage(domain: string): Promise<ForSaleListing |
       if (!response) return null;
     }
 
-    // GoDaddy + several others ship a tiny stub that JS-redirects to a lander
-    // path. Detect the stub by size + redirect script and refetch the target.
+    // Some lander platforms ship a tiny HTML stub at the apex that
+    // JS-redirects to a path on the same host (e.g. GoDaddy's `/lander`).
+    // Server-side fetch doesn't execute JS, so refetch the target.
     const redirectMatch = response.body.match(
       /window\.location\.(?:href|replace\(?)\s*=?\s*["']([^"']+)["']/i
     );
@@ -311,20 +323,31 @@ export async function checkParkingPage(domain: string): Promise<ForSaleListing |
       if (followed) response = followed;
     }
 
-    const finalHost = (() => {
+    const finalUrl = (() => {
       try {
-        return new URL(response.finalUrl).hostname.toLowerCase();
+        return new URL(response.finalUrl);
       } catch {
-        return '';
+        return null;
       }
     })();
+    const finalHost = finalUrl?.hostname.toLowerCase() ?? '';
+    const finalPath = finalUrl?.pathname ?? '';
 
-    for (const sig of PARKING_SIGNATURES) {
-      const hostHit = sig.finalHostnames?.some((h) => finalHost === h || finalHost.endsWith(`.${h}`));
-      const bodyHit = sig.bodyPatterns?.some((rx) => rx.test(response.body));
-      if (hostHit || bodyHit) {
-        // listingUrl: prefer the final landed URL — that's what the user lands
-        // on, often already the marketplace page.
+    for (const sig of SALE_SIGNATURES) {
+      // Strong signal A: the final URL lives on a marketplace host AND its
+      // path matches a buy-page pattern. Either alone isn't enough — sedo.com
+      // homepage is not a sale signal; ntwd.com landing on its own /lander
+      // path with no marketplace host isn't either.
+      const hostMatched = sig.finalHostnames?.some(
+        (h) => finalHost === h || finalHost.endsWith(`.${h}`)
+      );
+      const pathMatched = sig.finalPathPatterns?.some((rx) => rx.test(finalPath));
+      const finalMatched = hostMatched && pathMatched;
+
+      // Strong signal B: the body links out to a marketplace buy URL.
+      const bodyLinkMatched = sig.bodyBuyLinkPatterns?.some((rx) => rx.test(response.body));
+
+      if (finalMatched || bodyLinkMatched) {
         return {
           marketplace: 'parking',
           platform: sig.platform,

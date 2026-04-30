@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.7.8] - 2026-04-29
+
+### Changed
+- **Tightened "For Sale" detection.** v1.7.7's parking-page fingerprint was too broad — it flagged any GoDaddy CashParking page as for-sale even when the page was just ad monetization with no buy CTA (e.g. `ntwd.com`). The detector is now high-precision: it only fires when (a) the page chain ends on a real marketplace buy URL like `hugedomains.com/buy-domain.aspx`, `dan.com/buy-domain/`, `sedo.com/sales/…`, `afternic.com/forsale/`, or `uniregistrymarket.link/`, OR (b) the page body links out to one of those buy URLs, OR (c) the body contains explicit buy copy paired with a price ("Buy now $X,XXX"). Generic "this domain is for sale" copy alone no longer fires. Domains that are merely parked are no longer surfaced as for-sale.
+
 ## [1.7.7] - 2026-04-29
 
 ### Added
