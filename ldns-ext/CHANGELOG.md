@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.7.9] - 2026-04-30
+
+### Fixed
+- **Firefox: "File not found" when toggling Side panel mode off from the popup.** `chrome.action.setPopup({ popup })` interprets relative paths differently on the two browsers — Chrome resolves them against the extension root, Firefox resolves them against the calling page. Switching the toggle off from inside the popup at `moz-extension://uuid/src/popup/popup.html` was setting the popup to `src/popup/src/popup/popup.html`, which 404'd. Switched to `chrome.runtime.getURL('src/popup/popup.html')` so we always pass an absolute extension URL that both browsers accept unambiguously.
+
 ## [1.7.8] - 2026-04-29
 
 ### Changed

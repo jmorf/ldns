@@ -11,9 +11,20 @@
  *
  * For both browsers, "side-panel mode on" means clearing the action's
  * default popup so the click reaches its respective panel-opening path.
+ *
+ * NOTE: `chrome.action.setPopup({ popup })` interprets a relative path
+ * differently on Chrome vs Firefox. Chrome resolves relative to the
+ * extension root; Firefox resolves relative to the *calling page*. So
+ * passing a bare `'src/popup/popup.html'` from inside the popup itself
+ * produced `moz-extension://uuid/src/popup/src/popup/popup.html` on
+ * Firefox — a 404. Use `chrome.runtime.getURL()` to construct an absolute
+ * extension URL that both browsers accept unambiguously.
  */
 
-const POPUP_PATH = 'src/popup/popup.html';
+const POPUP_REL_PATH = 'src/popup/popup.html';
+function popupUrl(): string {
+  return chrome.runtime.getURL(POPUP_REL_PATH);
+}
 
 interface ChromeSidePanelApi {
   setPanelBehavior(opts: { openPanelOnActionClick: boolean }): Promise<void>;
@@ -51,7 +62,7 @@ export async function applySidePanelMode(enabled: boolean): Promise<void> {
       // Firefox: the background.js click listener calls sidebarAction.toggle()
       // on user-gesture; nothing else to do here.
     } else {
-      await chrome.action.setPopup({ popup: POPUP_PATH });
+      await chrome.action.setPopup({ popup: popupUrl() });
       if (sp) await sp.setPanelBehavior({ openPanelOnActionClick: false });
       // Firefox: closing the sidebar isn't strictly required when restoring
       // the popup, but tidies up if it was open.

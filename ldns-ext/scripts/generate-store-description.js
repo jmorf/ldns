@@ -273,6 +273,9 @@ Read our full privacy policy at ldns.com/extension/privacy
 
 📋 CHANGELOG
 
+v1.7.9
+• Fixed Firefox "File not found" error when turning Side panel mode off from inside the popup. Underlying cause: chrome.action.setPopup interprets relative paths differently on Chrome and Firefox; we now pass the absolute extension URL via chrome.runtime.getURL so both browsers behave consistently.
+
 v1.7.8
 • Tightened "For Sale" detection — only flags domains with an explicit marketplace buy CTA (HugeDomains, Sedo, Dan, Afternic, Uniregistry) or a "Buy now $X,XXX" price tag. Generic parked / ad-monetized pages are no longer mislabeled as for sale.
 
