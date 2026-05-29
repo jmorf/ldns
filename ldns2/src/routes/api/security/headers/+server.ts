@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { createHandler } from '$lib/server/handler';
-import { ensurePublicHost } from '$lib/server/ssrf';
+import { ensurePublicHost, assertRedirectTarget } from '$lib/server/ssrf';
 import { fetchServerInfo } from '@ldns/core/server-info';
 import { auditSecurityHeaders } from '@ldns/core/security-checks';
 
@@ -13,7 +13,7 @@ const handler = createHandler({
     const guard = await ensurePublicHost(domain);
     if (!guard.ok) throw error(400, guard.reason);
 
-    const info = await fetchServerInfo(domain);
+    const info = await fetchServerInfo(domain, false, assertRedirectTarget);
     return {
       ok: true as const,
       domain,

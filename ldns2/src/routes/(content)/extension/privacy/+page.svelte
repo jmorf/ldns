@@ -18,7 +18,7 @@
   <Eyebrow text="legal" />
   <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight text-fg mb-2">Privacy Policy</h1>
   <p class="text-fg-muted">LDNS browser extension — Chrome & Firefox</p>
-  <p class="text-sm text-fg-subtle mt-1">Last updated: January 2025</p>
+  <p class="text-sm text-fg-subtle mt-1">Last updated: May 2026</p>
 
   <div class="mt-10 space-y-10">
     <section>
@@ -35,9 +35,9 @@
       <h3 class="text-base font-medium text-fg mb-2">What we do not collect</h3>
       <ul class="list-disc list-inside text-fg-muted space-y-1 leading-relaxed">
         <li>We do NOT collect any personal information</li>
-        <li>We do NOT track your browsing history</li>
-        <li>We do NOT send any data to our servers</li>
-        <li>We do NOT use analytics or tracking services</li>
+        <li>We do NOT track your browsing history or read page content</li>
+        <li>We do NOT send your lookups to LDNS servers by default (one optional feature, off by default, is described below)</li>
+        <li>We do NOT use analytics or tracking services in the extension</li>
         <li>We do NOT sell or share any data with third parties</li>
       </ul>
 
@@ -52,7 +52,7 @@
 
     <section>
       <h2 class="text-xl font-semibold text-fg mb-4">Third-party services</h2>
-      <p class="text-fg-muted leading-relaxed mb-3">LDNS queries the following public DNS and WHOIS services to retrieve domain information:</p>
+      <p class="text-fg-muted leading-relaxed mb-3">When you perform a lookup, the queried <strong class="text-fg">domain name</strong> (or, for ASN/geo, an <strong class="text-fg">IP address</strong>) — and nothing else — is sent to one or more of the following public services:</p>
       <div class="overflow-x-auto bg-surface-2 border border-line rounded-xl">
         <table class="w-full text-sm">
           <thead class="text-left text-fg-subtle border-b border-line">
@@ -65,23 +65,58 @@
           <tbody class="divide-y divide-line">
             <tr>
               <td class="py-2 px-4 text-fg">Cloudflare DNS</td>
-              <td class="py-2 px-4 text-fg-muted">DNS-over-HTTPS queries</td>
+              <td class="py-2 px-4 text-fg-muted">DNS-over-HTTPS queries (default resolver)</td>
               <td class="py-2 px-4"><a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener" class="text-primary-400 hover:underline">cloudflare.com/privacypolicy</a></td>
             </tr>
             <tr>
               <td class="py-2 px-4 text-fg">Google DNS</td>
-              <td class="py-2 px-4 text-fg-muted">DNS-over-HTTPS queries</td>
+              <td class="py-2 px-4 text-fg-muted">DNS-over-HTTPS queries (when selected)</td>
               <td class="py-2 px-4"><a href="https://policies.google.com/privacy" target="_blank" rel="noopener" class="text-primary-400 hover:underline">policies.google.com/privacy</a></td>
             </tr>
             <tr>
+              <td class="py-2 px-4 text-fg">DNS.SB</td>
+              <td class="py-2 px-4 text-fg-muted">DNS-over-HTTPS queries (when selected)</td>
+              <td class="py-2 px-4"><a href="https://dns.sb/privacy/" target="_blank" rel="noopener" class="text-primary-400 hover:underline">dns.sb/privacy</a></td>
+            </tr>
+            <tr>
               <td class="py-2 px-4 text-fg">RDAP.org</td>
-              <td class="py-2 px-4 text-fg-muted">WHOIS/RDAP lookups</td>
+              <td class="py-2 px-4 text-fg-muted">WHOIS/RDAP registration lookups</td>
               <td class="py-2 px-4 text-fg-muted">Public RDAP bootstrap service</td>
+            </tr>
+            <tr>
+              <td class="py-2 px-4 text-fg">crt.sh</td>
+              <td class="py-2 px-4 text-fg-muted">Certificate Transparency search (subdomains, TLS cert)</td>
+              <td class="py-2 px-4"><a href="https://crt.sh" target="_blank" rel="noopener" class="text-primary-400 hover:underline">crt.sh</a></td>
+            </tr>
+            <tr>
+              <td class="py-2 px-4 text-fg">Team Cymru</td>
+              <td class="py-2 px-4 text-fg-muted">IP-to-ASN mapping (via DNS, for the ASN/origin view)</td>
+              <td class="py-2 px-4"><a href="https://www.team-cymru.com" target="_blank" rel="noopener" class="text-primary-400 hover:underline">team-cymru.com</a></td>
+            </tr>
+            <tr>
+              <td class="py-2 px-4 text-fg">hstspreload.org</td>
+              <td class="py-2 px-4 text-fg-muted">HSTS preload-list status</td>
+              <td class="py-2 px-4"><a href="https://hstspreload.org" target="_blank" rel="noopener" class="text-primary-400 hover:underline">hstspreload.org</a></td>
+            </tr>
+            <tr>
+              <td class="py-2 px-4 text-fg">The domain you look up</td>
+              <td class="py-2 px-4 text-fg-muted">Server-info tab issues an HTTP request to read response headers</td>
+              <td class="py-2 px-4 text-fg-muted">—</td>
             </tr>
           </tbody>
         </table>
       </div>
-      <p class="text-fg-muted leading-relaxed mt-3">When you look up a domain, only the domain name is sent to these services — no personal information is transmitted.</p>
+      <p class="text-fg-muted leading-relaxed mt-3">When you look up a domain, only the domain name (or IP) is sent to these services — no personal information is transmitted.</p>
+    </section>
+
+    <section>
+      <h2 class="text-xl font-semibold text-fg mb-3">Optional feature that contacts ldns.com</h2>
+      <p class="text-fg-muted leading-relaxed">
+        One feature, <strong class="text-fg">off by default</strong>, contacts our own backend when you enable it in Settings:
+      </p>
+      <ul class="list-disc list-inside text-fg-muted space-y-1 leading-relaxed mt-2">
+        <li><strong class="text-fg">Marketplace listing check:</strong> sends the domain name to <code class="text-fg">https://ldns.com/api/forsale</code> to detect public for-sale listings (Afternic, Dynadot, parking pages). We don't store or log these requests beyond rolling operational logs. Turning the toggle off stops all traffic to ldns.com immediately.</li>
+      </ul>
     </section>
 
     <section>
@@ -113,6 +148,10 @@
               <td class="py-2 px-4 text-fg-muted">Save your preferences and recent searches locally</td>
             </tr>
             <tr>
+              <td class="py-2 px-4 font-mono text-xs text-fg">sidePanel</td>
+              <td class="py-2 px-4 text-fg-muted">Open LDNS in the browser side panel when you enable side-panel mode (Chrome)</td>
+            </tr>
+            <tr>
               <td class="py-2 px-4 font-mono text-xs text-fg">host_permissions</td>
               <td class="py-2 px-4 text-fg-muted">Query DNS providers and fetch server information</td>
             </tr>
@@ -125,7 +164,7 @@
       <h2 class="text-xl font-semibold text-fg mb-3">Data security</h2>
       <ul class="list-disc list-inside text-fg-muted space-y-1 leading-relaxed">
         <li>All DNS queries use encrypted DNS-over-HTTPS (DoH)</li>
-        <li>No data is transmitted to LDNS servers</li>
+        <li>No data is transmitted to LDNS servers unless you enable the optional marketplace check</li>
         <li>All preferences are stored locally using the browser's secure storage API</li>
       </ul>
     </section>
@@ -153,8 +192,9 @@
     <div class="bg-surface-2 border border-line rounded-xl p-5">
       <p class="text-fg-muted text-sm leading-relaxed">
         <strong class="text-fg">Summary:</strong> LDNS is a privacy-focused tool. We don't collect,
-        store, or transmit your personal data. All lookups are performed directly between your
-        browser and public DNS / WHOIS services.
+        store, or transmit your personal data. By default, all lookups are performed directly between
+        your browser and public DNS / WHOIS services; only the optional marketplace check (off by
+        default) contacts ldns.com.
       </p>
     </div>
   </div>

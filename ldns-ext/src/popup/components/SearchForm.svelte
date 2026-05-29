@@ -4,6 +4,7 @@
   import { DNS_ENDPOINTS } from '@ldns/core/constants';
   import type { DnsEndpoint, ForSaleListing } from '@ldns/core/types';
   import { cn } from '$lib/utils/cn';
+  import { safeHttpUrl } from '$lib/utils/url';
 
   function formatPrice(listing: ForSaleListing): string {
     if (!listing.price) return 'Price on request';
@@ -110,7 +111,7 @@
     <!-- Left: For-sale indicator -->
     {#if firstListing}
       <a
-        href={firstListing.listingUrl}
+        href={safeHttpUrl(firstListing.listingUrl)}
         target="_blank"
         rel="noopener noreferrer"
         class="inline-flex items-center gap-1 px-2 py-0.5 bg-primary-500/15 border border-primary-500/30 rounded-lg text-primary-400 text-[11px] hover:bg-primary-500/25 transition-colors"

@@ -3,7 +3,8 @@ import {
   isPlausibleDomain,
   isPrivateIPv4,
   isPrivateIPv6,
-  ensurePublicHost
+  ensurePublicHost,
+  assertRedirectTarget
 } from './ssrf';
 
 describe('isPlausibleDomain', () => {
@@ -70,9 +71,47 @@ describe('isPrivateIPv6', () => {
     ['::ffff:10.0.0.1', true], // mapped private
     ['::ffff:8.8.8.8', false],
     ['2001:4860:4860::8888', false], // Google DNS
-    ['2606:4700:4700::1111', false] // Cloudflare DNS
+    ['2606:4700:4700::1111', false], // Cloudflare DNS
+    ['::ffff:7f00:1', true], // IPv4-mapped 127.0.0.1 written in hex
+    ['::ffff:169.254.169.254', true], // IPv4-mapped cloud metadata IP
+    ['::127.0.0.1', true], // deprecated IPv4-compatible loopback
+    ['fec0::1', true], // deprecated site-local
+    ['64:ff9b::a00:1', true], // NAT64 of 10.0.0.1
+    ['2002:7f00:1::', true], // 6to4 wrapping 127.0.0.1
+    ['::ffff:1.1.1.1', false], // IPv4-mapped public address
+    ['2001:db8::1', false] // documentation range (reserved, not internal)
   ])('isPrivateIPv6(%j) = %s', (ip, expected) => {
     expect(isPrivateIPv6(ip)).toBe(expected);
+  });
+});
+
+describe('assertRedirectTarget', () => {
+  it.each([
+    'https://example.com/',
+    'http://example.com/path',
+    'https://1.1.1.1/',
+    'https://93.184.216.34/'
+  ])('allows public target %j', (url) => {
+    expect(() => assertRedirectTarget(url)).not.toThrow();
+  });
+
+  it.each([
+    'http://127.0.0.1/',
+    'http://169.254.169.254/latest/meta-data/', // cloud metadata
+    'http://10.0.0.5/',
+    'http://192.168.1.1/',
+    'http://[::1]/',
+    'http://[::ffff:7f00:1]/', // IPv4-mapped loopback
+    'http://2130706433/', // decimal-encoded 127.0.0.1 (URL parser normalises)
+    'http://0x7f000001/', // hex-encoded 127.0.0.1
+    'http://0177.0.0.1/', // octal-encoded 127.0.0.1
+    'https://foo.local/',
+    'https://api.internal/',
+    'file:///etc/passwd',
+    'gopher://evil/',
+    'not a url'
+  ])('rejects disallowed target %j', (url) => {
+    expect(() => assertRedirectTarget(url)).toThrow();
   });
 });
 

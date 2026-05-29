@@ -359,8 +359,6 @@ async function queryWhoisTcp(server: string, domain: string): Promise<string> {
   // Dynamic import - only available in Cloudflare Workers runtime
   const { connect } = await import('cloudflare:sockets');
 
-  console.log(`[WHOIS] Connecting to ${server}:43 for ${domain}`);
-
   const socket = connect(
     { hostname: server, port: 43 },
     { allowHalfOpen: true }
@@ -368,7 +366,6 @@ async function queryWhoisTcp(server: string, domain: string): Promise<string> {
 
   // Wait for connection to be established
   await socket.opened;
-  console.log(`[WHOIS] Socket opened`);
 
   const writer = socket.writable.getWriter();
   const encoder = new TextEncoder();
@@ -378,21 +375,28 @@ async function queryWhoisTcp(server: string, domain: string): Promise<string> {
   // Release the writer but don't close the socket yet
   writer.releaseLock();
 
-  console.log(`[WHOIS] Query sent, reading response...`);
-
-  // Read the response
+  // Read the response, bounded so a hostile/buggy registry can't stream an
+  // unbounded body and exhaust the Worker.
+  const MAX_WHOIS_BYTES = 256 * 1024;
   const reader = socket.readable.getReader();
   const decoder = new TextDecoder();
   let response = '';
+  let total = 0;
 
   while (true) {
     const { done, value } = await reader.read();
-    console.log(`[WHOIS] Read chunk: done=${done}, bytes=${value?.length || 0}`);
     if (done) break;
+    total += value?.length ?? 0;
     response += decoder.decode(value, { stream: true });
+    if (total >= MAX_WHOIS_BYTES) {
+      try {
+        await reader.cancel();
+      } catch {
+        /* ignore */
+      }
+      break;
+    }
   }
-
-  console.log(`[WHOIS] Response length: ${response.length} bytes`);
 
   // Close the socket
   await socket.close();

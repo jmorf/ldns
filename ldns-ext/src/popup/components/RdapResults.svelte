@@ -9,6 +9,7 @@
   import { Copy, Check, Shield, ShieldOff, Calendar, Server, Building2, Tag, ExternalLink } from 'lucide-svelte';
   import type { ForSaleListing } from '@ldns/core/types';
   import { cn } from '$lib/utils/cn';
+  import { safeHttpUrl } from '$lib/utils/url';
 
   let copiedField = $state<string | null>(null);
 
@@ -102,7 +103,7 @@
         <div class="space-y-1.5">
           {#each forSaleListings as listing}
             <a
-              href={listing.listingUrl}
+              href={safeHttpUrl(listing.listingUrl)}
               target="_blank"
               rel="noopener noreferrer"
               class="flex items-center justify-between p-2 bg-surface-2 rounded-lg hover:bg-surface-3 transition-colors group"
