@@ -1,0 +1,22 @@
+{
+	// Root-level Wrangler config so Cloudflare Workers Builds can deploy from the
+	// repository root with its default deploy command (`npx wrangler versions
+	// upload` / `wrangler deploy`). Dependencies install at the workspace root
+	// (where `@ldns/core` links), so the build/deploy run from the root too — but
+	// the canonical app config lives in `ldns2/wrangler.jsonc`. This mirror only
+	// rewrites the relative paths to be root-relative; KEEP THE TWO IN SYNC
+	// (name, compatibility_date, compatibility_flags, assets binding, observability).
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"account_id": "0a23f5213b008c927c4b9a8b9442b573",
+	"name": "ldns2",
+	"main": "ldns2/.svelte-kit/cloudflare/_worker.js",
+	"compatibility_date": "2025-04-30",
+	"compatibility_flags": ["nodejs_compat"],
+	"assets": {
+		"binding": "ASSETS",
+		"directory": "ldns2/.svelte-kit/cloudflare"
+	},
+	"observability": {
+		"enabled": true
+	}
+}
