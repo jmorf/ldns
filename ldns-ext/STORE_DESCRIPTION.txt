@@ -252,11 +252,15 @@ Read our full privacy policy at ldns.com/extension/privacy
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📝 CURRENT VERSION: v1.7.9
+📝 CURRENT VERSION: v1.7.10
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📋 CHANGELOG
+
+v1.7.10
+• Report a bug / send feedback — new link in Settings and the popup footer opens a GitHub issue (public issue tracker, prefilled with your extension version and browser; nothing is sent until you submit it)
+• You can also reach @jmorf on X for informal feedback
 
 v1.7.9
 • Fixed Firefox "File not found" error when turning Side panel mode off from inside the popup. Underlying cause: chrome.action.setPopup interprets relative paths differently on Chrome and Firefox; we now pass the absolute extension URL via chrome.runtime.getURL so both browsers behave consistently.
@@ -335,6 +339,8 @@ v1.5.0
 
 Website: ldns.com
 Privacy Policy: ldns.com/extension/privacy
+Feedback & Bug Reports: github.com/jmorf/ldns-feedback
+X: x.com/jmorf (@jmorf)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

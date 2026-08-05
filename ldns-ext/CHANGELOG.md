@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.7.10] - 2026-08-05
+
+### Added
+- **Report a bug / send feedback.** New link in Settings and a compact "Report a bug" link in the popup footer. Both open a GitHub issue in the public `ldns-feedback` tracker (issues only — the extension source stays private), prefilled with the extension version and browser so reports arrive actionable. Nothing is sent until the user submits the issue on GitHub.
+- **X contact.** [@jmorf on X](https://x.com/jmorf) listed as an informal feedback channel in Settings, the README, and the store listing links.
+
 ## [1.7.9] - 2026-04-30
 
 ### Fixed

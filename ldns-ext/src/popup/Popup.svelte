@@ -4,6 +4,7 @@
   import { Settings as SettingsIcon, Sun, Moon, Monitor } from 'lucide-svelte';
   import ExportMenu from './components/ExportMenu.svelte';
   import { recallSession, rememberSession } from '$lib/utils/storage';
+  import { feedbackUrl } from '$lib/utils/feedback';
   import SearchForm from './components/SearchForm.svelte';
   import TabNavigation from './components/TabNavigation.svelte';
   import DnsResults from './components/DnsResults.svelte';
@@ -181,7 +182,17 @@
   <!-- Footer -->
   <footer class="px-4 py-1.5 border-t border-line flex items-center justify-between text-[10px] text-fg-subtle">
     <span class="font-mono">{extensionState.endpoint === 'cloudflare' ? 'Cloudflare DNS' : extensionState.endpoint === 'google' ? 'Google DNS' : 'DNS.SB'}</span>
-    <span>ldns.com</span>
+    <span class="flex items-center gap-2">
+      <a
+        href={feedbackUrl()}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hover:text-fg-muted transition-colors"
+        title="Report a bug or send feedback (opens GitHub)"
+      >Report a bug</a>
+      <span aria-hidden="true">·</span>
+      <span>ldns.com</span>
+    </span>
   </footer>
 
   <SettingsSheet open={settingsOpen} onClose={() => (settingsOpen = false)} />

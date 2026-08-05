@@ -1,8 +1,9 @@
 <script lang="ts">
   import { extensionState } from '$lib/state/extension-state.svelte';
-  import { X, Settings as SettingsIcon, ExternalLink } from 'lucide-svelte';
+  import { X, Settings as SettingsIcon, ExternalLink, Bug } from 'lucide-svelte';
   import { cn } from '$lib/utils/cn';
   import { sidePanelSupported } from '$lib/utils/sidepanel';
+  import { feedbackUrl, X_PROFILE_URL, X_HANDLE } from '$lib/utils/feedback';
 
   const hasSidePanel = sidePanelSupported();
 
@@ -103,6 +104,33 @@
           </span>
         </button>
       {/each}
+
+      <div class="pt-2 border-t border-line">
+        <a
+          href={feedbackUrl()}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="w-full flex items-start gap-3 text-left p-2.5 rounded-xl hover:bg-surface-3 transition-colors active:scale-[0.99]"
+        >
+          <Bug class="mt-0.5 w-4 h-4 text-primary-400 flex-shrink-0" />
+          <span class="flex-1 min-w-0">
+            <span class="flex items-center gap-1.5">
+              <span class="text-xs font-medium text-fg">Report a bug or send feedback</span>
+              <ExternalLink class="w-2.5 h-2.5 text-fg-muted opacity-70" />
+            </span>
+            <span class="block text-[10px] text-fg-muted mt-0.5">Opens a GitHub issue prefilled with your extension version and browser. Nothing is sent until you submit it.</span>
+          </span>
+        </a>
+        <p class="text-[10px] text-fg-muted px-2.5 mt-1">
+          You can also reach
+          <a
+            href={X_PROFILE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-primary-400 hover:text-primary-300"
+          >{X_HANDLE} on X</a>.
+        </p>
+      </div>
 
       <div class="pt-2 border-t border-line">
         <p class="text-[10px] text-fg-muted leading-relaxed px-1">

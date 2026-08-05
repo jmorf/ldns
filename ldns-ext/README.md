@@ -126,3 +126,4 @@ Proprietary — free to use for personal and commercial purposes. Redistribution
 
 - Website: [ldns.com](https://ldns.com)
 - Privacy: [ldns.com/extension/privacy](https://ldns.com/extension/privacy)
+- Feedback & bug reports: [github.com/jmorf/ldns-feedback](https://github.com/jmorf/ldns-feedback) or [@jmorf on X](https://x.com/jmorf)
