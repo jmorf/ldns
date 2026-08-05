@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { ForSaleResult, ForSaleListing } from '$lib/forsale';
   import { ShoppingCart, ExternalLink, DollarSign, Tag } from 'lucide-svelte';
+  import { safeHttpUrl } from '$lib/utils/url';
 
   interface Props {
     data: ForSaleResult | null;
@@ -48,7 +49,7 @@
   {#if compact}
     <!-- Compact badge for inline display -->
     <a
-      href={listings[0].listingUrl}
+      href={safeHttpUrl(listings[0].listingUrl)}
       target="_blank"
       rel="noopener noreferrer"
       class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full text-sm font-medium hover:bg-primary-200 dark:hover:bg-primary-900/50 transition-colors"
@@ -76,7 +77,7 @@
           <div class="space-y-2">
             {#each listings as listing}
               <a
-                href={listing.listingUrl}
+                href={safeHttpUrl(listing.listingUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
                 class="flex items-center justify-between gap-3 p-2 bg-surface-2/40 rounded-lg hover:bg-surface-2/60 transition-colors group"

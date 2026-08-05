@@ -20,7 +20,7 @@ The following data is stored locally using the browser's storage API and never l
 
 - **Recent searches** — the last 10 domains you've looked up, for convenience
 - **Preferences** — selected DNS provider and theme
-- **Settings** — opt-in flags for for-sale check, WHOIS fallback, fun loading messages, and grain overlay
+- **Settings** — an opt-in flag for the marketplace (for-sale) check, plus UI preferences (side-panel mode, fun loading messages, grain overlay)
 - **In-memory query cache** — short-lived (≤30s) cache of the most recent lookup, cleared when the popup closes
 
 You can clear recent searches at any time from inside the extension.
@@ -60,13 +60,14 @@ The extension declares specific host permissions for the named services above, p
 |------------|-----|
 | `activeTab` | Read the current tab's URL to auto-populate the domain field |
 | `storage` | Save your preferences and recent searches locally |
+| `sidePanel` | (Chrome) Open LDNS in the browser side panel when you enable side-panel mode |
 | `host_permissions` | Query DNS providers and fetch server information |
 
 ## Data security
 
 - All DNS queries use encrypted DNS-over-HTTPS (DoH)
 - Manifest V3 with a strict Content Security Policy (`script-src 'self'; object-src 'self'`)
-- No data is transmitted to LDNS servers unless you opt in to for-sale or WHOIS fallback features
+- No data is transmitted to LDNS servers unless you opt in to the marketplace (for-sale) feature
 - Preferences are stored using the browser's secure local storage API
 
 ## Your rights
@@ -87,4 +88,4 @@ For privacy concerns or questions, please visit [ldns.com](https://ldns.com).
 
 ---
 
-**Summary:** LDNS is a privacy-focused tool. The default configuration sends nothing to LDNS-owned servers — every DNS, RDAP and CT-log query goes directly to the corresponding public service. Two narrow opt-in features (for-sale, WHOIS fallback) contact `ldns.com` and are disabled by default.
+**Summary:** LDNS is a privacy-focused tool. The default configuration sends nothing to LDNS-owned servers — every DNS, RDAP and CT-log query goes directly to the corresponding public service. One narrow opt-in feature (the marketplace / for-sale check) contacts `ldns.com` and is disabled by default.

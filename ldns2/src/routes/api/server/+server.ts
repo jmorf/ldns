@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { createHandler } from '$lib/server/handler';
-import { ensurePublicHost } from '$lib/server/ssrf';
+import { ensurePublicHost, assertRedirectTarget } from '$lib/server/ssrf';
 import { analyzeServer } from '@ldns/core/server-info';
 import { detectTechnologies } from '@ldns/core/tech-detect';
 import { auditSecurityHeaders, detectAltSvc } from '@ldns/core/security-checks';
@@ -19,7 +19,7 @@ const handler = createHandler({
 
     let analysis;
     try {
-      analysis = await analyzeServer(domain, { useHttp });
+      analysis = await analyzeServer(domain, { useHttp, guard: assertRedirectTarget });
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Failed to fetch';
       // Return a structured error, not a 5xx — clients expect JSON.

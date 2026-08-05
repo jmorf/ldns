@@ -1664,35 +1664,12 @@ class DomainName {
         };
 
         try {
-            // Check Phishtank (free without API key)
-            try {
-                const phishtankUrl = `https://checkurl.phishtank.com/checkurl/`;
-                const formData = new FormData();
-                formData.append('url', `https://${this.name}`);
-                formData.append('format', 'json');
-                
-                const phishtankResponse = await fetch(phishtankUrl, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'User-Agent': 'Mozilla/5.0 (compatible; DNS-Lookup-Tool/1.0)'
-                    },
-                    signal: AbortSignal.timeout(5000)
-                });
-
-                if (phishtankResponse.ok) {
-                    const phishtankData = await phishtankResponse.json() as { results?: { in_database: boolean } };
-                    results.phishtank = {
-                        status: phishtankData.results?.in_database ? 'phishing' : 'clean',
-                        checked: true,
-                        details: phishtankData.results
-                    };
-                } else {
-                    results.phishtank = { status: 'error', checked: false, error: 'API unavailable' };
-                }
-            } catch (error) {
-                results.phishtank = { status: 'error', checked: false, error: 'Timeout or CORS' };
-            }
+            // PhishTank reputation lookup intentionally removed: it POSTed the
+            // looked-up URL to a third party (checkurl.phishtank.com), and this
+            // whole reputation path is dead code — no route calls it (the live
+            // /security page uses the server-side /api/* proxy instead). Leave a
+            // neutral result so the surrounding (unused) scoring still builds.
+            results.phishtank = { status: 'unknown', checked: false };
 
             // Simple Google Safe Browsing (fallback check)
             // Note: This is just a basic check - full API requires key

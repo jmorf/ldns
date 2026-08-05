@@ -67,7 +67,7 @@
               {#if info.org}<div class="md:col-span-2"><p class="text-[10px] uppercase tracking-wider text-fg-subtle">Organization</p><p class="text-fg mt-0.5">{info.org}</p></div>{/if}
               {#if info.isp}<div class="md:col-span-2"><p class="text-[10px] uppercase tracking-wider text-fg-subtle">ISP</p><p class="text-fg mt-0.5">{info.isp}</p></div>{/if}
             </div>
-            <a class="block mt-3 text-[11px] text-primary-400 hover:underline" href={`https://www.openstreetmap.org/?mlat=${info.lat}&mlon=${info.lon}#map=10/${info.lat}/${info.lon}`} target="_blank" rel="noopener noreferrer">View on OpenStreetMap →</a>
+            <a class="block mt-3 text-[11px] text-primary-400 hover:underline" href={Number.isFinite(Number(info.lat)) && Number.isFinite(Number(info.lon)) ? `https://www.openstreetmap.org/?mlat=${Number(info.lat)}&mlon=${Number(info.lon)}#map=10/${Number(info.lat)}/${Number(info.lon)}` : 'https://www.openstreetmap.org/'} target="_blank" rel="noopener noreferrer">View on OpenStreetMap →</a>
           {:else}
             <p class="text-sm text-fg-muted">{info.error}</p>
           {/if}

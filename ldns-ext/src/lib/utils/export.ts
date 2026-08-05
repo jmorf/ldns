@@ -53,9 +53,15 @@ export function downloadJson(): void {
 }
 
 function csvCell(value: string): string {
-  // Quote if value contains comma, quote, or newline; double up internal quotes.
-  if (/[",\n\r]/.test(value)) return `"${value.replace(/"/g, '""')}"`;
-  return value;
+  // Neutralise spreadsheet formula injection: Excel / Sheets execute a cell
+  // that begins with = + - @ (or a leading tab / CR that some parsers strip).
+  // DNS and TXT record values are attacker-controlled, so prefix those with a
+  // single quote so they're treated as literal text when the CSV is opened.
+  let v = value;
+  if (/^[=+\-@\t\r]/.test(v)) v = `'${v}`;
+  // Quote if the value contains comma, quote, or newline; double up internal quotes.
+  if (/[",\n\r]/.test(v)) return `"${v.replace(/"/g, '""')}"`;
+  return v;
 }
 
 function dnsToCsv(data: DnsData): string {

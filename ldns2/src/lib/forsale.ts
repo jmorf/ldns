@@ -1,3 +1,5 @@
+import { assertRedirectTarget } from '$lib/server/ssrf';
+
 // ─── For-Sale Marketplace Types ────────────────────────────────────────
 
 export interface ForSaleListing {
@@ -73,9 +75,8 @@ export async function checkAfternic(domain: string): Promise<ForSaleListing | nu
       buyNowAvailable: data.buyNow ?? false,
       listingUrl: data.listingUrl || `https://www.afternic.com/domain/${encodeURIComponent(domain)}`
     };
-  } catch (error) {
-    // Timeout or network error - silently fail
-    console.log('Afternic check failed:', error instanceof Error ? error.message : 'Unknown error');
+  } catch {
+    // Timeout or network error — silently fail (no lookup details in logs).
     return null;
   }
 }
@@ -154,8 +155,7 @@ export async function checkDynadot(domain: string, apiKey?: string): Promise<For
       buyNowAvailable: match.buy_now === 'yes',
       listingUrl: `https://www.dynadot.com/market/auction/${encodeURIComponent(domain)}`
     };
-  } catch (error) {
-    console.log('Dynadot check failed:', error instanceof Error ? error.message : 'Unknown error');
+  } catch {
     return null;
   }
 }
@@ -319,8 +319,16 @@ export async function checkParkingPage(domain: string): Promise<ForSaleListing |
       const absUrl = target.startsWith('http')
         ? target
         : new URL(target, response.finalUrl).toString();
-      const followed = await fetchSnippet(absUrl, controller.signal);
-      if (followed) response = followed;
+      // This redirect target comes from the parked page's own HTML, so it is
+      // fully attacker-controlled — re-validate it before fetching so a lander
+      // can't bounce us onto an internal/loopback host.
+      try {
+        assertRedirectTarget(absUrl);
+        const followed = await fetchSnippet(absUrl, controller.signal);
+        if (followed) response = followed;
+      } catch {
+        /* refuse to follow a disallowed redirect target */
+      }
     }
 
     const finalUrl = (() => {

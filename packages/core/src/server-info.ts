@@ -33,13 +33,26 @@ function normalizeUrl(url: string, useHttp = false): string {
 }
 
 /**
+ * Optional SSRF guard. Server callers pass one so every fetched URL — the
+ * initial domain *and* every redirect hop — is re-validated before a socket is
+ * opened. Client callers (the extension, fetching on the user's own behalf)
+ * pass nothing, preserving the ability to inspect e.g. a LAN router.
+ */
+export type UrlGuard = (url: string) => void;
+
+/**
  * Fetch with timeout
  */
 async function fetchWithTimeout(
   url: string,
   options: RequestInit,
+  guard?: UrlGuard,
   timeout = FETCH_TIMEOUT
 ): Promise<Response> {
+  // SSRF guard (server only): reject the target before opening a socket so a
+  // redirect to 127.0.0.1 / 169.254.169.254 / a private range can't be reached.
+  if (guard) guard(url);
+
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -60,7 +73,7 @@ async function fetchWithTimeout(
  * Fetch server information for a URL
  * Uses HEAD request to minimize data transfer, falls back to GET if HEAD fails
  */
-export async function fetchServerInfo(urlOrDomain: string, useHttp = false): Promise<ServerInfo> {
+export async function fetchServerInfo(urlOrDomain: string, useHttp = false, guard?: UrlGuard): Promise<ServerInfo> {
   const url = normalizeUrl(urlOrDomain, useHttp);
   const startTime = performance.now();
 
@@ -71,7 +84,7 @@ export async function fetchServerInfo(urlOrDomain: string, useHttp = false): Pro
       method: 'HEAD',
       redirect: 'follow',
       cache: 'no-store'
-    });
+    }, guard);
   } catch (error) {
     // If aborted, rethrow
     if (error instanceof Error && error.name === 'AbortError') {
@@ -82,8 +95,12 @@ export async function fetchServerInfo(urlOrDomain: string, useHttp = false): Pro
       method: 'GET',
       redirect: 'follow',
       cache: 'no-store'
-    });
+    }, guard);
   }
+
+  // `redirect: 'follow'` resolves the chain internally; re-validate where it
+  // actually landed so a redirect onto an internal host can't return data.
+  if (guard) guard(response.url);
 
   const responseTime = Math.round(performance.now() - startTime);
   const headers = headersToObject(response.headers);
@@ -111,7 +128,7 @@ export async function fetchServerInfo(urlOrDomain: string, useHttp = false): Pro
  * Trace all redirects for a URL
  * Manually follows redirects to capture each hop
  */
-export async function traceRedirects(urlOrDomain: string, useHttp = false): Promise<RedirectTrace> {
+export async function traceRedirects(urlOrDomain: string, useHttp = false, guard?: UrlGuard): Promise<RedirectTrace> {
   const originalUrl = normalizeUrl(urlOrDomain, useHttp);
   const hops: RedirectHop[] = [];
   let currentUrl = originalUrl;
@@ -127,7 +144,7 @@ export async function traceRedirects(urlOrDomain: string, useHttp = false): Prom
         method: 'HEAD',
         redirect: 'manual',
         cache: 'no-store'
-      });
+      }, guard);
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
         throw new Error('Request timed out');
@@ -136,7 +153,7 @@ export async function traceRedirects(urlOrDomain: string, useHttp = false): Prom
         method: 'GET',
         redirect: 'manual',
         cache: 'no-store'
-      });
+      }, guard);
     }
 
     const responseTime = Math.round(performance.now() - startTime);
@@ -151,7 +168,7 @@ export async function traceRedirects(urlOrDomain: string, useHttp = false): Prom
           method: 'HEAD',
           redirect: 'follow',
           cache: 'no-store'
-        });
+        }, guard);
         const finalUrl = followResponse.url;
         if (finalUrl && finalUrl !== currentUrl) {
           hops.push({
@@ -197,7 +214,7 @@ export async function traceRedirects(urlOrDomain: string, useHttp = false): Prom
       method: 'HEAD',
       redirect: 'manual',
       cache: 'no-store'
-    });
+    }, guard);
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
       throw new Error('Request timed out');
@@ -206,7 +223,7 @@ export async function traceRedirects(urlOrDomain: string, useHttp = false): Prom
       method: 'GET',
       redirect: 'manual',
       cache: 'no-store'
-    });
+    }, guard);
   }
   totalTime += Math.round(performance.now() - finalStartTime);
 
@@ -223,6 +240,12 @@ export async function traceRedirects(urlOrDomain: string, useHttp = false): Prom
 
 export interface AnalyzeOptions {
   useHttp?: boolean;
+  /**
+   * Optional SSRF guard applied to every fetched URL, including each redirect
+   * hop. Server callers pass one; the extension omits it (the user is fetching
+   * on their own behalf from their own browser/network).
+   */
+  guard?: UrlGuard;
 }
 
 /**
@@ -230,12 +253,12 @@ export interface AnalyzeOptions {
  * Throws on network/CORS failures so the state runner can surface the error.
  */
 export async function analyzeServer(urlOrDomain: string, options: AnalyzeOptions = {}): Promise<ServerAnalysis> {
-  const { useHttp = false } = options;
+  const { useHttp = false, guard } = options;
 
   // First trace redirects to find final URL
-  const redirects = await traceRedirects(urlOrDomain, useHttp);
+  const redirects = await traceRedirects(urlOrDomain, useHttp, guard);
   // Then get detailed info from final URL
-  const info = await fetchServerInfo(redirects.finalUrl);
+  const info = await fetchServerInfo(redirects.finalUrl, false, guard);
 
   return {
     info,
