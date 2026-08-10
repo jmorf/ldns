@@ -5,24 +5,16 @@
   import EmptyState from './EmptyState.svelte';
   import RefreshButton from './RefreshButton.svelte';
   import QuickActions from './QuickActions.svelte';
+  import CopyRow from './CopyRow.svelte';
   import { formatRdapDate } from '@ldns/core/rdap-query';
   import { formatListingPrice } from '@ldns/core/forsale-query';
-  import { Copy, Check, Shield, ShieldOff, Calendar, Server, Building2, Tag, ExternalLink } from 'lucide-svelte';
+  import { Shield, ShieldOff, Calendar, Server, Building2, Tag, ExternalLink } from 'lucide-svelte';
   import type { ForSaleListing } from '@ldns/core/types';
   import { cn } from '$lib/utils/cn';
+  import { createCopied } from '$lib/utils/copied.svelte';
   import { safeHttpUrl } from '$lib/utils/url';
 
-  let copiedField = $state<string | null>(null);
-
-  async function copyToClipboard(text: string, field: string) {
-    try {
-      await navigator.clipboard.writeText(text);
-      copiedField = field;
-      setTimeout(() => (copiedField = null), 1600);
-    } catch (error) {
-      console.error('Failed to copy:', error);
-    }
-  }
+  const copied = createCopied();
 
   function getMarketplaceName(listing: ForSaleListing): string {
     if (listing.marketplace === 'afternic') return 'Afternic';
@@ -89,7 +81,7 @@
       <div class="bg-primary-500/10 rounded-xl p-3 border border-primary-500/25">
         <div class="flex items-center gap-1.5 mb-2">
           <Tag class="w-3.5 h-3.5 text-primary-400" />
-          <h3 class="text-[11px] font-semibold tracking-wide uppercase text-primary-400">For Sale</h3>
+          <h3 class="section-title">For Sale</h3>
         </div>
         <div class="space-y-1.5">
           {#each forSaleListings as listing}
@@ -122,9 +114,9 @@
     {/if}
 
     <!-- Domain & Status -->
-    <div class="bg-surface-2 rounded-xl p-3 border border-line fade-in-up">
+    <div class="card fade-in-up">
       <div class="flex items-center justify-between mb-1.5">
-        <h3 class="text-[11px] font-semibold tracking-wide uppercase text-primary-400">Domain</h3>
+        <h3 class="section-title">Domain</h3>
         <div class="flex items-center gap-1">
           {#if data.dnssecEnabled}
             <span class="flex items-center gap-1 text-[10px] text-ok-400">
@@ -175,10 +167,10 @@
     {/if}
 
     <!-- Registration Dates -->
-    <div class="bg-surface-2 rounded-xl p-3 border border-line">
+    <div class="card">
       <div class="flex items-center gap-1.5 mb-2">
         <Calendar class="w-3.5 h-3.5 text-primary-400" />
-        <h3 class="text-[11px] font-semibold tracking-wide uppercase text-primary-400">Registration</h3>
+        <h3 class="section-title">Registration</h3>
       </div>
       <div class="grid grid-cols-3 gap-2 text-xs">
         <div>
@@ -198,10 +190,10 @@
 
     <!-- Registrar -->
     {#if data.registrar}
-      <div class="bg-surface-2 rounded-xl p-3 border border-line">
+      <div class="card">
         <div class="flex items-center gap-1.5 mb-1">
           <Building2 class="w-3.5 h-3.5 text-primary-400" />
-          <h3 class="text-[11px] font-semibold tracking-wide uppercase text-primary-400">Registrar</h3>
+          <h3 class="section-title">Registrar</h3>
         </div>
         <p class="text-fg text-xs">{data.registrar}</p>
       </div>
@@ -209,10 +201,10 @@
 
     <!-- DNSSEC chain -->
     {#if data.dnssecData?.dsData && data.dnssecData.dsData.length > 0}
-      <div class="bg-surface-2 rounded-xl p-3 border border-line">
+      <div class="card">
         <div class="flex items-center gap-1.5 mb-2">
           <Shield class="w-3.5 h-3.5 text-ok-400" />
-          <h3 class="text-[11px] font-semibold tracking-wide uppercase text-primary-400">DNSSEC Chain</h3>
+          <h3 class="section-title">DNSSEC Chain</h3>
         </div>
         <div class="space-y-1">
           {#each data.dnssecData.dsData as ds}
@@ -229,32 +221,16 @@
 
     <!-- Nameservers -->
     {#if data.nameservers.length > 0}
-      <div class="bg-surface-2 rounded-xl p-3 border border-line">
+      <div class="card">
         <div class="flex items-center gap-1.5 mb-2">
           <Server class="w-3.5 h-3.5 text-primary-400" />
-          <h3 class="text-[11px] font-semibold tracking-wide uppercase text-primary-400">Nameservers</h3>
+          <h3 class="section-title">Nameservers</h3>
         </div>
         <div class="space-y-1">
           {#each data.nameservers as ns}
-            <button
-              type="button"
-              onclick={() => copyToClipboard(ns, ns)}
-              class={cn(
-                'w-full flex items-center justify-between gap-2 px-2 py-1 -mx-2 rounded-lg transition-colors group text-left',
-                copiedField === ns ? 'bg-ok-500/10' : 'hover:bg-surface-3'
-              )}
-              aria-label="Copy nameserver"
-              title="Click to copy"
-            >
+            <CopyRow value={ns} k={ns} {copied} class="px-2 py-1 -mx-2 rounded-lg" label="Copy nameserver">
               <p class="text-fg text-xs font-mono">{ns}</p>
-              <span class="flex-shrink-0 opacity-50 group-hover:opacity-100 transition-opacity">
-                {#if copiedField === ns}
-                  <Check class="w-3 h-3 text-ok-400" />
-                {:else}
-                  <Copy class="w-3 h-3 text-fg-subtle group-hover:text-fg" />
-                {/if}
-              </span>
-            </button>
+            </CopyRow>
           {/each}
         </div>
       </div>

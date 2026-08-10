@@ -14,20 +14,7 @@
     checkHstsPreload
   } from '@ldns/core/security-checks';
   import { cn } from '$lib/utils/cn';
-
-  const colorClasses = {
-    green: 'text-ok-400',
-    yellow: 'text-warn-400',
-    red: 'text-bad-400',
-    gray: 'text-fg-muted'
-  };
-
-  const bgColorClasses = {
-    green: 'bg-ok-500/15 border-ok-500/30 text-ok-400',
-    yellow: 'bg-warn-500/15 border-warn-500/30 text-warn-400',
-    red: 'bg-bad-500/15 border-bad-500/30 text-bad-400',
-    gray: 'bg-surface-3 border-line text-fg-muted'
-  };
+  import { toneText, toneBadge, levelTone } from '$lib/utils/status';
 
   // Side-channel probes (don't block the rest of the tab)
   let securityTxt = $state<boolean | null>(null);
@@ -58,12 +45,14 @@
     if (domain) checkHstsPreload(domain).then((v) => { if (current()) hstsStatus = v; });
   });
 
-  function levelClass(level: 'ok' | 'warn' | 'bad') {
-    if (level === 'ok') return 'bg-ok-500/15 text-ok-400 border-ok-500/30';
-    if (level === 'warn') return 'bg-warn-500/15 text-warn-400 border-warn-500/30';
-    return 'bg-bad-500/15 text-bad-400 border-bad-500/30';
-  }
 </script>
+
+{#snippet kv(label: string, value: string, valueClass = '')}
+  <div class="flex justify-between items-center text-xs">
+    <span class="text-[10px] text-fg-subtle uppercase tracking-wide">{label}</span>
+    <span class={cn('font-mono text-fg', valueClass)} title={value}>{value}</span>
+  </div>
+{/snippet}
 
 <div class="space-y-2.5">
   <!-- HTTP toggle + refresh -->
@@ -98,15 +87,15 @@
     {@const altSvc = detectAltSvc(info.headers)}
 
     <!-- Hero stat: response time + status -->
-    <div class="bg-surface-2 rounded-xl p-3 border border-line fade-in-up">
+    <div class="card fade-in-up">
       <div class="flex items-end justify-between">
         <div>
           <p class="text-[10px] text-fg-subtle uppercase tracking-wide">Response time</p>
-          <p class={cn('text-2xl font-semibold tnum mt-0.5', colorClasses[getResponseTimeColor(info.responseTime)])}>
+          <p class={cn('text-2xl font-semibold tnum mt-0.5', toneText[getResponseTimeColor(info.responseTime)])}>
             {formatResponseTime(info.responseTime)}
           </p>
         </div>
-        <span class={cn('px-2 py-0.5 text-xs rounded-md border tnum font-mono', bgColorClasses[getStatusColor(info.status)])}>
+        <span class={cn('px-2 py-0.5 text-xs rounded-md border tnum font-mono', toneBadge[getStatusColor(info.status)])}>
           {info.status} {info.statusText}
         </span>
       </div>
@@ -143,12 +132,12 @@
     {/if}
 
     <!-- Security headers audit -->
-    <div class="bg-surface-2 rounded-xl p-3 border border-line">
-      <h3 class="text-[11px] font-semibold tracking-wide uppercase text-primary-400 mb-2">Security Headers</h3>
+    <div class="card">
+      <h3 class="section-title mb-2">Security Headers</h3>
       <div class="flex flex-wrap gap-1.5">
         {#each headerAudit as check}
           <span
-            class={cn('px-1.5 py-0.5 text-[10px] rounded-md border', levelClass(check.level))}
+            class={cn('px-1.5 py-0.5 text-[10px] rounded-md border', toneBadge[levelTone[check.level]])}
             title={`${check.key}: ${check.hint}${check.value ? ' — ' + check.value : ''}`}
           >
             {check.label}
@@ -178,8 +167,8 @@
     </div>
 
     <!-- Redirect Chain -->
-    <details class="bg-surface-2 rounded-xl border border-line">
-      <summary class="p-3 cursor-pointer text-[11px] font-semibold tracking-wide uppercase text-primary-400 hover:text-fg flex items-center justify-between list-none">
+    <details class="card-bare">
+      <summary class="p-3 cursor-pointer section-title hover:text-fg flex items-center justify-between list-none">
         <span>Redirect Chain</span>
         {#if redirects && redirects.redirectCount > 0}
           <span class="text-[10px] text-warn-400 normal-case font-normal tracking-normal">
@@ -195,7 +184,7 @@
             {#each redirects.hops as hop, i}
               <div class="flex items-start gap-2">
                 <div class="flex flex-col items-center">
-                  <span class={cn('w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-medium border', bgColorClasses[getStatusColor(hop.status)])}>
+                  <span class={cn('w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-medium border', toneBadge[getStatusColor(hop.status)])}>
                     {i + 1}
                   </span>
                   {#if i < redirects.hops.length - 1}
@@ -204,7 +193,7 @@
                 </div>
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center gap-2">
-                    <span class={cn('text-xs font-mono tnum', colorClasses[getStatusColor(hop.status)])}>{hop.status}</span>
+                    <span class={cn('text-xs font-mono tnum', toneText[getStatusColor(hop.status)])}>{hop.status}</span>
                     <span class="text-[10px] text-fg-subtle tnum">{formatResponseTime(hop.responseTime)}</span>
                   </div>
                   <p class="text-xs text-fg-muted truncate" title={hop.url}>{hop.url}</p>
@@ -214,14 +203,14 @@
             {/each}
             <div class="flex items-start gap-2">
               <div class="flex flex-col items-center">
-                <span class={cn('w-5 h-5 rounded-full flex items-center justify-center border', bgColorClasses[getStatusColor(redirects.finalStatus)])}>
+                <span class={cn('w-5 h-5 rounded-full flex items-center justify-center border', toneBadge[getStatusColor(redirects.finalStatus)])}>
                   <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                   </svg>
                 </span>
               </div>
               <div class="flex-1 min-w-0">
-                <span class={cn('text-xs font-mono tnum', colorClasses[getStatusColor(redirects.finalStatus)])}>
+                <span class={cn('text-xs font-mono tnum', toneText[getStatusColor(redirects.finalStatus)])}>
                   {redirects.finalStatus} {redirects.finalStatusText}
                 </span>
                 <p class="text-xs text-fg-muted truncate" title={redirects.finalUrl}>{redirects.finalUrl}</p>
@@ -236,58 +225,37 @@
 
     <!-- IP Addresses -->
     {#if ipv4.length > 0 || ipv6.length > 0}
-      <div class="bg-surface-2 rounded-xl border border-line p-3">
-        <h3 class="text-[11px] font-semibold tracking-wide uppercase text-primary-400 mb-2">IP Addresses</h3>
+      <div class="card">
+        <h3 class="section-title mb-2">IP Addresses</h3>
         <div class="space-y-1.5">
           {#each ipv4 as ip}
-            <div class="flex justify-between items-center text-xs">
-              <span class="text-[10px] text-fg-subtle uppercase tracking-wide">IPv4</span>
-              <span class="font-mono text-fg">{ip}</span>
-            </div>
+            {@render kv('IPv4', ip)}
           {/each}
           {#each ipv6 as ip}
-            <div class="flex justify-between items-center text-xs">
-              <span class="text-[10px] text-fg-subtle uppercase tracking-wide">IPv6</span>
-              <span class="font-mono text-fg truncate max-w-[280px]" title={ip}>{ip}</span>
-            </div>
+            {@render kv('IPv6', ip, 'truncate max-w-[280px]')}
           {/each}
         </div>
       </div>
     {/if}
 
     <!-- Server Details -->
-    <div class="bg-surface-2 rounded-xl border border-line p-3">
-      <h3 class="text-[11px] font-semibold tracking-wide uppercase text-primary-400 mb-2">Server Details</h3>
+    <div class="card">
+      <h3 class="section-title mb-2">Server Details</h3>
       <div class="space-y-1.5">
         {#if info.server}
-          <div class="flex justify-between items-center text-xs">
-            <span class="text-[10px] text-fg-subtle uppercase tracking-wide">Server</span>
-            <span class="font-mono text-fg">{info.server}</span>
-          </div>
+          {@render kv('Server', info.server)}
         {/if}
         {#if info.poweredBy}
-          <div class="flex justify-between items-center text-xs">
-            <span class="text-[10px] text-fg-subtle uppercase tracking-wide">Powered By</span>
-            <span class="font-mono text-fg">{info.poweredBy}</span>
-          </div>
+          {@render kv('Powered By', info.poweredBy)}
         {/if}
         {#if info.contentType}
-          <div class="flex justify-between items-center text-xs">
-            <span class="text-[10px] text-fg-subtle uppercase tracking-wide">Content-Type</span>
-            <span class="font-mono text-fg">{info.contentType}</span>
-          </div>
+          {@render kv('Content-Type', info.contentType)}
         {/if}
         {#if info.via}
-          <div class="flex justify-between items-center text-xs">
-            <span class="text-[10px] text-fg-subtle uppercase tracking-wide">Via</span>
-            <span class="font-mono text-fg">{info.via}</span>
-          </div>
+          {@render kv('Via', info.via)}
         {/if}
         {#if info.xCache}
-          <div class="flex justify-between items-center text-xs">
-            <span class="text-[10px] text-fg-subtle uppercase tracking-wide">X-Cache</span>
-            <span class="font-mono text-fg">{info.xCache}</span>
-          </div>
+          {@render kv('X-Cache', info.xCache)}
         {/if}
         {#if !info.server && !info.poweredBy && !info.contentType && !info.via && !info.xCache}
           <p class="text-xs text-fg-subtle text-center py-1">No server details available.</p>
@@ -297,40 +265,28 @@
 
     <!-- Cache -->
     {#if info.cacheControl || info.etag || info.age !== null || info.lastModified}
-      <div class="bg-surface-2 rounded-xl border border-line p-3">
-        <h3 class="text-[11px] font-semibold tracking-wide uppercase text-primary-400 mb-2">Cache</h3>
+      <div class="card">
+        <h3 class="section-title mb-2">Cache</h3>
         <div class="space-y-1.5">
           {#if info.cacheControl}
-            <div class="flex justify-between items-start text-xs">
-              <span class="text-[10px] text-fg-subtle uppercase tracking-wide">Cache-Control</span>
-              <span class="font-mono text-fg text-right max-w-[200px]">{info.cacheControl}</span>
-            </div>
+            {@render kv('Cache-Control', info.cacheControl, 'text-right max-w-[200px]')}
           {/if}
           {#if info.age !== null}
-            <div class="flex justify-between items-center text-xs">
-              <span class="text-[10px] text-fg-subtle uppercase tracking-wide">Age</span>
-              <span class="font-mono text-fg tnum">{info.age}s</span>
-            </div>
+            {@render kv('Age', `${info.age}s`, 'tnum')}
           {/if}
           {#if info.etag}
-            <div class="flex justify-between items-center text-xs">
-              <span class="text-[10px] text-fg-subtle uppercase tracking-wide">ETag</span>
-              <span class="font-mono text-fg truncate max-w-[200px]" title={info.etag}>{info.etag}</span>
-            </div>
+            {@render kv('ETag', info.etag, 'truncate max-w-[200px]')}
           {/if}
           {#if info.lastModified}
-            <div class="flex justify-between items-center text-xs">
-              <span class="text-[10px] text-fg-subtle uppercase tracking-wide">Last-Modified</span>
-              <span class="font-mono text-fg">{info.lastModified}</span>
-            </div>
+            {@render kv('Last-Modified', info.lastModified)}
           {/if}
         </div>
       </div>
     {/if}
 
     <!-- All headers -->
-    <details class="bg-surface-2 rounded-xl border border-line">
-      <summary class="p-3 cursor-pointer text-[11px] font-semibold tracking-wide uppercase text-primary-400 hover:text-fg list-none">
+    <details class="card-bare">
+      <summary class="p-3 cursor-pointer section-title hover:text-fg list-none">
         All Headers ({Object.keys(info.headers).length})
       </summary>
       <div class="px-3 pb-3 space-y-1 max-h-48 overflow-y-auto">

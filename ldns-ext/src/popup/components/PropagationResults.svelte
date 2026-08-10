@@ -120,7 +120,7 @@
               mismatch ? 'bg-warn-500/10 border-warn-500/30' : 'border-line'
             )}
           >
-            <span class="text-[11px] font-semibold tracking-wide uppercase text-primary-400">{type}</span>
+            <span class="section-title">{type}</span>
             {#if mismatch}
               <span class="text-[10px] text-warn-400 font-medium">Mismatch</span>
             {/if}

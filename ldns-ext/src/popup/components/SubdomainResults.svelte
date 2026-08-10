@@ -5,34 +5,16 @@
   import EmptyState from './EmptyState.svelte';
   import RefreshButton from './RefreshButton.svelte';
   import QuickActions from './QuickActions.svelte';
+  import CopyRow from './CopyRow.svelte';
   import { Copy, Check, Search, Download } from 'lucide-svelte';
-  import { cn } from '$lib/utils/cn';
+  import { createCopied } from '$lib/utils/copied.svelte';
   import { csvCell } from '$lib/utils/export';
 
-  let copiedIndex = $state<number | null>(null);
-  let copiedAll = $state(false);
+  const copied = createCopied();
   let filter = $state('');
 
-  async function copyToClipboard(text: string, index: number) {
-    try {
-      await navigator.clipboard.writeText(text);
-      copiedIndex = index;
-      setTimeout(() => (copiedIndex = null), 1600);
-    } catch (error) {
-      console.error('Failed to copy:', error);
-    }
-  }
-
-  async function copyAll() {
-    const subs = extensionState.subdomainState.data?.subdomains;
-    if (!subs) return;
-    try {
-      await navigator.clipboard.writeText(filtered.join('\n'));
-      copiedAll = true;
-      setTimeout(() => (copiedAll = false), 1600);
-    } catch (error) {
-      console.error('Failed to copy:', error);
-    }
+  function copyAll() {
+    void copied.copy(filtered.join('\n'), 'all');
   }
 
   function exportCsv() {
@@ -93,7 +75,7 @@
           class="flex items-center gap-1 text-[10px] text-fg-muted hover:text-fg transition-colors"
           title="Copy all visible"
         >
-          {#if copiedAll}
+          {#if copied.is('all')}
             <Check class="w-3 h-3 text-ok-400" />
             <span class="text-ok-400">Copied</span>
           {:else}
@@ -125,28 +107,12 @@
     </div>
 
     {#if filtered.length > 0}
-      <div class="bg-surface-2 rounded-xl overflow-hidden border border-line">
+      <div class="card-flush">
         <div class="divide-y divide-line max-h-[420px] overflow-y-auto">
-          {#each filtered as sub, i}
-            <button
-              type="button"
-              onclick={() => copyToClipboard(sub, i)}
-              class={cn(
-                'w-full px-3 py-1 flex items-center justify-between gap-2 transition-colors group text-left',
-                copiedIndex === i ? 'bg-ok-500/10' : 'hover:bg-surface-3'
-              )}
-              aria-label="Copy subdomain"
-              title="Click to copy"
-            >
+          {#each filtered as sub}
+            <CopyRow value={sub} k={sub} {copied} class="px-3 py-1" label="Copy subdomain">
               <p class="text-xs text-fg font-mono break-all flex-1">{sub}</p>
-              <span class="flex-shrink-0 opacity-50 group-hover:opacity-100 transition-opacity">
-                {#if copiedIndex === i}
-                  <Check class="w-3 h-3 text-ok-400" />
-                {:else}
-                  <Copy class="w-3 h-3 text-fg-subtle group-hover:text-fg" />
-                {/if}
-              </span>
-            </button>
+            </CopyRow>
           {/each}
         </div>
       </div>

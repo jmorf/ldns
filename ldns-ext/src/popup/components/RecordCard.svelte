@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { Copy, Check } from 'lucide-svelte';
+  import CopyRow from './CopyRow.svelte';
   import type { DnsRecordResult, AsnInfo } from '@ldns/core/types';
   import { cn } from '$lib/utils/cn';
+  import { createCopied } from '$lib/utils/copied.svelte';
 
   interface Props {
     type: string;
@@ -11,17 +12,7 @@
   }
 
   let { type, records, ptrResults = {}, asnResults = {} }: Props = $props();
-  let copiedIndex = $state<number | null>(null);
-
-  async function copyToClipboard(text: string, index: number) {
-    try {
-      await navigator.clipboard.writeText(text);
-      copiedIndex = index;
-      setTimeout(() => (copiedIndex = null), 1600);
-    } catch (error) {
-      console.error('Failed to copy:', error);
-    }
-  }
+  const copied = createCopied();
 
   function formatTTL(ttl: number): string {
     if (ttl >= 86400) return `${Math.floor(ttl / 86400)}d`;
@@ -38,22 +29,21 @@
 </script>
 
 {#if records.length > 0}
-  <div class="bg-surface-2 rounded-xl overflow-hidden border border-line fade-in-up">
+  <div class="card-flush fade-in-up">
     <div class="px-3 py-1.5 border-b border-line flex items-center justify-between">
-      <span class="text-[11px] font-semibold tracking-wide text-primary-400 uppercase">{type}</span>
+      <span class="section-title">{type}</span>
       <span class="text-[10px] text-fg-subtle tnum">{records.length}</span>
     </div>
     <div class="divide-y divide-line">
       {#each records as record, i}
-        <button
-          type="button"
-          onclick={() => copyToClipboard(record.data, i)}
-          class={cn(
-            'w-full px-3 py-1.5 flex items-start justify-between gap-2 text-left transition-colors group',
-            copiedIndex === i ? 'bg-ok-500/10' : 'hover:bg-surface-3'
-          )}
-          aria-label={`Copy ${type} record: ${record.data}`}
-          title="Click to copy"
+        <CopyRow
+          value={record.data}
+          k={`${i}`}
+          {copied}
+          class="px-3 py-1.5"
+          align="start"
+          copiedText
+          label={`Copy ${type} record: ${record.data}`}
         >
           <div class="flex-1 min-w-0">
             <p class="text-xs text-fg break-all font-mono">{record.data}</p>
@@ -83,17 +73,7 @@
               </p>
             {/if}
           </div>
-          <span class="flex-shrink-0 mt-0.5 transition-opacity opacity-50 group-hover:opacity-100">
-            {#if copiedIndex === i}
-              <span class="flex items-center gap-1 text-[10px] text-ok-400">
-                <Check class="w-3 h-3" />
-                Copied
-              </span>
-            {:else}
-              <Copy class="w-3 h-3 text-fg-subtle group-hover:text-fg" />
-            {/if}
-          </span>
-        </button>
+        </CopyRow>
       {/each}
     </div>
   </div>

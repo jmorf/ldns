@@ -5,39 +5,20 @@
   import EmptyState from './EmptyState.svelte';
   import RefreshButton from './RefreshButton.svelte';
   import QuickActions from './QuickActions.svelte';
+  import CopyRow from './CopyRow.svelte';
   import { getSPFPolicyDescription, getDMARCPolicyDescription, getPolicyColor } from '@ldns/core/parsers';
-  import { Mail, Copy, Check, KeyRound, Image, Lock } from 'lucide-svelte';
+  import { Mail, KeyRound, Image, Lock } from 'lucide-svelte';
   import { cn } from '$lib/utils/cn';
+  import { createCopied } from '$lib/utils/copied.svelte';
   import { safeHttpUrl } from '$lib/utils/url';
+  import { toneBadge } from '$lib/utils/status';
 
   const data = $derived(extensionState.emailState.data);
   const dkim = $derived(extensionState.dkimState.data);
 
-  let copiedField = $state<string | null>(null);
+  const copied = createCopied();
 
-  async function copyToClipboard(text: string, field: string) {
-    try {
-      await navigator.clipboard.writeText(text);
-      copiedField = field;
-      setTimeout(() => (copiedField = null), 1600);
-    } catch (error) {
-      console.error('Failed to copy:', error);
-    }
-  }
-
-  function getPolicyBadgeClass(policy: string): string {
-    const color = getPolicyColor(policy);
-    switch (color) {
-      case 'green':
-        return 'bg-ok-500/15 text-ok-400 border-ok-500/30';
-      case 'yellow':
-        return 'bg-warn-500/15 text-warn-400 border-warn-500/30';
-      case 'red':
-        return 'bg-bad-500/15 text-bad-400 border-bad-500/30';
-      default:
-        return 'bg-surface-3 text-fg-muted border-line';
-    }
-  }
+  const getPolicyBadgeClass = (policy: string) => toneBadge[getPolicyColor(policy)];
 
   // Compute auth strength: 5 dots for MX, SPF, DMARC, MTA-STS, BIMI
   const authChecks = $derived([
@@ -99,10 +80,10 @@
 
     <!-- Provider -->
     {#if data.provider}
-      <div class="bg-surface-2 rounded-xl p-3 border border-line fade-in-up">
+      <div class="card fade-in-up">
         <div class="flex items-center gap-1.5 mb-1">
           <Mail class="w-3.5 h-3.5 text-primary-400" />
-          <h3 class="text-[11px] font-semibold tracking-wide uppercase text-primary-400">Provider</h3>
+          <h3 class="section-title">Provider</h3>
         </div>
         <p class="text-sm text-fg">{data.provider}</p>
       </div>
@@ -110,29 +91,13 @@
 
     <!-- MX Records -->
     {#if data.mx.length > 0}
-      <div class="bg-surface-2 rounded-xl p-3 border border-line">
-        <h3 class="text-[11px] font-semibold tracking-wide uppercase text-primary-400 mb-2">MX</h3>
+      <div class="card">
+        <h3 class="section-title mb-2">MX</h3>
         <div class="space-y-1">
           {#each data.mx as record}
-            <button
-              type="button"
-              onclick={() => copyToClipboard(record.data, `mx-${record.data}`)}
-              class={cn(
-                'w-full flex items-center justify-between gap-2 px-2 py-1 -mx-2 rounded-lg transition-colors group text-left',
-                copiedField === `mx-${record.data}` ? 'bg-ok-500/10' : 'hover:bg-surface-3'
-              )}
-              aria-label="Copy MX record"
-              title="Click to copy"
-            >
+            <CopyRow value={record.data} k={`mx-${record.data}`} {copied} class="px-2 py-1 -mx-2 rounded-lg" label="Copy MX record">
               <p class="text-xs text-fg font-mono truncate flex-1">{record.data}</p>
-              <span class="flex-shrink-0 opacity-50 group-hover:opacity-100 transition-opacity">
-                {#if copiedField === `mx-${record.data}`}
-                  <Check class="w-3 h-3 text-ok-400" />
-                {:else}
-                  <Copy class="w-3 h-3 text-fg-subtle group-hover:text-fg" />
-                {/if}
-              </span>
-            </button>
+            </CopyRow>
           {/each}
         </div>
       </div>
@@ -140,9 +105,9 @@
 
     <!-- SPF -->
     {#if data.spfAnalysis}
-      <div class="bg-surface-2 rounded-xl p-3 border border-line">
+      <div class="card">
         <div class="flex items-center justify-between mb-1.5">
-          <h3 class="text-[11px] font-semibold tracking-wide uppercase text-primary-400">SPF</h3>
+          <h3 class="section-title">SPF</h3>
           <span class={cn('px-1.5 py-0.5 text-[10px] rounded-md border', getPolicyBadgeClass(data.spfAnalysis.policy))}>
             {data.spfAnalysis.policy}
           </span>
@@ -163,9 +128,9 @@
 
     <!-- DMARC -->
     {#if data.dmarcAnalysis}
-      <div class="bg-surface-2 rounded-xl p-3 border border-line">
+      <div class="card">
         <div class="flex items-center justify-between mb-1.5">
-          <h3 class="text-[11px] font-semibold tracking-wide uppercase text-primary-400">DMARC</h3>
+          <h3 class="section-title">DMARC</h3>
           <span class={cn('px-1.5 py-0.5 text-[10px] rounded-md border', getPolicyBadgeClass(data.dmarcAnalysis.policy))}>
             {data.dmarcAnalysis.policy}
           </span>
@@ -191,10 +156,10 @@
 
     <!-- MTA-STS -->
     {#if data.mtaSts.length > 0}
-      <div class="bg-surface-2 rounded-xl p-3 border border-line">
+      <div class="card">
         <div class="flex items-center gap-1.5 mb-1.5">
           <Lock class="w-3.5 h-3.5 text-primary-400" />
-          <h3 class="text-[11px] font-semibold tracking-wide uppercase text-primary-400">MTA-STS</h3>
+          <h3 class="section-title">MTA-STS</h3>
         </div>
         {#each data.mtaSts as record}
           <p class="text-[10px] text-fg-muted font-mono break-all leading-relaxed">{record.data.replace(/^"(.+)"$/, '$1')}</p>
@@ -204,10 +169,10 @@
 
     <!-- BIMI -->
     {#if data.bimi.length > 0}
-      <div class="bg-surface-2 rounded-xl p-3 border border-line">
+      <div class="card">
         <div class="flex items-center gap-1.5 mb-1.5">
           <Image class="w-3.5 h-3.5 text-primary-400" />
-          <h3 class="text-[11px] font-semibold tracking-wide uppercase text-primary-400">BIMI</h3>
+          <h3 class="section-title">BIMI</h3>
         </div>
         {#each data.bimi as record}
           {@const raw = record.data.replace(/^"(.+)"$/, '$1')}
@@ -234,19 +199,19 @@
 
     <!-- DKIM -->
     {#if extensionState.dkimState.loading}
-      <div class="bg-surface-2 rounded-xl p-3 border border-line">
+      <div class="card">
         <div class="flex items-center gap-1.5 mb-1">
           <KeyRound class="w-3.5 h-3.5 text-primary-400" />
-          <h3 class="text-[11px] font-semibold tracking-wide uppercase text-primary-400">DKIM</h3>
+          <h3 class="section-title">DKIM</h3>
         </div>
         <p class="text-[10px] text-fg-subtle">Probing common selectors…</p>
       </div>
     {:else if dkim && dkim.found > 0}
-      <div class="bg-surface-2 rounded-xl p-3 border border-line">
+      <div class="card">
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-1.5">
             <KeyRound class="w-3.5 h-3.5 text-primary-400" />
-            <h3 class="text-[11px] font-semibold tracking-wide uppercase text-primary-400">DKIM</h3>
+            <h3 class="section-title">DKIM</h3>
           </div>
           <span class="text-[10px] text-fg-muted tnum">{dkim.found}/{dkim.probed} selectors</span>
         </div>
