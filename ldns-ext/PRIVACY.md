@@ -1,6 +1,6 @@
 # Privacy Policy for LDNS - DNS & Domain Tools
 
-**Last Updated:** 2026-04-28
+**Last Updated:** 2026-08-10
 
 ## Overview
 
@@ -20,7 +20,7 @@ The following data is stored locally using the browser's storage API and never l
 
 - **Recent searches** — the last 10 domains you've looked up, for convenience
 - **Preferences** — selected DNS provider and theme
-- **Settings** — an opt-in flag for the marketplace (for-sale) check, plus UI preferences (side-panel mode, fun loading messages, grain overlay)
+- **Settings** — UI preferences (side-panel mode, fun loading messages, grain overlay)
 - **In-memory query cache** — short-lived (≤30s) cache of the most recent lookup, cleared when the popup closes
 
 You can clear recent searches at any time from inside the extension.
@@ -40,15 +40,11 @@ When you perform a lookup, the queried **domain name** (and only the domain name
 | Target server (any URL) | Server-info tab | HTTP HEAD/GET to read response headers | — |
 | HSTS preload list (`hstspreload.org`) | HSTS check | Public preload database | [hstspreload.org](https://hstspreload.org) |
 
-## Opt-in feature that contacts ldns.com
+## We never contact LDNS servers
 
-One feature contacts our backend, and it can be toggled on/off in Settings:
+The extension makes **no requests to `ldns.com` or any other LDNS-owned server**. Every lookup goes directly from your browser to the public services listed above. There is no backend, no telemetry, and no account.
 
-| Feature | What is sent | Why | Endpoint |
-|---|---|---|---|
-| Marketplace listing check | Domain name | Detect public marketplace listings (Afternic, Dynadot) and surface a "For Sale" chip / RDAP-tab banner | `https://ldns.com/api/forsale` |
-
-We do not store, log, or otherwise record these requests beyond standard request-level operational logging that's purged on a rolling basis. Toggling this feature off in Settings stops all traffic to `ldns.com` immediately.
+The extension does contain links to ldns.com (the header logo and the per-tab "view full report" chips). Those are ordinary links — nothing is sent unless you click one, which opens the site in a new tab like any other link.
 
 ## Host permissions
 
@@ -67,14 +63,13 @@ The extension declares specific host permissions for the named services above, p
 
 - All DNS queries use encrypted DNS-over-HTTPS (DoH)
 - Manifest V3 with a strict Content Security Policy (`script-src 'self'; object-src 'self'`)
-- No data is transmitted to LDNS servers unless you opt in to the marketplace (for-sale) feature
+- No data is transmitted to LDNS servers, ever — there is no backend to send it to
 - Preferences are stored using the browser's secure local storage API
 
 ## Your rights
 
 You can:
 - Clear your recent searches at any time within the extension
-- Disable for-sale and WHOIS-fallback features in Settings
 - Uninstall the extension to remove all locally stored data
 - Use the extension without any account or registration
 
@@ -88,4 +83,4 @@ For privacy concerns or questions, please visit [ldns.com](https://ldns.com).
 
 ---
 
-**Summary:** LDNS is a privacy-focused tool. The default configuration sends nothing to LDNS-owned servers — every DNS, RDAP and CT-log query goes directly to the corresponding public service. One narrow opt-in feature (the marketplace / for-sale check) contacts `ldns.com` and is disabled by default.
+**Summary:** LDNS is a privacy-focused tool. It sends nothing to LDNS-owned servers — every DNS, RDAP and CT-log query goes directly to the corresponding public service. There is no backend, no account, and no telemetry.

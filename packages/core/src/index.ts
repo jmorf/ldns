@@ -31,5 +31,4 @@ export * from './ptr';
 export * from './asn-query';
 
 export * from './subdomain-query';
-export * from './forsale-query';
 export * from './dkim-query';

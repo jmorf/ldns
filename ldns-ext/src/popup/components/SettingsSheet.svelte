@@ -14,7 +14,7 @@
 
   let { open, onClose }: Props = $props();
 
-  type SettingKey = 'forSaleEnabled' | 'funMessages' | 'grain' | 'sidePanelMode';
+  type SettingKey = 'funMessages' | 'grain' | 'sidePanelMode';
 
   function toggle(key: SettingKey) {
     extensionState.updateSettings({ [key]: !extensionState.settings[key] });
@@ -24,18 +24,11 @@
     key: SettingKey;
     label: string;
     hint: string;
-    privacy?: boolean;
   }> = [
     {
       key: 'sidePanelMode',
       label: 'Side panel mode',
       hint: 'Open LDNS as a side panel instead of a popup, so it stays pinned while you browse.'
-    },
-    {
-      key: 'forSaleEnabled',
-      label: 'Marketplace listing check',
-      hint: 'Looks up Afternic and Dynadot to see if the domain is publicly for sale. When found, an orange "For Sale" chip appears under the search bar and a banner appears at the top of the RDAP tab with marketplace, price and a buy-now link. Sends the domain name to ldns.com.',
-      privacy: true
     },
     {
       key: 'funMessages',
@@ -96,9 +89,6 @@
           <span class="flex-1 min-w-0">
             <span class="flex items-center gap-1.5">
               <span class="text-xs font-medium text-fg">{row.label}</span>
-              {#if row.privacy}
-                <span class="px-1 py-0.5 text-[8px] uppercase tracking-wide bg-primary-500/15 text-primary-400 border border-primary-500/30 rounded">Privacy</span>
-              {/if}
             </span>
             <span class="block text-[10px] text-fg-muted mt-0.5">{row.hint}</span>
           </span>
@@ -134,7 +124,7 @@
 
       <div class="pt-2 border-t border-line">
         <p class="text-[10px] text-fg-muted leading-relaxed px-1">
-          Privacy-impacting features stay off until you turn them on. See the
+          Every lookup goes straight from your browser to public DNS and registry services — nothing is sent to LDNS. See the
           <a
             class="text-primary-400 hover:text-primary-300 inline-flex items-center gap-0.5"
             href="https://ldns.com/extension/privacy"

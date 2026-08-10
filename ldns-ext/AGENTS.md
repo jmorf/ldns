@@ -40,7 +40,7 @@ v1.7.5 — shared logic extracted to `@ldns/core` workspace package (no user-fac
 - Refresh button on every tab
 
 ### Privacy & Robustness
-- The for-sale check (the only feature contacting ldns.com) is off by default
+- No requests to ldns.com or any LDNS-owned server — the extension has no backend
 - Strict CSP in manifest
 - IPv6 PTR support
 - Every fetch has a timeout, and the per-query AbortSignal is threaded from
@@ -70,7 +70,7 @@ v1.7.5 — shared logic extracted to `@ldns/core` workspace package (no user-fac
 | Tab | Component | Features |
 |-----|-----------|----------|
 | DNS | DnsResults | Filter chips, propagation toggle, inline PTR + ASN |
-| RDAP | RdapResults | Age/expiry banner, DNSSEC chain, optional for-sale |
+| RDAP | RdapResults | Age/expiry banner, DNSSEC chain |
 | Email | EmailResults | SPF/DMARC analysis, DKIM probe, MTA-STS, BIMI |
 | Server | ServerResults | Tech detection, sec-headers, HTTP/3, HSTS, security.txt |
 | Subs | SubdomainResults | CT-log scanner with live filter and CSV export |

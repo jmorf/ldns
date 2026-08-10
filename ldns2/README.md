@@ -40,7 +40,7 @@ DNS lookup and domain analysis tool at **[ldns.com](https://ldns.com)** — Svel
 
 ## Architecture
 
-Most lookups run **client-side** (DoH and RDAP are called straight from the browser). A set of server-side `/api/*` endpoints handles the cases the browser can't do itself — CORS-blocked upstreams, raw TCP WHOIS, and anything needing a server-held credential:
+Most lookups run **client-side** (DoH and RDAP are called straight from the browser). A set of server-side `/api/*` endpoints handles the cases the browser can't do itself — CORS-blocked upstreams and raw TCP WHOIS:
 
 | Endpoint | Purpose |
 |---|---|
@@ -49,7 +49,6 @@ Most lookups run **client-side** (DoH and RDAP are called straight from the brow
 | `/api/whois` | Port-43 WHOIS (browsers can't open raw TCP) |
 | `/api/subdomains`, `/api/tls` | Certificate Transparency queries (crt.sh) |
 | `/api/dkim`, `/api/asn`, `/api/geo` | DKIM selector probing, ASN lookup, IP geolocation |
-| `/api/forsale` | Domain marketplace check (see [Configuration](#configuration)) |
 
 Every `/api/*` route goes through `src/lib/server/handler.ts`, which applies an origin allow-list, a per-IP rate limit, edge caching, and a standard JSON envelope. Endpoints that fetch a user-supplied host run the SSRF guard in `src/lib/server/ssrf.ts` first — **see [SECURITY.md](../SECURITY.md) before self-hosting on a non-Cloudflare runtime.**
 
@@ -67,10 +66,6 @@ npm run check        # svelte-check + tsc
 npm run test         # vitest (391 tests)
 npm run deploy       # build + wrangler deploy → ldns.com
 ```
-
-## Configuration
-
-Copy `.dev.vars.example` to `.dev.vars` for local development. The only variable is `DYNADOT_API_KEY`, and it is **optional** — without it `/api/forsale` simply returns one fewer marketplace signal. In production it is set as a Cloudflare Worker secret (`wrangler secret put DYNADOT_API_KEY`), never committed.
 
 ## Tech Stack
 

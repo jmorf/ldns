@@ -7,7 +7,6 @@ import type {
   RecentSearch,
   Theme,
   ServerAnalysis,
-  ForSaleResult,
   SubdomainResult,
   Settings,
   DkimResult,
@@ -16,7 +15,6 @@ import type {
 import { queryDns } from '@ldns/core/dns-query';
 import { queryRdap } from '@ldns/core/rdap-query';
 import { queryEmailRecords } from '@ldns/core/email-query';
-import { checkForSale } from '@ldns/core/forsale-query';
 import {
   isValidDomain,
   parseDomain,
@@ -73,7 +71,6 @@ class ExtensionState {
   rdapState = $state<ToolState<ParsedRdapData>>(idleState());
   emailState = $state<ToolState<EmailData>>(idleState());
   serverState = $state<ToolState<ServerAnalysis>>(idleState());
-  forSaleState = $state<ToolState<ForSaleResult>>(idleState());
   propagationState = $state<ToolState<PropagationData>>(idleState());
   subdomainState = $state<ToolState<SubdomainResult>>(idleState());
   dkimState = $state<ToolState<DkimResult>>(idleState());
@@ -258,7 +255,6 @@ class ExtensionState {
       this.queryServer()
     ];
 
-    if (this.settings.forSaleEnabled) queries.push(this.queryForSale());
     if (this.propagationMode) queries.push(this.queryPropagation());
 
     await Promise.all(queries);
@@ -301,18 +297,6 @@ class ExtensionState {
       'server',
       (signal) => analyzeServer(this.domain, { useHttp: this.useHttpForServer, signal }),
       (next) => (this.serverState = next)
-    );
-  }
-
-  async queryForSale() {
-    if (!this.isValidDomain || !this.settings.forSaleEnabled) {
-      this.forSaleState = idleState();
-      return;
-    }
-    return this.run(
-      'forsale',
-      (signal) => checkForSale(this.rootDomain || this.domain, signal),
-      (next) => (this.forSaleState = next)
     );
   }
 
@@ -376,7 +360,6 @@ class ExtensionState {
     this.rdapState = idleState();
     this.emailState = idleState();
     this.serverState = idleState();
-    this.forSaleState = idleState();
     this.propagationState = idleState();
     this.subdomainState = idleState();
     this.dkimState = idleState();

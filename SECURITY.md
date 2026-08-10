@@ -20,7 +20,7 @@ Two design decisions are worth understanding before you deploy this yourself.
 
 ### 1. The SSRF guards assume Cloudflare's egress restriction
 
-Several `/api/*` endpoints (`server`, `headers`, `security/headers`, `security/probes`, `forsale`) fetch a **user-supplied host** server-side. That is the product working as intended — it's how you inspect a domain's headers — but it means the server makes requests to arbitrary addresses on request.
+Several `/api/*` endpoints (`server`, `headers`, `security/headers`, `security/probes`) fetch a **user-supplied host** server-side. That is the product working as intended — it's how you inspect a domain's headers — but it means the server makes requests to arbitrary addresses on request.
 
 `ldns2/src/lib/server/ssrf.ts` defends this by resolving the domain over DoH and rejecting private/loopback/link-local/CGNAT answers, and by re-validating **every redirect hop** against the same rules before the socket is opened.
 

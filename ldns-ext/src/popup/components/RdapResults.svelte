@@ -7,25 +7,13 @@
   import QuickActions from './QuickActions.svelte';
   import CopyRow from './CopyRow.svelte';
   import { formatRdapDate } from '@ldns/core/rdap-query';
-  import { formatListingPrice } from '@ldns/core/forsale-query';
-  import { Shield, ShieldOff, Calendar, Server, Building2, Tag, ExternalLink } from 'lucide-svelte';
-  import type { ForSaleListing } from '@ldns/core/types';
+  import { Shield, ShieldOff, Calendar, Server, Building2 } from 'lucide-svelte';
   import { cn } from '$lib/utils/cn';
   import { createCopied } from '$lib/utils/copied.svelte';
-  import { safeHttpUrl } from '$lib/utils/url';
 
   const copied = createCopied();
 
-  function getMarketplaceName(listing: ForSaleListing): string {
-    if (listing.marketplace === 'afternic') return 'Afternic';
-    if (listing.marketplace === 'dynadot') return 'Dynadot';
-    if (listing.marketplace === 'parking') return listing.platform ?? 'Parked';
-    return listing.marketplace;
-  }
-
   const data = $derived(extensionState.rdapState.data);
-  const forSaleListings = $derived(extensionState.forSaleState.data?.listings ?? []);
-  const hasForSaleListings = $derived(forSaleListings.length > 0);
 
   function getDomainAge(created: string): string {
     if (!created) return '';
@@ -76,43 +64,6 @@
     <div class="flex justify-end">
       <RefreshButton onClick={() => extensionState.queryRdap(true)} loading={extensionState.rdapState.loading} />
     </div>
-    <!-- For Sale Banner -->
-    {#if hasForSaleListings}
-      <div class="bg-primary-500/10 rounded-xl p-3 border border-primary-500/25">
-        <div class="flex items-center gap-1.5 mb-2">
-          <Tag class="w-3.5 h-3.5 text-primary-400" />
-          <h3 class="section-title">For Sale</h3>
-        </div>
-        <div class="space-y-1.5">
-          {#each forSaleListings as listing}
-            <a
-              href={safeHttpUrl(listing.listingUrl)}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex items-center justify-between p-2 bg-surface-2 rounded-lg hover:bg-surface-3 transition-colors group"
-            >
-              <div class="flex items-center gap-2">
-                <span class="text-[10px] font-semibold text-fg-muted uppercase tracking-wide">
-                  {getMarketplaceName(listing)}
-                </span>
-                {#if listing.buyNowAvailable}
-                  <span class="px-1 py-0.5 text-[9px] font-medium bg-primary-500/15 text-primary-400 rounded">Buy Now</span>
-                {/if}
-              </div>
-              <div class="flex items-center gap-1.5">
-                {#if listing.price}
-                  <span class="text-xs font-semibold text-primary-300 tnum">{formatListingPrice(listing)}</span>
-                {:else}
-                  <span class="text-xs text-fg-muted">Contact</span>
-                {/if}
-                <ExternalLink class="w-3 h-3 text-fg-subtle group-hover:text-primary-400 transition-colors" />
-              </div>
-            </a>
-          {/each}
-        </div>
-      </div>
-    {/if}
-
     <!-- Domain & Status -->
     <div class="card fade-in-up">
       <div class="flex items-center justify-between mb-1.5">

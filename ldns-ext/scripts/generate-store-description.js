@@ -20,6 +20,12 @@ const version = packageJson.version;
 const RECENT_RELEASES = 2;
 const releases = [
   {
+    version: '1.8.0',
+    notes: [
+      'Removed the marketplace ("For Sale") check — with it goes the last feature that contacted an LDNS server. The extension now has no backend: every lookup goes straight from your browser to public DNS and registry services.'
+    ]
+  },
+  {
     version: '1.7.11',
     notes: [
       'Reliability hardening: every lookup now has a timeout, network outages show a clear error instead of "no records", international (IDN) domains work, long TXT records (SPF/DKIM) display correctly, and Refresh always fetches fresh data.'
@@ -58,7 +64,7 @@ WHAT IT DOES
 
 PRIVACY
 
-No accounts, no analytics, no tracking. Lookups go directly from your browser to public DNS, registry, and Certificate Transparency services — nothing touches LDNS servers unless you enable the optional marketplace-listing check, which is off by default. Recent searches are stored only on your device. Full policy: ldns.com/extension/privacy
+No accounts, no analytics, no tracking, no backend. Every lookup goes directly from your browser to public DNS, registry, and Certificate Transparency services — nothing is ever sent to an LDNS server. Recent searches are stored only on your device. Full policy: ldns.com/extension/privacy
 
 WHAT'S NEW
 

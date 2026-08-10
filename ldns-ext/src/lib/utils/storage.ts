@@ -12,8 +12,6 @@ const STORAGE_KEYS = {
 } as const;
 
 export const DEFAULT_SETTINGS: Settings = {
-  // Privacy-impacting features default to OFF — the user must opt in.
-  forSaleEnabled: false,
   // Cosmetic / UX preferences default to ON.
   funMessages: true,
   grain: true,

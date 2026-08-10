@@ -26,7 +26,7 @@ npm test --workspaces    # all 528 tests across @ldns/core + ldns2
 
 ## Critical Rules
 
-1. **Server-side via SvelteKit `/api/*`** for anything that needs to bypass CORS or hit a slow upstream — `/api/server`, `/api/headers`, `/api/tls`, `/api/asn`, `/api/geo`, `/api/security/*`, `/api/subdomains`, `/api/dkim`, plus the legacy `/api/whois` and `/api/forsale`.
+1. **Server-side via SvelteKit `/api/*`** for anything that needs to bypass CORS or hit a slow upstream — `/api/server`, `/api/headers`, `/api/tls`, `/api/asn`, `/api/geo`, `/api/security/*`, `/api/subdomains`, `/api/dkim`, plus `/api/whois`.
 2. **Pure DNS-over-HTTPS** for record lookups still happens client-side (no proxy needed; CORS works for DoH).
 3. **Svelte 5 syntax only** — no `$:` reactive statements, use runes.
 4. **Surface tokens** (`bg-surface`, `text-fg-muted`, etc.) instead of `bg-gray-*` / `text-gray-*`. Theme-aware via the `theme.ts` store.

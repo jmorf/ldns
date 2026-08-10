@@ -1,5 +1,4 @@
-// Single implementation lives in @ldns/core so the site and the private
-// forsale Worker can't drift on security-critical guard logic.
+// Single implementation lives in @ldns/core, shared with the extension.
 export {
   isPlausibleDomain,
   isPrivateIPv4,

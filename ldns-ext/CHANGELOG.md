@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.8.0] - 2026-08-10
+
+### Removed
+- **Marketplace ("For Sale") check removed entirely.** The Settings toggle, the
+  "For Sale" chip under the search bar, and the RDAP-tab listing banner are all
+  gone. This was the only feature that ever contacted an LDNS server.
+
+### Changed
+- **The extension now has no backend at all.** Every lookup goes directly from
+  your browser to public DNS, registry, and Certificate Transparency services;
+  nothing is sent to ldns.com under any setting. The privacy policy has been
+  rewritten accordingly — there is no longer an "opt-in feature that contacts
+  ldns.com" section, because there is no such feature.
+- Settings is now purely UI preferences (side panel, loading messages, grain).
+
 ## [1.7.11] - 2026-08-09
 
 Reliability and security hardening pass ahead of open-sourcing, driven by a

@@ -20,7 +20,6 @@ Pure-TypeScript shared core for the LDNS family of products.
 | `asn-query` | IP→ASN via Team Cymru DoH |
 | `subdomain-query` | Subdomain discovery via crt.sh |
 | `dkim-query` | DKIM selector probing |
-| `forsale-query` | (server-only) marketplace listing check |
 
 ## Runtime requirements
 

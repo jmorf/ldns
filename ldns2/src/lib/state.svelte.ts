@@ -1,8 +1,5 @@
 import psl from 'psl';
-import type { ForSaleResult } from '@ldns/core/types';
 
-// Re-export ForSale types for consumers
-export type { ForSaleResult, ForSaleListing } from '@ldns/core/types';
 
 // ─── Raw API Response Types ────────────────────────────────────────
 
@@ -360,7 +357,6 @@ class DomainName {
         rdap: ToolState<ParsedRdapData>;
         dns: ToolState<DnsData>;
         security: ToolState<SecurityData>;
-        forSale: ToolState<ForSaleResult>;
         propagation: ToolState<PropagationResult>;
         subdomains: ToolState<SubdomainToolResult>;
     }>({
@@ -389,12 +385,6 @@ class DomainName {
             hasData: false
         },
         security: {
-            loading: false,
-            error: '',
-            data: null,
-            hasData: false
-        },
-        forSale: {
             loading: false,
             error: '',
             data: null,
@@ -1118,61 +1108,6 @@ class DomainName {
     }
 
     /**
-     * Check if the domain is listed for sale on marketplaces
-     * @returns For-sale data or null on failure
-     */
-    async lookupForSale(): Promise<ForSaleResult | null> {
-        if (!this.isValid) {
-            this.toolState.forSale = {
-                loading: false,
-                error: "Invalid domain",
-                data: null,
-                hasData: false
-            };
-            return null;
-        }
-
-        this.toolState.forSale = {
-            loading: true,
-            error: '',
-            data: null,
-            hasData: false
-        };
-
-        try {
-            // Use the root domain for for-sale checks (not subdomains)
-            const domainToCheck = this.rootDomain || this.name;
-
-            // Call our API endpoint which proxies to marketplaces server-side
-            const response = await fetch(`/api/forsale?domain=${encodeURIComponent(domainToCheck)}`);
-
-            if (!response.ok) {
-                throw new Error(`For-sale check failed: ${response.status}`);
-            }
-
-            const data: ForSaleResult = await response.json();
-
-            this.toolState.forSale = {
-                loading: false,
-                error: '',
-                data,
-                hasData: true
-            };
-
-            return data;
-        } catch (error) {
-            console.error("For-sale lookup error:", error);
-            this.toolState.forSale = {
-                loading: false,
-                error: error instanceof Error ? error.message : "For-sale check failed",
-                data: null,
-                hasData: false
-            };
-            return null;
-        }
-    }
-
-    /**
      * Look up DNS propagation — query all 3 DoH providers in parallel
      */
     async lookupPropagation(): Promise<PropagationResult | null> {
@@ -1332,7 +1267,7 @@ class DomainName {
     /**
      * Reset tool state for a specific tool
      */
-    resetToolState(tool: 'server' | 'email' | 'rdap' | 'dns' | 'security' | 'forSale' | 'propagation' | 'subdomains') {
+    resetToolState(tool: 'server' | 'email' | 'rdap' | 'dns' | 'security' | 'propagation' | 'subdomains') {
         // Use full toolState replacement for Svelte 5 reactivity
         this.toolState[tool] = {
             loading: false,
@@ -1345,7 +1280,7 @@ class DomainName {
     /**
      * Refresh tool data - reset state and fetch fresh data
      */
-    async refreshTool(tool: 'server' | 'email' | 'rdap' | 'dns' | 'security' | 'forSale' | 'propagation' | 'subdomains') {
+    async refreshTool(tool: 'server' | 'email' | 'rdap' | 'dns' | 'security' | 'propagation' | 'subdomains') {
         this.resetToolState(tool);
 
         switch (tool) {
@@ -1359,8 +1294,6 @@ class DomainName {
                 return await this.lookupDnsRecordsWithToolState();
             case 'security':
                 return await this.analyzeSecurityStatus();
-            case 'forSale':
-                return await this.lookupForSale();
             case 'propagation':
                 return await this.lookupPropagation();
             case 'subdomains':

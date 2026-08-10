@@ -61,9 +61,8 @@ A fast, privacy-focused Chrome & Firefox extension for DNS records, WHOIS/RDAP d
 - Dark/Light theme toggle
 - Refresh button on every tab
 - JSON export of full lookup
-- Diff against previous lookup of the same domain
 - Quick-action chips: hand off to the detailed report pages on ldns.com
-- Settings panel for opt-in features
+- Settings panel for UI preferences
 
 ## Installation
 
@@ -86,7 +85,7 @@ Available on [addons.mozilla.org](https://addons.mozilla.org) — search for "LD
 LDNS is designed with privacy in mind:
 - No analytics, telemetry, or accounts
 - DNS, RDAP and CT-log queries go directly to public services
-- The optional for-sale check (the only feature that contacts `ldns.com`) is **off by default** and must be enabled in Settings
+- **Nothing is ever sent to LDNS servers** — the extension has no backend
 - All preferences and recent searches stay in your local browser storage
 - See [PRIVACY.md](PRIVACY.md) for full details
 

@@ -117,7 +117,7 @@ The only third-party code in the build output comes from the dependencies declar
 │   └── core/                      # @ldns/core — pure TS shared modules:
 │       └── src/                   #   dns-query, rdap-query, email-query, server-info,
 │                                  #   dkim-query, asn-query, ptr, security-checks,
-│                                  #   subdomain-query, forsale-query, parsers, fetch-utils,
+│                                  #   subdomain-query, parsers, fetch-utils,
 │                                  #   url, domain-parser, types, constants (+ tests)
 └── ldns-ext/
     ├── src/

@@ -54,7 +54,7 @@ npm run -w ldns2 deploy                 # builds + wrangler deploy → ldns.com
 import { queryDns, analyzeServer, fetchTlsCertificate } from '@ldns/core/dns-query';
 ```
 
-The site additionally has a server-side `/api/*` proxy layer ([`ldns2/src/routes/api/`](ldns2/src/routes/api/)) for lookups that need to bypass browser CORS — server info, TLS, ASN, geo, subdomains, security headers, and the legacy WHOIS / for-sale endpoints. The extension uses the same `@ldns/core` modules directly because it has MV3 host permissions to fetch arbitrary origins.
+The site additionally has a server-side `/api/*` proxy layer ([`ldns2/src/routes/api/`](ldns2/src/routes/api/)) for lookups that need to bypass browser CORS — server info, TLS, ASN, geo, subdomains, security headers, and WHOIS. The extension uses the same `@ldns/core` modules directly because it has MV3 host permissions to fetch arbitrary origins.
 
 ## Per-project docs
 

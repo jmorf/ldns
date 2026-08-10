@@ -9,7 +9,6 @@
   import SectionHeader from "$lib/components/SectionHeader.svelte";
   import SEO from "$lib/components/SEO.svelte";
   import RecordSummary from "$lib/components/RecordSummary.svelte";
-  import ForSaleBadge from "$lib/components/ForSaleBadge.svelte";
   import EndpointSelector from "$lib/components/EndpointSelector.svelte";
   import { page } from "$app/stores";
   import { browser } from "$app/environment";
@@ -58,11 +57,7 @@
   // Look up all common record types using the new toolState method
   async function lookupAllRecords() {
     try {
-      // Run DNS and for-sale checks in parallel
-      await Promise.all([
-        domain.lookupDnsRecordsWithToolState("ALL"),
-        domain.lookupForSale()
-      ]);
+      await domain.lookupDnsRecordsWithToolState("ALL");
     } catch (error) {
       console.error("DNS lookup error:", error);
     }
@@ -153,13 +148,6 @@
 
   <!-- Content is only shown when not loading and has data -->
   {#if domain.toolState.dns.hasData}
-    <!-- For Sale Banner (if domain is listed) -->
-    {#if domain.toolState.forSale.hasData && domain.toolState.forSale.data?.listings.length}
-      <div class="mb-6">
-        <ForSaleBadge data={domain.toolState.forSale.data} />
-      </div>
-    {/if}
-
     <!-- Record Summary -->
     <div class="mb-6 hidden sm:block">
       <RecordSummary

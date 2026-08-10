@@ -15,7 +15,6 @@ interface FullExport {
   subdomains: unknown;
   dkim: unknown;
   asn: unknown;
-  forSale: unknown;
 }
 
 declare const __APP_VERSION__: string;
@@ -33,8 +32,7 @@ export function buildExport(): FullExport {
     propagation: extensionState.propagationState.data,
     subdomains: extensionState.subdomainState.data,
     dkim: extensionState.dkimState.data,
-    asn: extensionState.asnState.data,
-    forSale: extensionState.forSaleState.data
+    asn: extensionState.asnState.data
   };
 }
 

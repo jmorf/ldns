@@ -188,23 +188,6 @@ export interface ServerAnalysis {
   error: string | null;
 }
 
-/** For-sale marketplace listing */
-export interface ForSaleListing {
-  marketplace: 'afternic' | 'dynadot' | 'parking';
-  /**
-   * Specific platform name when marketplace='parking' — e.g. "GoDaddy
-   * CashParking", "HugeDomains", "Sedo", "Dan", "ParkingCrew". Optional
-   * because Afternic / Dynadot listings don't use it.
-   */
-  platform?: string;
-  domain: string;
-  forSale: boolean;
-  price?: number;
-  currency?: string;
-  buyNowAvailable?: boolean;
-  listingUrl: string;
-}
-
 /** Technology detection from headers */
 export interface TechDetection {
   name: string;
@@ -230,16 +213,8 @@ export interface CertInfo {
   commonName: string;
 }
 
-/** For-sale check result */
-export interface ForSaleResult {
-  domain: string;
-  listings: ForSaleListing[];
-  checkedAt: string;
-}
-
 /** User-configurable settings */
 export interface Settings {
-  forSaleEnabled: boolean;
   funMessages: boolean;
   grain: boolean;
   sidePanelMode: boolean;

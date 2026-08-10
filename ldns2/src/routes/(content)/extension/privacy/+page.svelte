@@ -18,7 +18,7 @@
   <Eyebrow text="legal" />
   <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight text-fg mb-2">Privacy Policy</h1>
   <p class="text-fg-muted">LDNS browser extension — Chrome & Firefox</p>
-  <p class="text-sm text-fg-subtle mt-1">Last updated: May 2026</p>
+  <p class="text-sm text-fg-subtle mt-1">Last updated: August 2026</p>
 
   <div class="mt-10 space-y-10">
     <section>
@@ -36,7 +36,7 @@
       <ul class="list-disc list-inside text-fg-muted space-y-1 leading-relaxed">
         <li>We do NOT collect any personal information</li>
         <li>We do NOT track your browsing history or read page content</li>
-        <li>We do NOT send your lookups to LDNS servers by default (one optional feature, off by default, is described below)</li>
+        <li>We do NOT send your lookups to LDNS servers — the extension has no backend</li>
         <li>We do NOT use analytics or tracking services in the extension</li>
         <li>We do NOT sell or share any data with third parties</li>
       </ul>
@@ -110,13 +110,17 @@
     </section>
 
     <section>
-      <h2 class="text-xl font-semibold text-fg mb-3">Optional feature that contacts ldns.com</h2>
+      <h2 class="text-xl font-semibold text-fg mb-3">We never contact LDNS servers</h2>
       <p class="text-fg-muted leading-relaxed">
-        One feature, <strong class="text-fg">off by default</strong>, contacts our own backend when you enable it in Settings:
+        The extension makes <strong class="text-fg">no requests to ldns.com</strong> or any other
+        LDNS-owned server. Every lookup goes directly from your browser to the public services listed
+        above — there is no backend, no telemetry, and no account.
       </p>
-      <ul class="list-disc list-inside text-fg-muted space-y-1 leading-relaxed mt-2">
-        <li><strong class="text-fg">Marketplace listing check:</strong> sends the domain name to <code class="text-fg">https://ldns.com/api/forsale</code> to detect public for-sale listings (Afternic, Dynadot, parking pages). We don't store or log these requests beyond rolling operational logs. Turning the toggle off stops all traffic to ldns.com immediately.</li>
-      </ul>
+      <p class="text-fg-muted leading-relaxed mt-2">
+        The extension does contain links to ldns.com (the header logo and the per-tab "view full
+        report" chips). Those are ordinary links: nothing is sent unless you click one, which opens
+        the site in a new tab like any other link.
+      </p>
     </section>
 
     <section>
@@ -164,7 +168,7 @@
       <h2 class="text-xl font-semibold text-fg mb-3">Data security</h2>
       <ul class="list-disc list-inside text-fg-muted space-y-1 leading-relaxed">
         <li>All DNS queries use encrypted DNS-over-HTTPS (DoH)</li>
-        <li>No data is transmitted to LDNS servers unless you enable the optional marketplace check</li>
+        <li>No data is transmitted to LDNS servers, ever — there is no backend to send it to</li>
         <li>All preferences are stored locally using the browser's secure storage API</li>
       </ul>
     </section>
@@ -192,9 +196,8 @@
     <div class="bg-surface-2 border border-line rounded-xl p-5">
       <p class="text-fg-muted text-sm leading-relaxed">
         <strong class="text-fg">Summary:</strong> LDNS is a privacy-focused tool. We don't collect,
-        store, or transmit your personal data. By default, all lookups are performed directly between
-        your browser and public DNS / WHOIS services; only the optional marketplace check (off by
-        default) contacts ldns.com.
+        store, or transmit your personal data. All lookups are performed directly between your
+        browser and public DNS / WHOIS services — the extension never contacts ldns.com.
       </p>
     </div>
   </div>

@@ -1,16 +1,13 @@
 <script lang="ts">
   import { extensionState } from '$lib/state/extension-state.svelte';
-  import { Search, Tag, ExternalLink, X } from 'lucide-svelte';
+  import { Search, X } from 'lucide-svelte';
   import { DNS_ENDPOINTS } from '@ldns/core/constants';
-  import { formatListingPrice } from '@ldns/core/forsale-query';
   import type { DnsEndpoint } from '@ldns/core/types';
   import { cn } from '$lib/utils/cn';
-  import { safeHttpUrl } from '$lib/utils/url';
 
   let inputValue = $state('');
   let inputEl = $state<HTMLInputElement | null>(null);
 
-  const firstListing = $derived(extensionState.forSaleState.data?.listings?.[0] ?? null);
 
   async function handleSubmit(e: Event) {
     e.preventDefault();
@@ -98,29 +95,7 @@
     </button>
   </div>
 
-  <div class="flex items-center justify-between gap-2">
-    <!-- Left: For-sale indicator -->
-    {#if firstListing}
-      <a
-        href={safeHttpUrl(firstListing.listingUrl)}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-flex items-center gap-1 px-2 py-0.5 bg-primary-500/15 border border-primary-500/30 rounded-lg text-primary-400 text-[11px] hover:bg-primary-500/25 transition-colors"
-        title={firstListing.platform ? `Parked at ${firstListing.platform}` : 'Listed for sale'}
-      >
-        <Tag class="w-3 h-3" />
-        <span>{firstListing.marketplace === 'parking' ? 'Parked' : 'For Sale'}</span>
-        {#if firstListing.price}
-          <span class="text-primary-300 font-semibold tnum">{formatListingPrice(firstListing)}</span>
-        {:else if firstListing.platform}
-          <span class="text-primary-300/70">· {firstListing.platform}</span>
-        {/if}
-        <ExternalLink class="w-2.5 h-2.5 opacity-60" />
-      </a>
-    {:else}
-      <div></div>
-    {/if}
-
+  <div class="flex items-center justify-end gap-2">
     <!-- Right: Segmented endpoint switcher -->
     <div class="flex items-center gap-0.5 p-0.5 bg-surface-2 border border-line rounded-lg">
       {#each Object.entries(DNS_ENDPOINTS) as [key, { name }]}
