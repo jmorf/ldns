@@ -2,6 +2,7 @@
   "name": "ldns-ext",
   "version": "1.7.10",
   "description": "LDNS DNS Lookup Chrome Extension",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",

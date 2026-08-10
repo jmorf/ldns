@@ -1,0 +1,17 @@
+LDNS Brand Assets — All Rights Reserved
+
+Copyright (c) 2025-2026 LDNS (https://ldns.com)
+
+The following are NOT covered by the MIT license in LICENSE and may not be
+used, reproduced, or distributed without prior written permission:
+
+- The "LDNS" name and wordmark
+- The extension icons (public/icons/icon-16.png, icon-48.png, icon-128.png)
+- Any other LDNS logos or brand imagery in this repository
+
+In particular, you may not publish a fork of this extension to any extension
+store, app store, or software registry under the LDNS name or using the LDNS
+icons. Forks must use their own name and iconography.
+
+Using the LDNS name factually to refer to this project (for example,
+"a fork of LDNS") is fine.

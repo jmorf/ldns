@@ -2,6 +2,7 @@
   "name": "@ldns/core",
   "version": "0.1.0",
   "description": "Pure-TypeScript shared core for LDNS — DNS queries, RDAP, email, server, security, ASN, PTR, TLS-from-CT.",
+  "license": "MIT",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
