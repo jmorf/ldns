@@ -102,4 +102,4 @@ See [AGENTS.md](./AGENTS.md) for development guidelines and architecture notes, 
 
 ## License
 
-[MIT](./LICENSE) — with a brand exception: the LDNS name, wordmark, and logo are not covered. See [LICENSE-BRAND](../ldns-ext/LICENSE-BRAND).
+[MIT](./LICENSE) — with a brand exception: the LDNS name, wordmark, and logo are not covered. See [LICENSE-BRAND](../LICENSE-BRAND).

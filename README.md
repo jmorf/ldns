@@ -67,3 +67,13 @@ The site additionally has a server-side `/api/*` proxy layer ([`ldns2/src/routes
 ## History
 
 This was previously two separate repos (`jmorf/ldns2` and `jmorf/ldns-ext`) plus a homeless `packages/core/` directory. As of v2.0.0 (site) / v1.7.5 (extension) it's a single workspace; the old repos remain as historical archives.
+
+## Contributing
+
+Bug reports and focused pull requests are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for the workspace layout, dev commands, and PR process. For security issues, please **don't** open a public issue; see [SECURITY.md](SECURITY.md).
+
+## License
+
+[MIT](LICENSE) — use it, fork it, learn from it.
+
+**Brand exception:** the LDNS name, wordmark, and the extension/site icons are **not** covered by the MIT license — all rights reserved, see [LICENSE-BRAND](LICENSE-BRAND). Forks are welcome, but must ship under their own name and iconography; publishing a fork to an extension store as "LDNS" is not permitted. Referring to LDNS factually ("a fork of LDNS") is fine.

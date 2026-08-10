@@ -121,7 +121,7 @@ npm run generate:description  # regenerate STORE_DESCRIPTION.txt (release prep)
 
 The code is licensed under the [MIT License](LICENSE) — use it, fork it, learn from it.
 
-**Brand exception:** the LDNS name, wordmark, and the extension icons in `public/icons/` are **not** MIT-licensed — all rights reserved, see [LICENSE-BRAND](LICENSE-BRAND). Forks are welcome, but they must ship under their own name and icons; publishing a fork to an extension store as "LDNS" or with the LDNS icons is not permitted. Referring to LDNS factually ("a fork of LDNS") is of course fine.
+**Brand exception:** the LDNS name, wordmark, and the extension icons in `public/icons/` are **not** MIT-licensed — all rights reserved, see [LICENSE-BRAND](../LICENSE-BRAND). Forks are welcome, but they must ship under their own name and icons; publishing a fork to an extension store as "LDNS" or with the LDNS icons is not permitted. Referring to LDNS factually ("a fork of LDNS") is of course fine.
 
 ## Links
 

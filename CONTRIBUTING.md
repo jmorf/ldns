@@ -78,4 +78,4 @@ Match the surrounding code — it's consistent, and consistency beats personal p
 
 ## License
 
-By contributing, you agree that your contributions are licensed under the [MIT License](./LICENSE). Note the [brand exception](./ldns-ext/LICENSE-BRAND): the LDNS name, wordmark, and icons are not covered — forks must use their own branding.
+By contributing, you agree that your contributions are licensed under the [MIT License](./LICENSE). Note the [brand exception](./LICENSE-BRAND): the LDNS name, wordmark, and icons are not covered — forks must use their own branding.
