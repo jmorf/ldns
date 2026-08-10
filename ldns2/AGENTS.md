@@ -1,6 +1,6 @@
 # AGENTS.md
 
-> DNS lookup and domain analysis web app at **ldns.com**. SvelteKit on Cloudflare Pages with `/api/*` SvelteKit endpoints proxying server-side lookups, sharing core logic with the browser extension via `@ldns/core`.
+> DNS lookup and domain analysis web app at **ldns.com**. SvelteKit on Cloudflare Workers with `/api/*` SvelteKit endpoints proxying server-side lookups, sharing core logic with the browser extension via `@ldns/core`.
 
 ## Quick Reference
 
@@ -8,11 +8,11 @@
 npm run dev              # dev server (use hot reload)
 npm run build            # production build
 npm run check            # svelte-check + tsc
-npm run test             # vitest (365 tests)
+npm run test             # vitest (391 tests)
 npm run deploy           # build + wrangler deploy → ldns.com
 
 # from repo root:
-npm test --workspaces    # all 502 tests across @ldns/core + ldns2
+npm test --workspaces    # all 528 tests across @ldns/core + ldns2
 ```
 
 ## Stack
@@ -21,7 +21,7 @@ npm test --workspaces    # all 502 tests across @ldns/core + ldns2
 - **Svelte 5 runes** (`$state`, `$derived`, `$props`, `$effect`)
 - **Tailwind CSS v4** with surface-token CSS variables (see `src/styles/tokens.css`)
 - **shadcn-style components** (`src/lib/components/ui/*`) + custom components
-- **Cloudflare Pages** (adapter-cloudflare)
+- **Cloudflare Workers** (adapter-cloudflare)
 - **`@ldns/core`** — workspace package with all DNS / RDAP / email / server / security / TLS / ASN / PTR / subdomain / DKIM logic. Shared with the extension.
 
 ## Critical Rules
@@ -122,4 +122,4 @@ Never hardcode `bg-gray-*` or `text-gray-*` — use the tokens.
 - [Svelte 5](https://svelte.dev/docs/svelte/overview)
 - [SvelteKit](https://kit.svelte.dev/docs)
 - [Tailwind CSS v4](https://tailwindcss.com/docs)
-- [Cloudflare Pages adapter](https://kit.svelte.dev/docs/adapter-cloudflare)
+- [Cloudflare Workers adapter](https://kit.svelte.dev/docs/adapter-cloudflare)

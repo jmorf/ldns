@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ForSaleResult, ForSaleListing } from '$lib/forsale';
+  import type { ForSaleResult, ForSaleListing } from '@ldns/core/types';
   import { ShoppingCart, ExternalLink, DollarSign, Tag } from 'lucide-svelte';
   import { safeHttpUrl } from '$lib/utils/url';
 

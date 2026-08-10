@@ -1,6 +1,6 @@
-# LDNS2
+# LDNS
 
-A modern, client-side DNS lookup and domain analysis tool built with SvelteKit 5 and Cloudflare Pages. 100% client-side — no backend required.
+DNS lookup and domain analysis tool at **[ldns.com](https://ldns.com)** — SvelteKit 5 on Cloudflare Workers, sharing its lookup logic with the [LDNS browser extension](../ldns-ext) via the `@ldns/core` workspace package.
 
 ## Features
 
@@ -9,6 +9,7 @@ A modern, client-side DNS lookup and domain analysis tool built with SvelteKit 5
 - DNS-over-HTTPS via Cloudflare, Google, and DNS.SB
 - **DNS Propagation Comparison** — Compare results across all 3 providers with mismatch detection
 - **Reverse DNS (PTR)** — Lookup PTR records for domain A record IPs
+- **IP-to-ASN** — Origin AS number, name, and country via Team Cymru
 
 ### RDAP/WHOIS
 - Domain registration details via RDAP protocol
@@ -19,77 +20,91 @@ A modern, client-side DNS lookup and domain analysis tool built with SvelteKit 5
 - MX record analysis with provider detection
 - SPF record parsing and validation
 - DMARC policy analysis
+- DKIM selector probing
 - BIMI and MTA-STS detection
 
 ### Server Info
 - HTTP response headers analysis
-- Server software detection
+- Server software and technology-stack detection
 - Redirect chain tracing
 - Cache and IP information
 
 ### Security Analysis
-- SSL/TLS assessment from CAA records
-- Email security scoring
-- Domain reputation indicators
+- Security-headers audit (HSTS, CSP, X-Frame-Options, …)
+- HSTS preload status, security.txt and robots.txt probes
+- TLS certificate details from Certificate Transparency logs
 
 ### Subdomain Discovery
 - Scan Certificate Transparency logs via crt.sh
 - Deduplicated, sorted results with certificate details
 
+## Architecture
+
+Most lookups run **client-side** (DoH and RDAP are called straight from the browser). A set of server-side `/api/*` endpoints handles the cases the browser can't do itself — CORS-blocked upstreams, raw TCP WHOIS, and anything needing a server-held credential:
+
+| Endpoint | Purpose |
+|---|---|
+| `/api/server`, `/api/headers`, `/api/security/headers` | Fetch a domain's HTTP headers and redirect chain |
+| `/api/security/probes`, `/api/security/hsts-preload` | security.txt / robots.txt existence, HSTS preload status |
+| `/api/whois` | Port-43 WHOIS (browsers can't open raw TCP) |
+| `/api/subdomains`, `/api/tls` | Certificate Transparency queries (crt.sh) |
+| `/api/dkim`, `/api/asn`, `/api/geo` | DKIM selector probing, ASN lookup, IP geolocation |
+| `/api/forsale` | Domain marketplace check (see [Configuration](#configuration)) |
+
+Every `/api/*` route goes through `src/lib/server/handler.ts`, which applies an origin allow-list, a per-IP rate limit, edge caching, and a standard JSON envelope. Endpoints that fetch a user-supplied host run the SSRF guard in `src/lib/server/ssrf.ts` first — **see [SECURITY.md](../SECURITY.md) before self-hosting on a non-Cloudflare runtime.**
+
 ## Quick Start
 
 ```bash
-# Install dependencies
+# Install from the REPOSITORY ROOT — this is an npm workspace and the site
+# depends on the local @ldns/core package.
 npm install
 
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Run tests (172 passing)
-npm run test
-
-# Deploy to Cloudflare Pages
-npm run deploy
+# Then, in ldns2/:
+npm run dev          # dev server
+npm run build        # production build
+npm run check        # svelte-check + tsc
+npm run test         # vitest (391 tests)
+npm run deploy       # build + wrangler deploy → ldns.com
 ```
+
+## Configuration
+
+Copy `.dev.vars.example` to `.dev.vars` for local development. The only variable is `DYNADOT_API_KEY`, and it is **optional** — without it `/api/forsale` simply returns one fewer marketplace signal. In production it is set as a Cloudflare Worker secret (`wrangler secret put DYNADOT_API_KEY`), never committed.
 
 ## Tech Stack
 
 - **Framework**: [SvelteKit 5](https://kit.svelte.dev/) with TypeScript (strict mode)
 - **Reactivity**: Svelte 5 runes (`$state`, `$derived`, `$props`, `$effect`)
-- **UI**: [Flowbite Svelte](https://flowbite-svelte.com/) components + icons
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) with custom vermilion/orange palette
-- **DNS**: Cloudflare DNS over HTTPS (DoH)
-- **Deployment**: [Cloudflare Pages](https://pages.cloudflare.com/) (static)
+- **UI**: shadcn-style components in `src/lib/components/ui/` + custom components
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) with surface-token CSS variables
+- **Shared logic**: `@ldns/core` workspace package (DNS, RDAP, email, server, security, TLS, ASN, PTR, subdomains, DKIM)
+- **Deployment**: [Cloudflare Workers](https://workers.cloudflare.com/) via `adapter-cloudflare`
+
+## Privacy
+
+No analytics, no telemetry, no accounts, no tracking scripts. Lookups go directly to public DNS, registry, and Certificate Transparency services; the `/api/*` endpoints exist only where the browser cannot make the request itself.
 
 ## Project Structure
 
 ```
 src/
 ├── routes/
-│   ├── (content)/           # Static pages (/, /about)
-│   └── (tools)/[domain]/    # Domain analysis tools
-│       ├── +page.svelte     # DNS lookup (main)
-│       ├── email/           # Email configuration
-│       ├── rdap/            # RDAP lookup
-│       ├── server/          # Server info
-│       ├── security/        # Security analysis
-│       ├── propagation/     # DNS propagation comparison
-│       ├── reverse-dns/     # Reverse DNS (PTR) lookup
-│       └── subdomains/      # CT log subdomain discovery
+│   ├── (content)/           # Static pages (/, /about, /tools, /extension)
+│   ├── (tools)/[domain]/    # Domain analysis tool pages (~25 routes)
+│   └── api/                 # Server-side endpoints (see Architecture)
 ├── lib/
 │   ├── components/          # Reusable UI components
+│   ├── server/              # handler, ssrf, cors, ratelimit (server-only)
 │   ├── utils/               # Helpers (seoContent, navigation, useToolPage)
 │   └── state.svelte.ts      # Centralized state management
-└── app.css                  # Global styles
+└── styles/                  # Tailwind entry + design tokens
 ```
 
 ## Contributing
 
-See [AGENTS.md](./AGENTS.md) for detailed development guidelines and architecture documentation.
+See [AGENTS.md](./AGENTS.md) for development guidelines and architecture notes, and [CONTRIBUTING.md](../CONTRIBUTING.md) for the PR process.
 
 ## License
 
-Proprietary - Free to use for personal and commercial purposes. See [LICENSE](LICENSE) for full terms.
+[MIT](./LICENSE) — with a brand exception: the LDNS name, wordmark, and logo are not covered. See [LICENSE-BRAND](../ldns-ext/LICENSE-BRAND).

@@ -9,10 +9,18 @@
 		"binding": "ASSETS",
 		"directory": ".svelte-kit/cloudflare"
 	},
+	"services": [
+		{
+			// Private Worker holding the Dynadot key + daily spend ceiling.
+			// Deploy workers/forsale first, or remove this binding — the
+			// /api/forsale route degrades gracefully when it's absent.
+			"binding": "FORSALE",
+			"service": "ldns-forsale"
+		}
+	],
 	"observability": {
 		"enabled": true
 	}
 	// "placement": { "mode": "smart" },
 	// "vars": { "MY_VARIABLE": "production_value" },
-	// "services": [{ "binding": "MY_SERVICE", "service": "my-service" }]
 }

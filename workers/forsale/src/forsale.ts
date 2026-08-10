@@ -1,4 +1,4 @@
-import { assertRedirectTarget } from '$lib/server/ssrf';
+import { assertRedirectTarget } from '@ldns/core/ssrf';
 
 // ─── For-Sale Marketplace Types ────────────────────────────────────────
 
@@ -248,21 +248,53 @@ const SALE_SIGNATURES: SaleSignature[] = [
 const PARKING_FETCH_TIMEOUT_MS = 5000;
 const MAX_BODY_BYTES = 100_000; // 100 KB is plenty for fingerprinting
 
+const MAX_REDIRECTS = 10;
+
+/** Join body chunks without Buffer — keeps this Worker free of any Node shim. */
+function concatChunks(chunks: Uint8Array[]): Uint8Array {
+  if (chunks.length === 1) return chunks[0];
+  const total = chunks.reduce((n, c) => n + c.length, 0);
+  const out = new Uint8Array(total);
+  let offset = 0;
+  for (const c of chunks) {
+    out.set(c, offset);
+    offset += c.length;
+  }
+  return out;
+}
+
 async function fetchSnippet(url: string, signal: AbortSignal): Promise<{ finalUrl: string; body: string } | null> {
   try {
-    const res = await fetch(url, {
-      headers: {
-        // A real browser UA gets us the marketing landing page rather than
-        // a bot-fence response on some platforms.
-        'User-Agent': 'Mozilla/5.0 (compatible; LDNS/1.0; +https://ldns.com)',
-        Accept: 'text/html,application/xhtml+xml'
-      },
-      redirect: 'follow',
-      signal
-    });
+    // Follow redirects MANUALLY so the SSRF guard runs on every hop. With
+    // `redirect: 'follow'` the runtime connects to each intermediate hop
+    // before we can inspect it, so a parked domain could 302 us onto an
+    // internal address. Each Location is validated before the next fetch.
+    let current = url;
+    let res: Response | null = null;
+    for (let i = 0; i <= MAX_REDIRECTS; i++) {
+      assertRedirectTarget(current);
+      res = await fetch(current, {
+        headers: {
+          // A real browser UA gets us the marketing landing page rather than
+          // a bot-fence response on some platforms.
+          'User-Agent': 'Mozilla/5.0 (compatible; LDNS/1.0; +https://ldns.com)',
+          Accept: 'text/html,application/xhtml+xml'
+        },
+        redirect: 'manual',
+        signal
+      });
+      if (res.status >= 300 && res.status < 400) {
+        const location = res.headers.get('location');
+        if (!location) break;
+        current = new URL(location, current).href;
+        continue;
+      }
+      break;
+    }
+    if (!res) return null;
     if (!res.ok) return null;
     const reader = res.body?.getReader();
-    if (!reader) return { finalUrl: res.url, body: '' };
+    if (!reader) return { finalUrl: current, body: '' };
     const chunks: Uint8Array[] = [];
     let total = 0;
     while (total < MAX_BODY_BYTES) {
@@ -279,10 +311,8 @@ async function fetchSnippet(url: string, signal: AbortSignal): Promise<{ finalUr
         break;
       }
     }
-    const body = new TextDecoder().decode(
-      chunks.length === 1 ? chunks[0] : Buffer.concat(chunks.map((c) => Buffer.from(c)))
-    );
-    return { finalUrl: res.url, body };
+    const body = new TextDecoder().decode(concatChunks(chunks));
+    return { finalUrl: current, body };
   } catch {
     return null;
   }

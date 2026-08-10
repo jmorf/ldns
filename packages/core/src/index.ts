@@ -13,6 +13,7 @@ export * from './types';
 export * from './constants';
 export * from './fetch-utils';
 export * from './url';
+export * from './ssrf';
 
 export * from './dns-query';
 export * from './dns-propagation';

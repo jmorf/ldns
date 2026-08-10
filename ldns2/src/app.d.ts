@@ -1,9 +1,23 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
+
+/**
+ * Cloudflare bindings available to server routes via `platform.env`.
+ * Keep in sync with wrangler.jsonc.
+ */
+interface LdnsEnv {
+    /**
+     * Service binding to the private `ldns-forsale` Worker
+     * (`workers/forsale`). Optional: when unbound — a fork, or local dev
+     * without that Worker — /api/forsale degrades to empty results.
+     */
+    FORSALE?: { fetch(input: string | Request, init?: RequestInit): Promise<Response> };
+}
+
 declare global {
     namespace App {
         interface Platform {
-            env: Env
+            env: LdnsEnv
             cf: CfProperties
             ctx: ExecutionContext
         }

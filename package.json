@@ -4,6 +4,7 @@
   "private": true,
   "workspaces": [
     "packages/*",
+    "workers/*",
     "ldns2",
     "ldns-ext"
   ],

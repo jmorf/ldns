@@ -1,8 +1,8 @@
 import psl from 'psl';
-import type { ForSaleResult } from '$lib/forsale';
+import type { ForSaleResult } from '@ldns/core/types';
 
 // Re-export ForSale types for consumers
-export type { ForSaleResult, ForSaleListing } from '$lib/forsale';
+export type { ForSaleResult, ForSaleListing } from '@ldns/core/types';
 
 // ─── Raw API Response Types ────────────────────────────────────────
 

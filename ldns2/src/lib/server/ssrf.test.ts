@@ -7,6 +7,14 @@ import {
   assertRedirectTarget
 } from './ssrf';
 
+/**
+ * Every ensurePublicHost rejection must return this exact string. Distinct
+ * messages would leak how our resolver classifies an attacker-chosen IP —
+ * an internal-range probing oracle. Asserting the same constant in all four
+ * rejection tests is what pins that property.
+ */
+const OPAQUE_REASON = 'Cannot look up this domain';
+
 describe('isPlausibleDomain', () => {
   it.each([
     ['google.com', true],
@@ -128,7 +136,7 @@ describe('ensurePublicHost', () => {
   it('rejects domains that fail format validation', async () => {
     const r = await ensurePublicHost('localhost');
     expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.reason).toMatch(/Invalid domain/);
+    if (!r.ok) expect(r.reason).toBe(OPAQUE_REASON);
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
@@ -139,7 +147,7 @@ describe('ensurePublicHost', () => {
     });
     const r = await ensurePublicHost('example.com');
     expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.reason).toMatch(/does not resolve/);
+    if (!r.ok) expect(r.reason).toBe(OPAQUE_REASON);
   });
 
   it('rejects when DoH returns a private address', async () => {
@@ -149,7 +157,7 @@ describe('ensurePublicHost', () => {
     });
     const r = await ensurePublicHost('attacker.example.com');
     expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.reason).toMatch(/private|internal/i);
+    if (!r.ok) expect(r.reason).toBe(OPAQUE_REASON);
   });
 
   it('rejects when AAAA contains link-local', async () => {
@@ -184,6 +192,6 @@ describe('ensurePublicHost', () => {
     fetchSpy.mockRejectedValue(new Error('network down'));
     const r = await ensurePublicHost('example.com');
     expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.reason).toMatch(/DNS resolution failed/);
+    if (!r.ok) expect(r.reason).toBe(OPAQUE_REASON);
   });
 });

@@ -23,8 +23,13 @@ export function isAllowedOrigin(origin: string | null): boolean {
   if (origin.startsWith('chrome-extension://')) {
     return EXTENSION_IDS.has(origin.slice('chrome-extension://'.length));
   }
-  // Firefox extensions get a UUID under moz-extension://; allow any for now.
-  // Once we have a stable AMO UUID we can lock this down.
+  // Firefox assigns each install its own random moz-extension:// UUID, so
+  // there is no stable origin to allow-list the way Chrome's extension ID
+  // works. Allowing any moz-extension origin means any installed Firefox
+  // add-on can call these endpoints — acceptable because every response is
+  // public DNS/domain data behind a rate limit, and nothing here is
+  // authenticated or user-specific.
+  // TODO: if AMO ever exposes a stable per-add-on origin, pin it here.
   if (origin.startsWith('moz-extension://')) return true;
   return ALLOWED_ORIGINS.has(origin);
 }
