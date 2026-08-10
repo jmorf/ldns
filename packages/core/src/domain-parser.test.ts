@@ -1,11 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import {
   parseDomain,
-  getTld,
-  getSld,
-  getSubdomain,
   getRootDomain,
   isValidDomain,
+  toAsciiDomain,
   extractDomainFromUrl
 } from './domain-parser';
 
@@ -67,34 +65,18 @@ describe('parseDomain', () => {
   });
 });
 
-describe('getTld', () => {
-  it('should return TLD for valid domain', () => {
-    expect(getTld('example.com')).toBe('com');
-    expect(getTld('example.org')).toBe('org');
-    expect(getTld('example.co.uk')).toBe('co.uk');
+describe('toAsciiDomain', () => {
+  it('should punycode IDN domains', () => {
+    expect(toAsciiDomain('münchen.de')).toBe('xn--mnchen-3ya.de');
+    expect(toAsciiDomain('日本.jp')).toBe('xn--wgv71a.jp');
   });
 
-  it('should return empty string for invalid domain', () => {
-    expect(getTld('')).toBe('');
-    expect(getTld('invalid')).toBe('');
-  });
-});
-
-describe('getSld', () => {
-  it('should return SLD for valid domain', () => {
-    expect(getSld('example.com')).toBe('example');
-    expect(getSld('google.co.uk')).toBe('google');
-  });
-});
-
-describe('getSubdomain', () => {
-  it('should return subdomain when present', () => {
-    expect(getSubdomain('www.example.com')).toBe('www');
-    expect(getSubdomain('api.v2.example.com')).toBe('api.v2');
+  it('should leave ASCII domains unchanged', () => {
+    expect(toAsciiDomain('example.com')).toBe('example.com');
   });
 
-  it('should return empty string when no subdomain', () => {
-    expect(getSubdomain('example.com')).toBe('');
+  it('should handle underscore labels', () => {
+    expect(toAsciiDomain('_dmarc.münchen.de')).toBe('_dmarc.xn--mnchen-3ya.de');
   });
 });
 
@@ -132,9 +114,12 @@ describe('extractDomainFromUrl', () => {
 
   it('should handle URL without protocol', () => {
     expect(extractDomainFromUrl('example.com/path')).toBe('example.com');
-    // Without protocol, the regex captures the first domain-like string
-    const result = extractDomainFromUrl('www.example.com');
-    expect(result).toContain('example.com');
+    expect(extractDomainFromUrl('www.example.com')).toBe('www.example.com');
+  });
+
+  it('should handle scheme-less host with port or query', () => {
+    expect(extractDomainFromUrl('example.com:8080')).toBe('example.com');
+    expect(extractDomainFromUrl('example.com?utm=x')).toBe('example.com');
   });
 
   it('should handle invalid URLs gracefully', () => {

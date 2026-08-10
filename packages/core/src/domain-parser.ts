@@ -15,15 +15,6 @@ const empty: ParsedDomain = { input: '', tld: '', sld: '', subdomain: '', rootDo
 const cache = new Map<string, ParsedDomain>();
 const MAX_CACHE = 100;
 
-/**
- * No-op kept for compatibility — psl is now synchronously imported. This
- * function used to trigger a dynamic import; we keep it so other call sites
- * don't need updating, and so future re-introduction of lazy loading is easy.
- */
-export function preloadPsl(): Promise<void> {
-  return Promise.resolve();
-}
-
 export function parseDomain(name: string): ParsedDomain {
   if (!name) return empty;
   const normalizedName = name.toLowerCase().trim();
@@ -52,18 +43,6 @@ export function parseDomain(name: string): ParsedDomain {
   return result;
 }
 
-export function getTld(name: string): string {
-  return parseDomain(name).tld;
-}
-
-export function getSld(name: string): string {
-  return parseDomain(name).sld;
-}
-
-export function getSubdomain(name: string): string {
-  return parseDomain(name).subdomain;
-}
-
 export function getRootDomain(name: string): string {
   return parseDomain(name).rootDomain;
 }
@@ -72,12 +51,29 @@ export function isValidDomain(name: string): boolean {
   return parseDomain(name).isValid;
 }
 
+/**
+ * Convert a possibly-Unicode (IDN) domain to its ASCII/punycode form.
+ * DoH endpoints, RDAP, and crt.sh all reject raw Unicode query names —
+ * `münchen.de` must be sent as `xn--mnchen-3ya.de`. The URL parser applies
+ * IDNA per the WHATWG spec (and handles `_dmarc.`-style underscore labels).
+ * Returns the input unchanged if it can't be parsed as a hostname.
+ */
+export function toAsciiDomain(name: string): string {
+  try {
+    return new URL(`http://${name}`).hostname;
+  } catch {
+    return name;
+  }
+}
+
+/**
+ * Extract the hostname from user input that looks like a URL — handles full
+ * URLs, scheme-less `host/path`, `host:port`, and `host?query` forms.
+ */
 export function extractDomainFromUrl(url: string): string {
   try {
-    const urlObj = new URL(url);
-    return urlObj.hostname;
+    return new URL(url.includes('://') ? url : `http://${url}`).hostname;
   } catch {
-    const match = url.match(/(?:https?:\/\/)?(?:www\.)?([^/\s]+)/);
-    return match ? match[1] : '';
+    return '';
   }
 }

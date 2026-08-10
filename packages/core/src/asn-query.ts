@@ -32,9 +32,9 @@ function unquote(s: string): string {
   return s.replace(/^"(.+)"$/, '$1');
 }
 
-async function queryAsnTxt(name: string): Promise<string | null> {
+async function queryAsnTxt(name: string, signal?: AbortSignal): Promise<string | null> {
   try {
-    const result = await queryDns(name, ['TXT'], undefined, 'cloudflare');
+    const result = await queryDns(name, ['TXT'], undefined, 'cloudflare', signal);
     const first = result.TXT?.[0]?.data;
     return first ? unquote(first) : null;
   } catch {
@@ -42,11 +42,11 @@ async function queryAsnTxt(name: string): Promise<string | null> {
   }
 }
 
-export async function lookupAsn(ip: string): Promise<AsnInfo> {
+export async function lookupAsn(ip: string, signal?: AbortSignal): Promise<AsnInfo> {
   const zone = asnZone(ip);
   const empty: AsnInfo = { ip, asn: null, asName: null, country: null, prefix: null };
   if (!zone) return empty;
-  const txt = await queryAsnTxt(zone);
+  const txt = await queryAsnTxt(zone, signal);
   if (!txt) return empty;
   const parts = txt.split('|').map((p) => p.trim());
   // Multi-origin ASN may appear as "X Y Z" — take the first.
@@ -58,7 +58,7 @@ export async function lookupAsn(ip: string): Promise<AsnInfo> {
 
   // Look up the AS name (best-effort)
   let asName: string | null = null;
-  const nameTxt = await queryAsnTxt(`AS${asnNum}.asn.cymru.com`);
+  const nameTxt = await queryAsnTxt(`AS${asnNum}.asn.cymru.com`, signal);
   if (nameTxt) {
     const nparts = nameTxt.split('|').map((p) => p.trim());
     asName = nparts[4] || null;
@@ -69,11 +69,11 @@ export async function lookupAsn(ip: string): Promise<AsnInfo> {
   return { ip, asn: asnNum, asName, country, prefix };
 }
 
-export async function lookupAsnBatch(ips: string[]): Promise<Record<string, AsnInfo>> {
+export async function lookupAsnBatch(ips: string[], signal?: AbortSignal): Promise<Record<string, AsnInfo>> {
   const result: Record<string, AsnInfo> = {};
   await Promise.all(
     ips.map(async (ip) => {
-      result[ip] = await lookupAsn(ip);
+      result[ip] = await lookupAsn(ip, signal);
     })
   );
   return result;

@@ -11,7 +11,7 @@ const STORAGE_KEYS = {
   SIDEBAR_TIP_SEEN: 'ldns_sidebar_tip_seen'
 } as const;
 
-const DEFAULT_SETTINGS: Settings = {
+export const DEFAULT_SETTINGS: Settings = {
   // Privacy-impacting features default to OFF — the user must opt in.
   forSaleEnabled: false,
   // Cosmetic / UX preferences default to ON.
@@ -23,7 +23,14 @@ const DEFAULT_SETTINGS: Settings = {
 export async function getRecentSearches(): Promise<RecentSearch[]> {
   try {
     const result = await chrome.storage.local.get(STORAGE_KEYS.RECENT_SEARCHES);
-    return result[STORAGE_KEYS.RECENT_SEARCHES] || [];
+    const stored = result[STORAGE_KEYS.RECENT_SEARCHES];
+    // Validate the stored shape — corrupt data must not reach the UI, where a
+    // non-string domain would blow up click handlers.
+    if (!Array.isArray(stored)) return [];
+    return stored.filter(
+      (s): s is RecentSearch =>
+        !!s && typeof s === 'object' && typeof s.domain === 'string' && typeof s.timestamp === 'number'
+    );
   } catch {
     return [];
   }
@@ -145,10 +152,6 @@ export function cacheGet<T>(key: string, ttlMs: number): T | null {
 
 export function cacheSet<T>(key: string, value: T): void {
   memCache.set(key, { value, at: Date.now() });
-}
-
-export function cacheClear(): void {
-  memCache.clear();
 }
 
 // ─── Session cache (chrome.storage.session) ─────────────────────────

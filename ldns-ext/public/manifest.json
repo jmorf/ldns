@@ -1,21 +1,12 @@
 {
   "manifest_version": 3,
   "name": "LDNS - DNS & Domain Tools",
-  "version": "1.7.6",
+  "version": "1.7.10",
   "description": "Instant DNS records, WHOIS/RDAP data, email security analysis, and server info for any domain. Fast, private, no data collection.",
   "author": "LDNS",
   "homepage_url": "https://ldns.com",
   "permissions": ["activeTab", "storage", "sidePanel"],
-  "host_permissions": [
-    "https://cloudflare-dns.com/*",
-    "https://dns.google/*",
-    "https://doh.dns.sb/*",
-    "https://rdap.org/*",
-    "https://crt.sh/*",
-    "https://ldns.com/*",
-    "https://hstspreload.org/*",
-    "<all_urls>"
-  ],
+  "host_permissions": ["<all_urls>"],
   "action": {
     "default_title": "LDNS - DNS & Domain Tools",
     "default_popup": "src/popup/popup.html",

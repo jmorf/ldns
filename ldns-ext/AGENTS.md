@@ -28,29 +28,32 @@ v1.7.5 — shared logic extracted to `@ldns/core` workspace package (no user-fac
 4. **Security-headers audit** + HTTP/3 + HSTS-preload + security.txt/robots.txt
 5. **DNSSEC chain detail** (DS records inline)
 6. **JSON export** of the full lookup
-7. **Quick-action chips** to DNSViz, intoDNS, SSL Labs, securityheaders.com, etc.
+7. **Quick-action chips** deep-linking to the detailed report pages on ldns.com
 8. **Settings panel** with opt-in privacy toggles
 
 ### Polish
-- Geist Sans + Geist Mono with tabular numerals
+- Inter / system font stack with tabular numerals
 - Floating-pill tab bar with icons
 - Skeleton-shimmer loading
 - CSS variables instead of `!important` light-mode hacks
 - Custom monogram, refreshed empty states, optional grain overlay
 - Refresh button on every tab
 
-### Privacy
-- For-sale and WHOIS-fallback are off by default
+### Privacy & Robustness
+- The for-sale check (the only feature contacting ldns.com) is off by default
 - Strict CSP in manifest
 - IPv6 PTR support
-- AbortController on every query
-- Background service worker deleted (was dead code)
+- Every fetch has a timeout, and the per-query AbortSignal is threaded from
+  the state store into the network layer — switching domains cancels
+  in-flight requests
+- No background service worker on Chrome (Firefox ships a 10-line
+  action-click bridge for the sidebar)
 
 ## Build Commands
 - `npm run dev` - Development mode
 - `npm run build` - Production Chrome build → `dist/`
 - `npm run build:firefox` - Firefox build → `dist-firefox/`
-- `npm test` - Run tests (131 passing)
+- `npm test -w @ldns/core` (repo root) - Run the shared-core test suite (137 passing)
 - `npm run check` - TypeScript checking (zero errors)
 - `npm run package:source` - Source bundle for store reviewers
 

@@ -9,6 +9,7 @@
   import RefreshButton from './RefreshButton.svelte';
   import QuickActions from './QuickActions.svelte';
   import { lookupPtrBatch } from '@ldns/core/ptr';
+  import { RECORD_TYPE_ORDER } from '@ldns/core/constants';
   import { cn } from '$lib/utils/cn';
 
   const filters = [
@@ -32,8 +33,6 @@
     other: ['CNAME', 'CAA', 'DNSKEY', 'HTTPS', 'SRV', 'DS']
   };
 
-  const recordTypeOrder = ['A', 'AAAA', 'CNAME', 'MX', 'TXT', 'NS', 'SOA', 'CAA'];
-
   function getFilteredRecords() {
     const data = extensionState.dnsState.data;
     if (!data) return [];
@@ -41,7 +40,7 @@
     const result: { type: string; records: typeof data[string] }[] = [];
     const allowedTypes = filterMap[activeFilter];
 
-    for (const type of recordTypeOrder) {
+    for (const type of RECORD_TYPE_ORDER) {
       if (data[type] && data[type].length > 0) {
         if (activeFilter === 'all' || allowedTypes.includes(type)) {
           result.push({ type, records: data[type] });
@@ -49,7 +48,7 @@
       }
     }
     for (const [type, records] of Object.entries(data)) {
-      if (!recordTypeOrder.includes(type) && records.length > 0) {
+      if (!RECORD_TYPE_ORDER.includes(type) && records.length > 0) {
         if (activeFilter === 'all' || activeFilter === 'other' || allowedTypes.includes(type)) {
           result.push({ type, records });
         }
@@ -65,11 +64,16 @@
     const aaaa = data?.AAAA?.map((r) => r.data) ?? [];
     const ips = [...a, ...aaaa];
     if (ips.length === 0) return;
+    // Guard against a stale batch landing after the domain changed — a slow
+    // PTR response for the previous domain must not replace the current map.
+    const forDomain = extensionState.domain;
     untrack(() => {
       const pending: Record<string, string> = {};
       ips.forEach((ip) => (pending[ip] = '...'));
       ptrResults = pending;
-      lookupPtrBatch(ips).then((batch) => (ptrResults = batch));
+      lookupPtrBatch(ips).then((batch) => {
+        if (extensionState.domain === forDomain) ptrResults = batch;
+      });
     });
   });
 
@@ -144,7 +148,7 @@
         </button>
       {/each}
       <div class="ml-auto">
-        <RefreshButton onClick={() => extensionState.queryDns()} loading={extensionState.dnsState.loading} />
+        <RefreshButton onClick={() => extensionState.queryDns(true)} loading={extensionState.dnsState.loading} />
       </div>
     </div>
 

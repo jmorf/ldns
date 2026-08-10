@@ -1,24 +1,30 @@
 import type { ParsedRdapData, RdapResponse, RdapEvent, RdapEntity, VCardProperty } from './types';
 import { RDAP_BOOTSTRAP_URL } from './constants';
-import { getRootDomain } from './domain-parser';
+import { getRootDomain, toAsciiDomain } from './domain-parser';
+import { fetchWithTimeout } from './fetch-utils';
+
+const RDAP_TIMEOUT_MS = 15_000;
 
 /**
  * Look up RDAP information for a domain
  * @param domain The domain to query
+ * @param signal Optional AbortSignal so callers can cancel in-flight queries
  * @returns Parsed RDAP data or null on failure
  */
-export async function queryRdap(domain: string): Promise<ParsedRdapData> {
-  // Get the registrable domain (root domain without subdomain)
-  const rootDomain = getRootDomain(domain) || domain;
+export async function queryRdap(domain: string, signal?: AbortSignal): Promise<ParsedRdapData> {
+  // Get the registrable domain (root domain without subdomain), punycoded —
+  // RDAP servers expect the ASCII form of IDN domains.
+  const rootDomain = toAsciiDomain(getRootDomain(domain) || domain);
 
   const bootstrapUrl = `${RDAP_BOOTSTRAP_URL}${rootDomain}`;
 
-  const response = await fetch(bootstrapUrl, {
+  const response = await fetchWithTimeout(bootstrapUrl, {
     headers: {
       'Accept': 'application/rdap+json'
     },
-    redirect: 'follow'
-  });
+    redirect: 'follow',
+    signal
+  }, RDAP_TIMEOUT_MS);
 
   if (!response.ok) {
     if (response.status === 404) {
@@ -62,16 +68,6 @@ export async function queryRdap(domain: string): Promise<ParsedRdapData> {
   };
 
   return parsedData;
-}
-
-/**
- * Query domain registration data via RDAP. RDAP is the modern replacement
- * for WHOIS and is supported by every gTLD plus most ccTLDs. The legacy
- * WHOIS protocol runs on port 43 which browsers cannot access, so there is
- * no in-browser fallback that doesn't involve a third-party HTTP proxy.
- */
-export async function queryDomainRegistration(domain: string): Promise<ParsedRdapData> {
-  return queryRdap(domain);
 }
 
 /**
@@ -140,14 +136,13 @@ function findEventDate(events: RdapEvent[], eventType: string): string {
 export function formatRdapDate(dateString: string): string {
   if (!dateString) return 'N/A';
 
-  try {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  } catch {
-    return dateString;
-  }
+  // `new Date()` never throws — it yields an Invalid Date. Fall back to the
+  // registry's raw string rather than rendering the literal "Invalid Date".
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return dateString;
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
 }

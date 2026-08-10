@@ -55,3 +55,7 @@ ldns-ext/dist-firefox/
 
 # Vite timestamp files
 **/vite.config.*.timestamp-*
+
+# Claude Code local settings and session data
+.claude/
+**/.claude/settings.local.json

@@ -14,16 +14,7 @@
     }
   },
   "permissions": ["activeTab", "storage"],
-  "host_permissions": [
-    "https://cloudflare-dns.com/*",
-    "https://dns.google/*",
-    "https://doh.dns.sb/*",
-    "https://rdap.org/*",
-    "https://crt.sh/*",
-    "https://ldns.com/*",
-    "https://hstspreload.org/*",
-    "<all_urls>"
-  ],
+  "host_permissions": ["<all_urls>"],
   "background": {
     "scripts": ["background.js"]
   },

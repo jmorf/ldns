@@ -10,7 +10,7 @@ The build is platform-independent. We have verified it produces an identical out
 
 - **macOS** 14+ (primary build platform)
 - **Linux** — any distribution with Node.js available (Ubuntu 22.04+ tested)
-- **Windows** 10/11 with WSL2 or native (PowerShell or CMD both work)
+- **Windows** 10/11 with WSL2 (the packaging step shells out to the `zip` command, which is not available in native PowerShell/CMD — use WSL, Git Bash, or install a zip utility on PATH)
 
 No native compilation is performed; everything runs in pure Node.js.
 
@@ -47,12 +47,18 @@ No other tooling needs to be installed globally — every other dependency is lo
 
 These steps reproduce the exact `ldns-firefox.zip` that was submitted.
 
+The source archive is a self-contained **npm workspace**: the extension
+(`ldns-ext/`) depends on the shared `@ldns/core` package (`packages/core/`),
+and the root `package.json` wires them together. Always install from the
+archive root — installing inside `ldns-ext/` alone will not resolve
+`@ldns/core`.
+
 ```bash
 # 1. Extract the source archive into a fresh directory
-mkdir ldns-ext && unzip ldns-source.zip -d ldns-ext
-cd ldns-ext
+unzip ldns-source.zip -d ldns
+cd ldns
 
-# 2. Install dependencies deterministically from package-lock.json
+# 2. Install dependencies deterministically from the workspace lockfile
 npm ci
 
 # 3. Run the Firefox build pipeline
@@ -61,8 +67,8 @@ npm run build:firefox
 
 After the build:
 
-- The unpacked extension is in `dist-firefox/`
-- The packaged add-on is at `ldns-firefox.zip` in the project root
+- The unpacked extension is in `ldns-ext/dist-firefox/`
+- The packaged add-on is at `ldns-ext/ldns-firefox.zip`
 
 The version field in `dist-firefox/manifest.json` is read from `package.json` at build time, so the rebuilt manifest will match the submitted version exactly.
 
@@ -104,40 +110,46 @@ The only third-party code in the build output comes from the dependencies declar
 ## 6. Project structure
 
 ```
-ldns-ext/
-├── src/
-│   ├── popup/                     # Popup UI (Svelte 5)
-│   │   ├── popup.html
-│   │   ├── popup.ts
-│   │   ├── Popup.svelte
-│   │   └── components/            # Svelte components (DnsResults, EmailResults, etc.)
-│   ├── lib/
-│   │   ├── shared/                # Pure TS modules: dns-query, rdap-query, email-query,
-│   │   │                          # server-info, dkim-query, asn-query, ptr,
-│   │   │                          # security-checks, parsers, types, constants
-│   │   ├── state/                 # extension-state.svelte.ts (Svelte 5 runes)
-│   │   └── utils/                 # cn, storage, export, sidepanel
-│   ├── styles/global.css          # Tailwind v4 entry + theme variables
-│   └── app.d.ts
-├── public/
-│   ├── manifest.json              # Chrome MV3 manifest
-│   ├── manifest.firefox.json      # Firefox MV3 manifest (used by the build)
-│   └── icons/                     # 16 / 48 / 128 px PNGs
-├── scripts/
-│   ├── build-firefox.js           # Firefox build pipeline (called by `npm run build:firefox`)
-│   ├── generate-store-description.js   # Regenerates STORE_DESCRIPTION.txt from package.json
-│   └── package-source.js          # Builds this source-review zip
-├── package.json
-├── package-lock.json              # Locked dependency tree — used by `npm ci`
-├── vite.config.firefox.ts         # Firefox-specific Vite config
-├── svelte.config.js
-├── tsconfig.json
-├── postcss.config.js
-├── vitest.config.ts
-├── PRIVACY.md
-├── README.md
-├── CHANGELOG.md
-└── SOURCE_BUILD_INSTRUCTIONS.md   # this file
+(archive root — npm workspace)
+├── package.json                   # workspace root: ["packages/*", "ldns-ext"]
+├── package-lock.json              # locked dependency tree — used by `npm ci`
+├── packages/
+│   └── core/                      # @ldns/core — pure TS shared modules:
+│       └── src/                   #   dns-query, rdap-query, email-query, server-info,
+│                                  #   dkim-query, asn-query, ptr, security-checks,
+│                                  #   subdomain-query, forsale-query, parsers, fetch-utils,
+│                                  #   url, domain-parser, types, constants (+ tests)
+└── ldns-ext/
+    ├── src/
+    │   ├── popup/                 # Popup UI (Svelte 5)
+    │   │   ├── popup.html
+    │   │   ├── popup.ts
+    │   │   ├── Popup.svelte
+    │   │   ├── global.css         # Tailwind v4 entry + theme variables
+    │   │   └── components/        # Svelte components (DnsResults, EmailResults, etc.)
+    │   ├── lib/
+    │   │   ├── state/             # extension-state.svelte.ts (Svelte 5 runes)
+    │   │   └── utils/             # cn, storage, export, sidepanel, url, feedback
+    │   └── app.d.ts
+    ├── public/
+    │   ├── manifest.json          # Chrome MV3 manifest
+    │   ├── manifest.firefox.json  # Firefox MV3 manifest (used by the build)
+    │   ├── background.js          # Firefox-only action-click → sidebar bridge
+    │   └── icons/                 # 16 / 48 / 128 px PNGs
+    ├── scripts/
+    │   ├── build-firefox.js       # Firefox build pipeline (`npm run build:firefox`)
+    │   ├── generate-store-description.js   # Regenerates STORE_DESCRIPTION.txt
+    │   └── package-source.js      # Builds this source-review zip
+    ├── package.json
+    ├── vite.config.ts             # Chrome build (crxjs)
+    ├── vite.config.firefox.ts     # Firefox-specific Vite config
+    ├── svelte.config.js
+    ├── tsconfig.json
+    ├── postcss.config.js
+    ├── PRIVACY.md
+    ├── README.md
+    ├── CHANGELOG.md
+    └── SOURCE_BUILD_INSTRUCTIONS.md   # this file
 ```
 
 ---
@@ -153,15 +165,15 @@ All listed in `package.json`. Every one is open-source and on npm.
 - TypeScript (Apache-2.0)
 - Tailwind CSS v4 + @tailwindcss/vite + @tailwindcss/postcss (MIT)
 - PostCSS + autoprefixer (MIT)
-- bits-ui (MIT)
-- clsx + tailwind-merge + tailwind-variants (MIT)
+- clsx + tailwind-merge (MIT)
 
 **App-level**
-- psl (MIT) — Public Suffix List parser, used to identify the registrable domain client-side. Bundled into the popup; no network calls.
+- @ldns/core (MIT) — the shared workspace package in `packages/core/`; resolved locally via the workspace, never from the registry
+- psl (MIT) — Public Suffix List parser (dependency of @ldns/core), used to identify the registrable domain client-side. Bundled into the popup; no network calls.
 - lucide-svelte (ISC) — icon set
 
 **Test (not required for the build)**
-- vitest, jsdom, @testing-library/svelte, canvas (all MIT)
+- vitest (MIT) — used by the @ldns/core test suite
 
 `npm ci` installs exactly the versions pinned in `package-lock.json`; no other resolver behavior is involved.
 
@@ -170,8 +182,8 @@ All listed in `package.json`. Every one is open-source and on npm.
 ## 8. Optional: running tests
 
 ```bash
-npm test         # runs the full Vitest suite (~131 tests, a few seconds)
-npm run check    # svelte-check + tsc — type-check the project
+npm test -w @ldns/core       # runs the shared-core Vitest suite (137 tests, a few seconds)
+npm run check -w ldns-ext    # svelte-check + tsc — type-check the extension
 ```
 
 Tests are not required to produce the extension build but are included for completeness.

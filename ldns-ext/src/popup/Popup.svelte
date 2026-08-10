@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { extensionState } from '$lib/state/extension-state.svelte';
+  import { DNS_ENDPOINTS } from '@ldns/core/constants';
   import { Settings as SettingsIcon, Sun, Moon, Monitor } from 'lucide-svelte';
   import ExportMenu from './components/ExportMenu.svelte';
   import { recallSession, rememberSession } from '$lib/utils/storage';
@@ -84,7 +85,6 @@
 
 <div
   class="relative w-full h-screen min-h-[720px] bg-surface text-fg flex flex-col overflow-hidden"
-  class:light={extensionState.theme === 'light'}
 >
   {#if extensionState.settings.grain}
     <div class="grain"></div>
@@ -181,7 +181,7 @@
 
   <!-- Footer -->
   <footer class="px-4 py-1.5 border-t border-line flex items-center justify-between text-[10px] text-fg-subtle">
-    <span class="font-mono">{extensionState.endpoint === 'cloudflare' ? 'Cloudflare DNS' : extensionState.endpoint === 'google' ? 'Google DNS' : 'DNS.SB'}</span>
+    <span class="font-mono">{DNS_ENDPOINTS[extensionState.endpoint].name}</span>
     <span class="flex items-center gap-2">
       <a
         href={feedbackUrl()}

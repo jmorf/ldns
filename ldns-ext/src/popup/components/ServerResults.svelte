@@ -49,9 +49,13 @@
     securityTxt = null;
     robotsTxt = null;
     hstsStatus = null;
-    probeExists(`${origin}/.well-known/security.txt`).then((v) => (securityTxt = v));
-    probeExists(`${origin}/robots.txt`).then((v) => (robotsTxt = v));
-    if (domain) checkHstsPreload(domain).then((v) => (hstsStatus = v));
+    // Guard against stale probes: a slow response for the previous domain
+    // (up to 6s) must not overwrite the verdicts for the current one.
+    const forDomain = extensionState.domain;
+    const current = () => extensionState.domain === forDomain;
+    probeExists(`${origin}/.well-known/security.txt`).then((v) => { if (current()) securityTxt = v; });
+    probeExists(`${origin}/robots.txt`).then((v) => { if (current()) robotsTxt = v; });
+    if (domain) checkHstsPreload(domain).then((v) => { if (current()) hstsStatus = v; });
   });
 
   function levelClass(level: 'ok' | 'warn' | 'bad') {

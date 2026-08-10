@@ -7,6 +7,7 @@
   import QuickActions from './QuickActions.svelte';
   import { Copy, Check, Search, Download } from 'lucide-svelte';
   import { cn } from '$lib/utils/cn';
+  import { csvCell } from '$lib/utils/export';
 
   let copiedIndex = $state<number | null>(null);
   let copiedAll = $state(false);
@@ -37,7 +38,9 @@
   function exportCsv() {
     const data = extensionState.subdomainState.data;
     if (!data) return;
-    const csv = 'subdomain\n' + filtered.map((s) => `"${s}"`).join('\n');
+    // csvCell neutralizes spreadsheet formula injection — subdomain strings
+    // come from attacker-controllable CT-log SANs.
+    const csv = 'subdomain\n' + filtered.map((s) => csvCell(s)).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -52,7 +55,8 @@
     if (input && input !== extensionState.domain) {
       await extensionState.setDomain(input, true);
     }
-    extensionState.querySubdomains();
+    // User explicitly asked for a scan — bypass the cache.
+    extensionState.querySubdomains(true);
   }
 
   const subs = $derived(extensionState.subdomainState.data?.subdomains ?? []);

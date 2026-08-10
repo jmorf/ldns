@@ -31,13 +31,12 @@ A fast, privacy-focused Chrome & Firefox extension for DNS records, WHOIS/RDAP d
 - Creation, update, and expiration dates
 - DNSSEC status, DS records and key tag
 - **Domain Age & Expiry Countdown** — Color-coded banner (green >90d, yellow 30-90d, red <30d)
-- Optional WHOIS fallback (off by default; opt-in via Settings)
 
 ### Email Security
 - MX record analysis with provider detection (40+ providers)
 - SPF record parsing and validation
 - DMARC policy analysis
-- BIMI, MTA-STS, TLS-RPT detection
+- BIMI and MTA-STS detection
 - **DKIM** — Probes 20+ common selectors, displays found keys with algorithm and key length
 
 ### Server Info
@@ -63,7 +62,7 @@ A fast, privacy-focused Chrome & Firefox extension for DNS records, WHOIS/RDAP d
 - Refresh button on every tab
 - JSON export of full lookup
 - Diff against previous lookup of the same domain
-- Quick-action chips: open results in DNSViz, intoDNS, SSL Labs, securityheaders.com, Wayback Machine
+- Quick-action chips: hand off to the detailed report pages on ldns.com
 - Settings panel for opt-in features
 
 ## Installation
@@ -76,18 +75,18 @@ Available on [addons.mozilla.org](https://addons.mozilla.org) — search for "LD
 
 ### From Source (Developer Mode)
 1. Clone this repository
-2. Run `npm install`
-3. Run `npm run build`
+2. Run `npm install` **from the repository root** (the extension depends on the `@ldns/core` workspace package)
+3. Run `npm run build` in `ldns-ext/`
 4. Open `chrome://extensions` in Chrome
 5. Enable "Developer mode"
-6. Click "Load unpacked" and select the `dist` folder
+6. Click "Load unpacked" and select the `ldns-ext/dist` folder
 
 ## Privacy
 
 LDNS is designed with privacy in mind:
 - No analytics, telemetry, or accounts
 - DNS, RDAP and CT-log queries go directly to public services
-- For-sale and WHOIS-fallback lookups (which contact `ldns.com`) are **off by default** and must be enabled in Settings
+- The optional for-sale check (the only feature that contacts `ldns.com`) is **off by default** and must be enabled in Settings
 - All preferences and recent searches stay in your local browser storage
 - See [PRIVACY.md](PRIVACY.md) for full details
 
@@ -102,12 +101,13 @@ LDNS is designed with privacy in mind:
 ## Development
 
 ```bash
-npm install         # install dependencies
+npm install         # from the repository root — installs all workspace packages
 npm run dev         # development with hot reload
 npm run check       # type checking
 npm run build       # Chrome build → dist/
 npm run build:firefox  # Firefox build → dist-firefox/
-npm test            # run tests
+npm test -w @ldns/core   # run the shared-core test suite (137 tests)
+npm run generate:description  # regenerate STORE_DESCRIPTION.txt (release prep)
 ```
 
 ## Tech Stack

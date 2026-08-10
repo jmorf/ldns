@@ -20,15 +20,15 @@ const version = packageJson.version;
 const RECENT_RELEASES = 2;
 const releases = [
   {
-    version: '1.7.10',
+    version: '1.7.11',
     notes: [
-      'Report a bug / send feedback — links in Settings and the popup footer open a prefilled GitHub issue. Nothing is sent until you submit it.'
+      'Reliability hardening: every lookup now has a timeout, network outages show a clear error instead of "no records", international (IDN) domains work, long TXT records (SPF/DKIM) display correctly, and Refresh always fetches fresh data.'
     ]
   },
   {
-    version: '1.7.9',
+    version: '1.7.10',
     notes: [
-      'Fixed a Firefox "File not found" error when turning side-panel mode off from inside the popup.'
+      'Report a bug / send feedback — links in Settings and the popup footer open a prefilled GitHub issue. Nothing is sent until you submit it.'
     ]
   }
 ];

@@ -115,7 +115,6 @@ export interface EmailData {
   dmarc: DnsRecordResult[];
   mtaSts: DnsRecordResult[];
   bimi: DnsRecordResult[];
-  tlsrpt?: DnsRecordResult[];
   isEmailEnabled: boolean;
   provider: string;
   spfAnalysis: SPFAnalysis | null;
@@ -135,40 +134,6 @@ export type DnsEndpoint = 'cloudflare' | 'google' | 'dns-sb';
 
 /** Theme options — `system` follows the user's OS / browser preference */
 export type Theme = 'dark' | 'light' | 'system';
-
-/** Message types for background script communication */
-export type MessageType =
-  | 'DNS_QUERY'
-  | 'RDAP_QUERY'
-  | 'EMAIL_QUERY'
-  | 'GET_CURRENT_TAB_DOMAIN';
-
-export interface ExtensionMessage {
-  type: MessageType;
-  payload?: unknown;
-}
-
-export interface DnsQueryPayload {
-  domain: string;
-  recordTypes: string[];
-  subdomain?: string;
-  endpoint?: DnsEndpoint;
-}
-
-export interface RdapQueryPayload {
-  domain: string;
-}
-
-export interface EmailQueryPayload {
-  domain: string;
-  endpoint?: DnsEndpoint;
-}
-
-export interface ExtensionResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
 
 /** Recent search entry */
 export interface RecentSearch {
@@ -283,7 +248,6 @@ export interface Settings {
 /** A discovered DKIM selector */
 export interface DkimSelector {
   selector: string;
-  found: boolean;
   raw: string;
   algorithm: string;
   keyLength: number;

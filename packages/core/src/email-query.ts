@@ -11,26 +11,25 @@ import { EMAIL_PROVIDERS } from './constants';
  */
 export async function queryEmailRecords(
   domain: string,
-  endpoint: DnsEndpoint = 'cloudflare'
+  endpoint: DnsEndpoint = 'cloudflare',
+  signal?: AbortSignal
 ): Promise<EmailData> {
   // Lookup email-related DNS records in parallel.
   // Probe both `default._bimi` and `selector1._bimi` since some senders use the latter.
   const [mxResults, txtResults, dmarcResults, mtaStsResults, bimiDefault, bimiSelector1] = await Promise.all([
-    queryDns(domain, ['MX'], undefined, endpoint),
-    queryDns(domain, ['TXT'], undefined, endpoint),
-    queryDns(domain, ['TXT'], '_dmarc', endpoint),
-    queryDns(domain, ['TXT'], '_mta-sts', endpoint),
-    queryDns(domain, ['TXT'], 'default._bimi', endpoint),
-    queryDns(domain, ['TXT'], 'selector1._bimi', endpoint)
+    queryDns(domain, ['MX'], undefined, endpoint, signal),
+    queryDns(domain, ['TXT'], undefined, endpoint, signal),
+    queryDns(domain, ['TXT'], '_dmarc', endpoint, signal),
+    queryDns(domain, ['TXT'], '_mta-sts', endpoint, signal),
+    queryDns(domain, ['TXT'], 'default._bimi', endpoint, signal),
+    queryDns(domain, ['TXT'], 'selector1._bimi', endpoint, signal)
   ]);
 
   const mxRecords = mxResults.MX || [];
 
-  const isPrefix = (record: DnsRecordResult, prefix: string) => {
-    // TXT records may arrive quoted, with an unquoted multi-string concat, or as plain text.
-    const normalized = record.data.trim().replace(/^"(.+)"$/, '$1').toLowerCase();
-    return normalized.startsWith(prefix.toLowerCase());
-  };
+  // TXT values arrive normalized (unquoted, chunks joined) from queryDns.
+  const isPrefix = (record: DnsRecordResult, prefix: string) =>
+    record.data.trim().toLowerCase().startsWith(prefix.toLowerCase());
 
   const spfRecords = (txtResults.TXT || []).filter((r) => isPrefix(r, 'v=spf1'));
   const dmarcRecords = (dmarcResults.TXT || []).filter((r) => isPrefix(r, 'v=dmarc1'));

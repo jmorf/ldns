@@ -1,4 +1,5 @@
 import { extensionState } from '$lib/state/extension-state.svelte';
+import { RECORD_TYPE_ORDER } from '@ldns/core/constants';
 import type { DnsData, DnsRecordResult } from '@ldns/core/types';
 
 interface FullExport {
@@ -52,7 +53,7 @@ export function downloadJson(): void {
   downloadBlob(blob, `ldns-${extensionState.domain || 'lookup'}-${Date.now()}.json`);
 }
 
-function csvCell(value: string): string {
+export function csvCell(value: string): string {
   // Neutralise spreadsheet formula injection: Excel / Sheets execute a cell
   // that begins with = + - @ (or a leading tab / CR that some parsers strip).
   // DNS and TXT record values are attacker-controlled, so prefix those with a
@@ -67,7 +68,7 @@ function csvCell(value: string): string {
 function dnsToCsv(data: DnsData): string {
   const header = ['type', 'data', 'ttl'];
   const rows: string[] = [header.join(',')];
-  const orderedTypes = ['A', 'AAAA', 'CNAME', 'MX', 'TXT', 'NS', 'SOA', 'CAA'];
+  const orderedTypes = RECORD_TYPE_ORDER;
   const seen = new Set<string>();
   const emit = (type: string, records: DnsRecordResult[]) => {
     for (const r of records) {

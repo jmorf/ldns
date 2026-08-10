@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { queryDns, getRecordTypeName } from './dns-query';
+import { queryDns } from './dns-query';
 
 // Mock fetch globally
 const mockFetch = vi.fn();
@@ -124,38 +124,72 @@ describe('queryDns', () => {
     );
   });
 
-  it('should handle fetch errors gracefully', async () => {
+  it('should throw when every record type fails at the transport layer', async () => {
+    // An endpoint outage must not masquerade as "this domain has no records".
     mockFetch.mockRejectedValue(new Error('Network error'));
 
-    const result = await queryDns('example.com', ['A']);
-
-    expect(result.A).toHaveLength(0);
+    await expect(queryDns('example.com', ['A', 'AAAA'])).rejects.toThrow(/DNS lookup failed/);
   });
 
-  it('should handle non-OK response', async () => {
+  it('should throw when every response is non-OK', async () => {
     mockFetch.mockResolvedValue({
       ok: false,
       status: 500
     });
 
-    const result = await queryDns('example.com', ['A']);
-
-    expect(result.A).toHaveLength(0);
-  });
-});
-
-describe('getRecordTypeName', () => {
-  it('should return correct type names', () => {
-    expect(getRecordTypeName(1)).toBe('A');
-    expect(getRecordTypeName(2)).toBe('NS');
-    expect(getRecordTypeName(5)).toBe('CNAME');
-    expect(getRecordTypeName(15)).toBe('MX');
-    expect(getRecordTypeName(16)).toBe('TXT');
-    expect(getRecordTypeName(28)).toBe('AAAA');
-    expect(getRecordTypeName(257)).toBe('CAA');
+    await expect(queryDns('example.com', ['A'])).rejects.toThrow(/DNS lookup failed/);
   });
 
-  it('should return TYPE{number} for unknown types', () => {
-    expect(getRecordTypeName(999)).toBe('TYPE999');
+  it('should degrade gracefully on partial failure', async () => {
+    mockFetch.mockImplementation((url: string) => {
+      const type = new URL(url).searchParams.get('type');
+      if (type === 'A') {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({
+            Status: 0,
+            Answer: [{ data: '93.184.216.34', TTL: 300, type: 1 }]
+          })
+        });
+      }
+      return Promise.reject(new Error('Network error'));
+    });
+
+    const result = await queryDns('example.com', ['A', 'TXT']);
+
+    expect(result.A).toHaveLength(1);
+    expect(result.TXT).toHaveLength(0);
+  });
+
+  it('should punycode IDN domains before querying', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ Status: 0 })
+    });
+
+    await queryDns('münchen.de', ['A']);
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining('xn--mnchen-3ya.de'),
+      expect.any(Object)
+    );
+  });
+
+  it('should join chunked TXT records and strip quotes', async () => {
+    // >255-byte TXT records arrive from Cloudflare/DNS.SB as `"chunk1" "chunk2"` —
+    // RFC 7208 requires concatenation with no separator.
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({
+        Status: 0,
+        Answer: [
+          { data: '"v=spf1 include:a.com " "include:b.com -all"', TTL: 300, type: 16 }
+        ]
+      })
+    });
+
+    const result = await queryDns('example.com', ['TXT']);
+
+    expect(result.TXT[0].data).toBe('v=spf1 include:a.com include:b.com -all');
   });
 });

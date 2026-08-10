@@ -31,6 +31,8 @@ export interface TlsCertificate {
   ctLogUrl: string;
 }
 
+import { fetchWithTimeout } from './fetch-utils';
+
 interface CrtShRow {
   issuer_ca_id: number;
   issuer_name: string;
@@ -49,17 +51,23 @@ function daysBetween(a: Date, b: Date): number {
 
 export async function fetchTlsCertificate(domain: string, signal?: AbortSignal): Promise<TlsCertificate | null> {
   const url = `https://crt.sh/?q=${encodeURIComponent(domain)}&output=json&exclude=expired&deduplicate=Y`;
-  const res = await fetch(url, { signal, headers: { Accept: 'application/json' } });
+  const res = await fetchWithTimeout(url, { signal, headers: { Accept: 'application/json' } }, 12_000);
   if (!res.ok) {
     if (res.status === 503) throw new Error('crt.sh is overloaded; try again');
     throw new Error(`crt.sh returned ${res.status}`);
   }
-  const rows = (await res.json()) as CrtShRow[];
+  let rows: unknown;
+  try {
+    rows = await res.json();
+  } catch {
+    return null;
+  }
   if (!Array.isArray(rows) || rows.length === 0) return null;
 
   // Most recent by not_before. crt.sh typically returns descending-ish but not guaranteed.
-  rows.sort((a, b) => new Date(b.not_before).getTime() - new Date(a.not_before).getTime());
-  const top = rows[0];
+  const certRows = rows as CrtShRow[];
+  certRows.sort((a, b) => new Date(b.not_before).getTime() - new Date(a.not_before).getTime());
+  const top = certRows[0];
 
   const san = (top.name_value || '').split('\n').map((s) => s.trim()).filter(Boolean);
   const now = new Date();

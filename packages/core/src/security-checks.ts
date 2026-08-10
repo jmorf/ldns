@@ -1,7 +1,9 @@
 /**
- * Lightweight security/feature checks derived from a HEAD response.
- * Pure helpers: no fetches here.
+ * Lightweight security/feature checks derived from a HEAD response,
+ * plus two small network probes (security.txt/robots.txt existence and
+ * HSTS-preload status).
  */
+import { fetchWithTimeout } from './fetch-utils';
 
 export interface SecurityHeaderCheck {
   key: string;
@@ -61,16 +63,10 @@ export function detectAltSvc(headers: Record<string, string>): AltSvcInfo {
 /**
  * Probe an URL with a HEAD request, returning whether it exists (2xx or 3xx).
  */
-export async function probeExists(url: string, timeoutMs = 6000): Promise<boolean> {
+export async function probeExists(url: string, timeoutMs = 6000, signal?: AbortSignal): Promise<boolean> {
   try {
-    const ctl = new AbortController();
-    const t = setTimeout(() => ctl.abort(), timeoutMs);
-    try {
-      const res = await fetch(url, { method: 'HEAD', signal: ctl.signal, redirect: 'follow' });
-      return res.ok;
-    } finally {
-      clearTimeout(t);
-    }
+    const res = await fetchWithTimeout(url, { method: 'HEAD', redirect: 'follow', signal }, timeoutMs);
+    return res.ok;
   } catch {
     return false;
   }
@@ -80,20 +76,16 @@ export async function probeExists(url: string, timeoutMs = 6000): Promise<boolea
  * Check the public HSTS preload list status for a domain.
  * Returns 'preloaded' | 'pending' | 'unknown' | null on error.
  */
-export async function checkHstsPreload(domain: string): Promise<string | null> {
+export async function checkHstsPreload(domain: string, signal?: AbortSignal): Promise<string | null> {
   try {
-    const ctl = new AbortController();
-    const t = setTimeout(() => ctl.abort(), 6000);
-    try {
-      const res = await fetch(`https://hstspreload.org/api/v2/status?domain=${encodeURIComponent(domain)}`, {
-        signal: ctl.signal
-      });
-      if (!res.ok) return null;
-      const json = (await res.json()) as { status?: string };
-      return json.status ?? null;
-    } finally {
-      clearTimeout(t);
-    }
+    const res = await fetchWithTimeout(
+      `https://hstspreload.org/api/v2/status?domain=${encodeURIComponent(domain)}`,
+      { signal },
+      6000
+    );
+    if (!res.ok) return null;
+    const json = (await res.json()) as { status?: string };
+    return json.status ?? null;
   } catch {
     return null;
   }

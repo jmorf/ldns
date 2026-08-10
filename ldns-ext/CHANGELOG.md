@@ -1,5 +1,53 @@
 # Changelog
 
+## [1.7.11] - 2026-08-09
+
+Reliability and security hardening pass ahead of open-sourcing, driven by a
+four-dimension review (security, correctness, simplicity, open-source
+readiness) of the extension and shared core.
+
+### Fixed
+- **Outages no longer masquerade as empty results.** A DoH endpoint that is
+  down (or no network at all) used to render "No records found" and
+  "0 of 5 auth records" as if the domain were unconfigured; total transport
+  failure now surfaces as an error state.
+- **Every network call has a timeout, and cancellation is real.** DNS and RDAP
+  fetches previously had no timeout (a hung connection would spin the popup
+  forever), and switching domains only *ignored* the old lookup while its
+  requests (up to ~40) kept running. All fetches now share one timeout/abort
+  helper and the per-query AbortSignal reaches the socket.
+- **International domains work.** Unicode input (e.g. `münchen.de`) is
+  punycoded before querying — previously every backend rejected it and the UI
+  claimed the domain didn't exist.
+- **Long TXT records are no longer garbled.** Chunked (>255-byte) TXT records
+  (large SPF records, 2048-bit DKIM keys) are joined per RFC 7208 instead of
+  displaying quote-littered fragments that broke parsing and copy.
+- **Refresh actually refreshes.** The per-tab Refresh/Rescan buttons bypassed
+  nothing — inside the cache TTL they silently re-served cached data; they now
+  force a fresh query.
+- **DKIM results no longer vanish on repeat lookups** (a cache-hit path
+  skipped the DKIM probe entirely).
+- **A dead DNS provider is no longer reported as a propagation mismatch** —
+  unreachable providers are labeled and excluded from comparison.
+- Stale-response guards on the PTR and security.txt/robots.txt/HSTS-preload
+  side probes (slow responses for a previous domain could overwrite the
+  current domain's results).
+- BIMI logo/VMC links from DNS TXT records are scheme-validated before being
+  used as links; the subdomain CSV export now neutralizes spreadsheet formula
+  injection like the other exports.
+- DMARC parsing handles uppercase tags and `=` inside values; malformed
+  registry dates fall back to the raw string instead of "Invalid Date";
+  `host:port` and `host?query` inputs are parsed correctly.
+
+### Changed
+- Simplification sweep: ~400 lines of dead code removed (unused message
+  types, WHOIS-fallback remnants, no-op helpers, duplicated
+  formatters/constants now shared via @ldns/core), five unused dependencies
+  dropped (including the native `canvas` module), and the redundant explicit
+  host list removed from the manifests (`<all_urls>` already covered it).
+- Docs corrected to match the code (no WHOIS fallback, no TLS-RPT claim,
+  accurate test counts and workspace build steps).
+
 ## [1.7.10] - 2026-08-05
 
 ### Added

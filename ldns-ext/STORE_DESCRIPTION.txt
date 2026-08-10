@@ -16,11 +16,11 @@ No accounts, no analytics, no tracking. Lookups go directly from your browser to
 
 WHAT'S NEW
 
+v1.7.11
+• Reliability hardening: every lookup now has a timeout, network outages show a clear error instead of "no records", international (IDN) domains work, long TXT records (SPF/DKIM) display correctly, and Refresh always fetches fresh data.
+
 v1.7.10
 • Report a bug / send feedback — links in Settings and the popup footer open a prefilled GitHub issue. Nothing is sent until you submit it.
-
-v1.7.9
-• Fixed a Firefox "File not found" error when turning side-panel mode off from inside the popup.
 
 LINKS
 

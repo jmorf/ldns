@@ -1,9 +1,9 @@
 /**
  * Server Information and Redirect Tracing Module
- * Imported from LDNS2 - keep in sync with /Users/j/code/ldns/ldns2/src/lib/server-info.ts
  */
 
 import type { ServerInfo, RedirectHop, RedirectTrace, ServerAnalysis } from './types';
+import { fetchWithTimeout, isAbortOrTimeout } from './fetch-utils';
 
 // ─── Constants ────────────────────────────────────────────────────────
 
@@ -41,30 +41,18 @@ function normalizeUrl(url: string, useHttp = false): string {
 export type UrlGuard = (url: string) => void;
 
 /**
- * Fetch with timeout
+ * Guarded fetch: applies the SSRF guard (server only) before opening a socket
+ * so a redirect to 127.0.0.1 / 169.254.169.254 / a private range can't be
+ * reached, then delegates to the shared timeout/abort-composing fetch.
  */
-async function fetchWithTimeout(
+async function guardedFetch(
   url: string,
   options: RequestInit,
   guard?: UrlGuard,
-  timeout = FETCH_TIMEOUT
+  signal?: AbortSignal
 ): Promise<Response> {
-  // SSRF guard (server only): reject the target before opening a socket so a
-  // redirect to 127.0.0.1 / 169.254.169.254 / a private range can't be reached.
   if (guard) guard(url);
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-  try {
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal
-    });
-    return response;
-  } finally {
-    clearTimeout(timeoutId);
-  }
+  return fetchWithTimeout(url, { ...options, signal }, FETCH_TIMEOUT);
 }
 
 // ─── Main Functions ────────────────────────────────────────────────────
@@ -73,29 +61,41 @@ async function fetchWithTimeout(
  * Fetch server information for a URL
  * Uses HEAD request to minimize data transfer, falls back to GET if HEAD fails
  */
-export async function fetchServerInfo(urlOrDomain: string, useHttp = false, guard?: UrlGuard): Promise<ServerInfo> {
+export async function fetchServerInfo(
+  urlOrDomain: string,
+  useHttp = false,
+  guard?: UrlGuard,
+  signal?: AbortSignal
+): Promise<ServerInfo> {
   const url = normalizeUrl(urlOrDomain, useHttp);
   const startTime = performance.now();
 
   let response: Response;
   try {
     // Try HEAD first (faster, less data transfer)
-    response = await fetchWithTimeout(url, {
+    response = await guardedFetch(url, {
       method: 'HEAD',
       redirect: 'follow',
       cache: 'no-store'
-    }, guard);
+    }, guard, signal);
   } catch (error) {
-    // If aborted, rethrow
-    if (error instanceof Error && error.name === 'AbortError') {
+    // If aborted or timed out, rethrow with a friendly message
+    if (isAbortOrTimeout(error)) {
       throw new Error('Request timed out');
     }
     // Fallback to GET if HEAD fails (some servers block HEAD requests)
-    response = await fetchWithTimeout(url, {
-      method: 'GET',
-      redirect: 'follow',
-      cache: 'no-store'
-    }, guard);
+    try {
+      response = await guardedFetch(url, {
+        method: 'GET',
+        redirect: 'follow',
+        cache: 'no-store'
+      }, guard, signal);
+    } catch (getError) {
+      if (isAbortOrTimeout(getError)) {
+        throw new Error('Request timed out');
+      }
+      throw getError;
+    }
   }
 
   // `redirect: 'follow'` resolves the chain internally; re-validate where it
@@ -128,7 +128,12 @@ export async function fetchServerInfo(urlOrDomain: string, useHttp = false, guar
  * Trace all redirects for a URL
  * Manually follows redirects to capture each hop
  */
-export async function traceRedirects(urlOrDomain: string, useHttp = false, guard?: UrlGuard): Promise<RedirectTrace> {
+export async function traceRedirects(
+  urlOrDomain: string,
+  useHttp = false,
+  guard?: UrlGuard,
+  signal?: AbortSignal
+): Promise<RedirectTrace> {
   const originalUrl = normalizeUrl(urlOrDomain, useHttp);
   const hops: RedirectHop[] = [];
   let currentUrl = originalUrl;
@@ -140,20 +145,20 @@ export async function traceRedirects(urlOrDomain: string, useHttp = false, guard
 
     let response: Response;
     try {
-      response = await fetchWithTimeout(currentUrl, {
+      response = await guardedFetch(currentUrl, {
         method: 'HEAD',
         redirect: 'manual',
         cache: 'no-store'
-      }, guard);
+      }, guard, signal);
     } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
+      if (isAbortOrTimeout(error)) {
         throw new Error('Request timed out');
       }
-      response = await fetchWithTimeout(currentUrl, {
+      response = await guardedFetch(currentUrl, {
         method: 'GET',
         redirect: 'manual',
         cache: 'no-store'
-      }, guard);
+      }, guard, signal);
     }
 
     const responseTime = Math.round(performance.now() - startTime);
@@ -164,11 +169,11 @@ export async function traceRedirects(urlOrDomain: string, useHttp = false, guard
     // Make a follow request to find the actual destination
     if (response.type === 'opaqueredirect') {
       try {
-        const followResponse = await fetchWithTimeout(currentUrl, {
+        const followResponse = await guardedFetch(currentUrl, {
           method: 'HEAD',
           redirect: 'follow',
           cache: 'no-store'
-        }, guard);
+        }, guard, signal);
         const finalUrl = followResponse.url;
         if (finalUrl && finalUrl !== currentUrl) {
           hops.push({
@@ -191,7 +196,14 @@ export async function traceRedirects(urlOrDomain: string, useHttp = false, guard
     if (response.status >= 300 && response.status < 400) {
       const location = headers['location'];
       if (!location) break;
-      const nextUrl = new URL(location, currentUrl).href;
+      // A malformed Location header shouldn't blow up the whole trace —
+      // stop here and report the chain up to this point.
+      let nextUrl: string;
+      try {
+        nextUrl = new URL(location, currentUrl).href;
+      } catch {
+        break;
+      }
       hops.push({
         url: currentUrl,
         status: response.status,
@@ -210,20 +222,20 @@ export async function traceRedirects(urlOrDomain: string, useHttp = false, guard
   const finalStartTime = performance.now();
   let finalResponse: Response;
   try {
-    finalResponse = await fetchWithTimeout(currentUrl, {
+    finalResponse = await guardedFetch(currentUrl, {
       method: 'HEAD',
       redirect: 'manual',
       cache: 'no-store'
-    }, guard);
+    }, guard, signal);
   } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
+    if (isAbortOrTimeout(error)) {
       throw new Error('Request timed out');
     }
-    finalResponse = await fetchWithTimeout(currentUrl, {
+    finalResponse = await guardedFetch(currentUrl, {
       method: 'GET',
       redirect: 'manual',
       cache: 'no-store'
-    }, guard);
+    }, guard, signal);
   }
   totalTime += Math.round(performance.now() - finalStartTime);
 
@@ -246,6 +258,8 @@ export interface AnalyzeOptions {
    * on their own behalf from their own browser/network).
    */
   guard?: UrlGuard;
+  /** Optional AbortSignal so callers can cancel the whole analysis. */
+  signal?: AbortSignal;
 }
 
 /**
@@ -253,12 +267,12 @@ export interface AnalyzeOptions {
  * Throws on network/CORS failures so the state runner can surface the error.
  */
 export async function analyzeServer(urlOrDomain: string, options: AnalyzeOptions = {}): Promise<ServerAnalysis> {
-  const { useHttp = false, guard } = options;
+  const { useHttp = false, guard, signal } = options;
 
   // First trace redirects to find final URL
-  const redirects = await traceRedirects(urlOrDomain, useHttp, guard);
+  const redirects = await traceRedirects(urlOrDomain, useHttp, guard, signal);
   // Then get detailed info from final URL
-  const info = await fetchServerInfo(redirects.finalUrl, false, guard);
+  const info = await fetchServerInfo(redirects.finalUrl, false, guard, signal);
 
   return {
     info,

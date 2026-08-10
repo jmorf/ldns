@@ -19,8 +19,9 @@ export function parseSPFRecord(spfRecord: string): SPFAnalysis {
 
     // Check for modifiers (redirect=, exp=)
     if (part.includes('=')) {
-      const [key, value] = part.split('=');
-      modifiers[key] = value;
+      // Split on the first '=' only — values may themselves contain '='.
+      const eq = part.indexOf('=');
+      modifiers[part.slice(0, eq)] = part.slice(eq + 1);
     }
     // Check for qualifier prefixes
     else if (part.match(/^[+\-~?]/)) {
@@ -102,16 +103,22 @@ export function parseDMARCRecord(dmarcRecord: string): DMARCAnalysis {
 
   for (const part of parts) {
     if (!part) continue;
-    const [key, value] = part.split('=');
+    // Split on the first '=' only (rua/ruf URIs contain '='), and lowercase
+    // the tag name — RFC 7489 tag names are case-insensitive.
+    const eq = part.indexOf('=');
+    if (eq <= 0) continue;
+    const key = part.slice(0, eq).trim().toLowerCase();
+    const value = part.slice(eq + 1).trim();
     if (key && value) {
-      tags[key.trim()] = value.trim();
+      tags[key] = value;
     }
   }
 
   // Extract key information
-  const policy = tags['p'] || 'none';
-  const subdomainPolicy = tags['sp'] || policy;
-  const percentage = parseInt(tags['pct'] || '100');
+  const policy = (tags['p'] || 'none').toLowerCase();
+  const subdomainPolicy = (tags['sp'] || policy).toLowerCase();
+  const parsedPct = parseInt(tags['pct'] ?? '100', 10);
+  const percentage = Number.isFinite(parsedPct) ? parsedPct : 100;
   const alignment = {
     dkim: tags['adkim'] || 'r', // r=relaxed, s=strict
     spf: tags['aspf'] || 'r'

@@ -11,6 +11,8 @@
 
 export * from './types';
 export * from './constants';
+export * from './fetch-utils';
+export * from './url';
 
 export * from './dns-query';
 export * from './dns-propagation';

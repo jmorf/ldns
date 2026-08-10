@@ -2,19 +2,10 @@
   import { extensionState } from '$lib/state/extension-state.svelte';
   import { Search, Tag, ExternalLink, X } from 'lucide-svelte';
   import { DNS_ENDPOINTS } from '@ldns/core/constants';
-  import type { DnsEndpoint, ForSaleListing } from '@ldns/core/types';
+  import { formatListingPrice } from '@ldns/core/forsale-query';
+  import type { DnsEndpoint } from '@ldns/core/types';
   import { cn } from '$lib/utils/cn';
   import { safeHttpUrl } from '$lib/utils/url';
-
-  function formatPrice(listing: ForSaleListing): string {
-    if (!listing.price) return 'Price on request';
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: listing.currency || 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(listing.price);
-  }
 
   let inputValue = $state('');
   let inputEl = $state<HTMLInputElement | null>(null);
@@ -120,7 +111,7 @@
         <Tag class="w-3 h-3" />
         <span>{firstListing.marketplace === 'parking' ? 'Parked' : 'For Sale'}</span>
         {#if firstListing.price}
-          <span class="text-primary-300 font-semibold tnum">{formatPrice(firstListing)}</span>
+          <span class="text-primary-300 font-semibold tnum">{formatListingPrice(firstListing)}</span>
         {:else if firstListing.platform}
           <span class="text-primary-300/70">· {firstListing.platform}</span>
         {/if}

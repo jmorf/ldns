@@ -8,6 +8,7 @@
   import { getSPFPolicyDescription, getDMARCPolicyDescription, getPolicyColor } from '@ldns/core/parsers';
   import { Mail, Copy, Check, KeyRound, Image, Lock } from 'lucide-svelte';
   import { cn } from '$lib/utils/cn';
+  import { safeHttpUrl } from '$lib/utils/url';
 
   const data = $derived(extensionState.emailState.data);
   const dkim = $derived(extensionState.dkimState.data);
@@ -72,7 +73,7 @@
           <span class="font-semibold text-fg tnum">{authOnCount}</span> of <span class="tnum">5</span> auth records
         </span>
       </div>
-      <RefreshButton onClick={() => extensionState.queryEmail()} loading={extensionState.emailState.loading} />
+      <RefreshButton onClick={() => { extensionState.queryEmail(true); extensionState.queryDkim(true); }} loading={extensionState.emailState.loading} />
     </div>
 
     <!-- Auth keys (badges) -->
@@ -216,13 +217,13 @@
             {#if logoMatch}
               <div class="flex items-start gap-2 text-[10px]">
                 <span class="text-fg-subtle uppercase tracking-wide">Logo</span>
-                <a class="text-primary-400 hover:underline font-mono break-all" href={logoMatch[1].trim()} target="_blank" rel="noopener noreferrer">{logoMatch[1].trim()}</a>
+                <a class="text-primary-400 hover:underline font-mono break-all" href={safeHttpUrl(logoMatch[1].trim())} target="_blank" rel="noopener noreferrer">{logoMatch[1].trim()}</a>
               </div>
             {/if}
             {#if vmcMatch}
               <div class="flex items-start gap-2 text-[10px]">
                 <span class="text-fg-subtle uppercase tracking-wide">VMC</span>
-                <a class="text-primary-400 hover:underline font-mono break-all" href={vmcMatch[1].trim()} target="_blank" rel="noopener noreferrer">{vmcMatch[1].trim()}</a>
+                <a class="text-primary-400 hover:underline font-mono break-all" href={safeHttpUrl(vmcMatch[1].trim())} target="_blank" rel="noopener noreferrer">{vmcMatch[1].trim()}</a>
               </div>
             {/if}
             <p class="text-[10px] text-fg-muted font-mono break-all leading-relaxed pt-1 border-t border-line">{raw}</p>

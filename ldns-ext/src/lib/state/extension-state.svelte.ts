@@ -14,15 +14,14 @@ import type {
   AsnInfo
 } from '@ldns/core/types';
 import { queryDns } from '@ldns/core/dns-query';
-import { queryDomainRegistration } from '@ldns/core/rdap-query';
+import { queryRdap } from '@ldns/core/rdap-query';
 import { queryEmailRecords } from '@ldns/core/email-query';
 import { checkForSale } from '@ldns/core/forsale-query';
 import {
   isValidDomain,
   parseDomain,
   getRootDomain,
-  extractDomainFromUrl,
-  preloadPsl
+  extractDomainFromUrl
 } from '@ldns/core/domain-parser';
 import { DEFAULT_RECORD_TYPES } from '@ldns/core/constants';
 import { analyzeServer } from '@ldns/core/server-info';
@@ -31,6 +30,7 @@ import { discoverSubdomains } from '@ldns/core/subdomain-query';
 import { queryDkim } from '@ldns/core/dkim-query';
 import { lookupAsnBatch } from '@ldns/core/asn-query';
 import {
+  DEFAULT_SETTINGS,
   getRecentSearches,
   addRecentSearch,
   clearRecentSearches,
@@ -67,12 +67,7 @@ class ExtensionState {
     return this.theme;
   }
 
-  settings = $state<Settings>({
-    forSaleEnabled: false,
-    funMessages: true,
-    grain: true,
-    sidePanelMode: false
-  });
+  settings = $state<Settings>({ ...DEFAULT_SETTINGS });
 
   dnsState = $state<ToolState<DnsData>>(idleState());
   rdapState = $state<ToolState<ParsedRdapData>>(idleState());
@@ -102,8 +97,6 @@ class ExtensionState {
   }
 
   async init() {
-    // Kick off psl load in parallel — don't block popup render on it
-    void preloadPsl();
     const [recents, endpoint, theme, settings] = await Promise.all([
       getRecentSearches(),
       getEndpointPreference(),
@@ -164,9 +157,12 @@ class ExtensionState {
   }
 
   async setDomain(input: string, performLookup = false) {
-    let domain = input.toLowerCase().trim();
-    if (this.looksLikeUrl(input)) {
-      domain = extractDomainFromUrl(input).toLowerCase().trim();
+    let domain = input.toLowerCase().trim().replace(/\.$/, '');
+    if (this.looksLikeUrl(input) || (!isValidDomain(domain) && extractDomainFromUrl(input))) {
+      // Full URLs, but also `host:port` / `host?query` forms that aren't
+      // themselves valid domains — extract the hostname.
+      const host = extractDomainFromUrl(input);
+      if (host) domain = host.toLowerCase().replace(/\.$/, '');
     }
     this.domain = domain;
     this.inputDomain = domain;
@@ -186,28 +182,32 @@ class ExtensionState {
 
   /**
    * Generic query runner: handles loading/error/data state, cancellation,
-   * and short-lived in-memory caching. Aborts any prior in-flight query of the same key.
+   * and short-lived in-memory caching. Aborts any prior in-flight query of
+   * the same key; the signal is threaded into the core query functions so
+   * cancellation reaches the network. `force` bypasses the cache read (the
+   * Refresh buttons) while still caching the fresh result.
    */
   private async run<T>(
     key: string,
-    target: ToolState<T>,
     fn: (signal: AbortSignal) => Promise<T>,
     setter: (next: ToolState<T>) => void,
-    options: { cacheTtlMs?: number; cacheKey?: string } = {}
+    options: { cacheTtlMs?: number; cacheKey?: string; force?: boolean } = {}
   ): Promise<void> {
     // Cancel previous
     this.aborters.get(key)?.abort();
-    const controller = new AbortController();
-    this.aborters.set(key, controller);
+    this.aborters.delete(key);
 
     // In-memory cache check
-    if (options.cacheKey && options.cacheTtlMs) {
+    if (options.cacheKey && options.cacheTtlMs && !options.force) {
       const cached = cacheGet<T>(options.cacheKey, options.cacheTtlMs);
       if (cached) {
         setter({ loading: false, error: '', data: cached, hasData: true });
         return;
       }
     }
+
+    const controller = new AbortController();
+    this.aborters.set(key, controller);
 
     setter(loadingState<T>());
     try {
@@ -226,8 +226,6 @@ class ExtensionState {
     } finally {
       if (this.aborters.get(key) === controller) this.aborters.delete(key);
     }
-    // unused param; ToolState reference kept to preserve API ergonomics
-    void target;
   }
 
   cancelAll() {
@@ -237,6 +235,7 @@ class ExtensionState {
 
   async performLookup() {
     if (!this.isValidDomain) return;
+    const lookupDomain = this.domain;
 
     await addRecentSearch(this.domain);
     this.recentSearches = await getRecentSearches();
@@ -248,9 +247,14 @@ class ExtensionState {
     this.asnState = idleState();
 
     const queries: Promise<void>[] = [
-      this.queryDns(),
+      // ASN depends on DNS results, so chain it — guarded against a newer
+      // lookup having superseded this one by the time DNS lands.
+      this.queryDns().then(() => {
+        if (this.domain === lookupDomain) this.queryAsn();
+      }),
       this.queryRdap(),
       this.queryEmail(),
+      this.queryDkim(),
       this.queryServer()
     ];
 
@@ -258,46 +262,36 @@ class ExtensionState {
     if (this.propagationMode) queries.push(this.queryPropagation());
 
     await Promise.all(queries);
-    // After DNS lands, kick off ASN
-    this.queryAsn();
   }
 
-  async queryDns() {
+  async queryDns(force = false) {
     if (!this.isValidDomain) return;
     const cacheKey = `dns:${this.domain}:${this.endpoint}`;
     return this.run(
       'dns',
-      this.dnsState,
-      () => queryDns(this.domain, DEFAULT_RECORD_TYPES, undefined, this.endpoint),
+      (signal) => queryDns(this.domain, DEFAULT_RECORD_TYPES, undefined, this.endpoint, signal),
       (next) => (this.dnsState = next),
-      { cacheKey, cacheTtlMs: 30_000 }
+      { cacheKey, cacheTtlMs: 30_000, force }
     );
   }
 
-  async queryRdap() {
+  async queryRdap(force = false) {
     if (!this.isValidDomain) return;
     return this.run(
       'rdap',
-      this.rdapState,
-      () => queryDomainRegistration(this.domain),
+      (signal) => queryRdap(this.domain, signal),
       (next) => (this.rdapState = next),
-      { cacheKey: `rdap:${this.domain}`, cacheTtlMs: 60_000 }
+      { cacheKey: `rdap:${this.domain}`, cacheTtlMs: 60_000, force }
     );
   }
 
-  async queryEmail() {
+  async queryEmail(force = false) {
     if (!this.isValidDomain) return;
     return this.run(
       'email',
-      this.emailState,
-      async () => {
-        const data = await queryEmailRecords(this.domain, this.endpoint);
-        // Kick off DKIM probe in background
-        this.queryDkim();
-        return data;
-      },
+      (signal) => queryEmailRecords(this.domain, this.endpoint, signal),
       (next) => (this.emailState = next),
-      { cacheKey: `email:${this.domain}:${this.endpoint}`, cacheTtlMs: 30_000 }
+      { cacheKey: `email:${this.domain}:${this.endpoint}`, cacheTtlMs: 30_000, force }
     );
   }
 
@@ -305,8 +299,7 @@ class ExtensionState {
     if (!this.isValidDomain) return;
     return this.run(
       'server',
-      this.serverState,
-      () => analyzeServer(this.domain, { useHttp: this.useHttpForServer }),
+      (signal) => analyzeServer(this.domain, { useHttp: this.useHttpForServer, signal }),
       (next) => (this.serverState = next)
     );
   }
@@ -318,42 +311,38 @@ class ExtensionState {
     }
     return this.run(
       'forsale',
-      this.forSaleState,
-      () => checkForSale(this.rootDomain || this.domain),
+      (signal) => checkForSale(this.rootDomain || this.domain, signal),
       (next) => (this.forSaleState = next)
     );
   }
 
-  async queryPropagation() {
+  async queryPropagation(force = false) {
     if (!this.isValidDomain) return;
     return this.run(
       'propagation',
-      this.propagationState,
-      () => queryAllProviders(this.domain),
+      (signal) => queryAllProviders(this.domain, undefined, signal),
       (next) => (this.propagationState = next),
-      { cacheKey: `prop:${this.domain}`, cacheTtlMs: 30_000 }
+      { cacheKey: `prop:${this.domain}`, cacheTtlMs: 30_000, force }
     );
   }
 
-  async querySubdomains() {
+  async querySubdomains(force = false) {
     if (!this.isValidDomain) return;
     return this.run(
       'subdomains',
-      this.subdomainState,
-      () => discoverSubdomains(this.rootDomain || this.domain),
+      (signal) => discoverSubdomains(this.rootDomain || this.domain, signal),
       (next) => (this.subdomainState = next),
-      { cacheKey: `subs:${this.rootDomain || this.domain}`, cacheTtlMs: 5 * 60_000 }
+      { cacheKey: `subs:${this.rootDomain || this.domain}`, cacheTtlMs: 5 * 60_000, force }
     );
   }
 
-  async queryDkim() {
+  async queryDkim(force = false) {
     if (!this.isValidDomain) return;
     return this.run(
       'dkim',
-      this.dkimState,
-      () => queryDkim(this.domain, this.endpoint),
+      (signal) => queryDkim(this.domain, this.endpoint, signal),
       (next) => (this.dkimState = next),
-      { cacheKey: `dkim:${this.domain}`, cacheTtlMs: 60_000 }
+      { cacheKey: `dkim:${this.domain}`, cacheTtlMs: 60_000, force }
     );
   }
 
@@ -368,8 +357,7 @@ class ExtensionState {
     }
     return this.run(
       'asn',
-      this.asnState,
-      () => lookupAsnBatch(ips),
+      (signal) => lookupAsnBatch(ips, signal),
       (next) => (this.asnState = next),
       { cacheKey: `asn:${ips.join(',')}`, cacheTtlMs: 60 * 60_000 }
     );

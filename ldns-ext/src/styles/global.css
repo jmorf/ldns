@@ -94,7 +94,7 @@ html.sidepanel body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Mono utility — reuse Geist Mono from CSS var */
+/* Mono utility — monospace stack from CSS var */
 .font-mono {
   font-family: var(--font-mono);
 }

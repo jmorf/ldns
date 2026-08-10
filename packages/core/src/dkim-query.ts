@@ -28,8 +28,8 @@ const COMMON_SELECTORS = [
 ];
 
 function joinTxt(records: DnsRecordResult[]): string {
-  // DoH may return multi-string TXT records as already-joined; just normalize quotes.
-  return records.map((r) => r.data.replace(/^"(.+)"$/, '$1')).join('');
+  // TXT values arrive normalized (unquoted, chunks joined) from queryDns.
+  return records.map((r) => r.data).join('');
 }
 
 function parseDkim(raw: string): { algorithm: string; keyLength: number; policy: string } {
@@ -66,13 +66,14 @@ function parseDkim(raw: string): { algorithm: string; keyLength: number; policy:
  */
 export async function queryDkim(
   domain: string,
-  endpoint: DnsEndpoint = 'cloudflare'
+  endpoint: DnsEndpoint = 'cloudflare',
+  signal?: AbortSignal
 ): Promise<DkimResult> {
   const selectors = COMMON_SELECTORS;
   const results = await Promise.all(
     selectors.map(async (selector) => {
       try {
-        const dns = await queryDns(domain, ['TXT'], `${selector}._domainkey`, endpoint);
+        const dns = await queryDns(domain, ['TXT'], `${selector}._domainkey`, endpoint, signal);
         const txtRecords = dns.TXT || [];
         if (txtRecords.length === 0) return null;
         const raw = joinTxt(txtRecords);
@@ -80,7 +81,6 @@ export async function queryDkim(
         const parsed = parseDkim(raw);
         const out: DkimSelector = {
           selector,
-          found: true,
           raw,
           algorithm: parsed.algorithm,
           keyLength: parsed.keyLength,

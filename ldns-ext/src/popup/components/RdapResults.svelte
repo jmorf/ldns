@@ -6,6 +6,7 @@
   import RefreshButton from './RefreshButton.svelte';
   import QuickActions from './QuickActions.svelte';
   import { formatRdapDate } from '@ldns/core/rdap-query';
+  import { formatListingPrice } from '@ldns/core/forsale-query';
   import { Copy, Check, Shield, ShieldOff, Calendar, Server, Building2, Tag, ExternalLink } from 'lucide-svelte';
   import type { ForSaleListing } from '@ldns/core/types';
   import { cn } from '$lib/utils/cn';
@@ -21,16 +22,6 @@
     } catch (error) {
       console.error('Failed to copy:', error);
     }
-  }
-
-  function formatPrice(listing: ForSaleListing): string {
-    if (!listing.price) return 'Price on request';
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: listing.currency || 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(listing.price);
   }
 
   function getMarketplaceName(listing: ForSaleListing): string {
@@ -91,7 +82,7 @@
     <ErrorState message={extensionState.rdapState.error} />
   {:else if data}
     <div class="flex justify-end">
-      <RefreshButton onClick={() => extensionState.queryRdap()} loading={extensionState.rdapState.loading} />
+      <RefreshButton onClick={() => extensionState.queryRdap(true)} loading={extensionState.rdapState.loading} />
     </div>
     <!-- For Sale Banner -->
     {#if hasForSaleListings}
@@ -118,7 +109,7 @@
               </div>
               <div class="flex items-center gap-1.5">
                 {#if listing.price}
-                  <span class="text-xs font-semibold text-primary-300 tnum">{formatPrice(listing)}</span>
+                  <span class="text-xs font-semibold text-primary-300 tnum">{formatListingPrice(listing)}</span>
                 {:else}
                   <span class="text-xs text-fg-muted">Contact</span>
                 {/if}

@@ -2,8 +2,8 @@
   import { extensionState } from '$lib/state/extension-state.svelte';
   import LoadingState from './LoadingState.svelte';
   import ErrorState from './ErrorState.svelte';
-  import { DNS_ENDPOINTS } from '@ldns/core/constants';
-  import type { DnsEndpoint } from '@ldns/core/types';
+  import { DNS_ENDPOINTS, RECORD_TYPE_ORDER } from '@ldns/core/constants';
+  import { ALL_ENDPOINTS } from '@ldns/core/dns-propagation';
   import { cn } from '$lib/utils/cn';
 
   interface Props {
@@ -12,8 +12,11 @@
 
   let { filterTypes = null }: Props = $props();
 
-  const endpoints: DnsEndpoint[] = ['cloudflare', 'google', 'dns-sb'];
-  const recordTypeOrder = ['A', 'AAAA', 'CNAME', 'MX', 'TXT', 'NS', 'SOA', 'CAA'];
+  const endpoints = ALL_ENDPOINTS;
+
+  // Providers that couldn't be reached — an outage, not propagation evidence.
+  const unreachable = $derived(extensionState.propagationState.data?.unreachable ?? []);
+  const reachable = $derived(endpoints.filter((ep) => !unreachable.includes(ep)));
 
   function getAllRecordTypes() {
     const data = extensionState.propagationState.data?.results;
@@ -32,8 +35,8 @@
       filtered = filtered.filter((t) => filterTypes.includes(t));
     }
     return filtered.sort((a, b) => {
-      const ai = recordTypeOrder.indexOf(a);
-      const bi = recordTypeOrder.indexOf(b);
+      const ai = RECORD_TYPE_ORDER.indexOf(a);
+      const bi = RECORD_TYPE_ORDER.indexOf(b);
       return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
     });
   }
@@ -41,7 +44,9 @@
   function hasDiscrepancy(type: string): boolean {
     const data = extensionState.propagationState.data?.results;
     if (!data) return false;
-    const sets = endpoints.map((ep) => {
+    // Compare only providers that answered — a dead provider's empty result
+    // set must not be reported as a propagation mismatch.
+    const sets = reachable.map((ep) => {
       const records = data[ep]?.[type] || [];
       return records
         .map((r) => r.data)
@@ -94,6 +99,11 @@
           <span class="text-warn-400">⚠</span> {mismatches.length} record type{mismatches.length === 1 ? '' : 's'} differ:
           <span class="font-mono">{mismatches.join(', ')}</span>
         {/if}
+        {#if unreachable.length > 0}
+          <span class="block mt-0.5 text-fg-subtle">
+            {unreachable.map((ep) => DNS_ENDPOINTS[ep].name).join(', ')} unreachable — excluded from comparison
+          </span>
+        {/if}
       </p>
 
       {#each allTypes as type}
@@ -120,7 +130,9 @@
               {@const records = extensionState.propagationState.data?.results[endpoint]?.[type] || []}
               <div class="p-2">
                 <p class="text-[10px] text-fg-subtle font-medium mb-1">{DNS_ENDPOINTS[endpoint].name}</p>
-                {#if records.length > 0}
+                {#if unreachable.includes(endpoint)}
+                  <p class="text-[10px] text-fg-subtle italic">Unreachable</p>
+                {:else if records.length > 0}
                   {#each records as record}
                     <p class="text-[10px] text-fg font-mono break-all leading-relaxed">{record.data}</p>
                   {/each}

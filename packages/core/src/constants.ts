@@ -17,6 +17,9 @@ export const DNS_ENDPOINTS: Record<DnsEndpoint, { url: string; name: string }> =
 
 export const DEFAULT_RECORD_TYPES = ['A', 'AAAA', 'NS', 'MX', 'TXT', 'SOA', 'CAA'];
 
+/** Canonical display/export ordering for DNS record types. */
+export const RECORD_TYPE_ORDER = ['A', 'AAAA', 'CNAME', 'MX', 'TXT', 'NS', 'SOA', 'CAA'];
+
 export const RDAP_BOOTSTRAP_URL = 'https://rdap.org/domain/';
 
 export const MAX_RECENT_SEARCHES = 10;
