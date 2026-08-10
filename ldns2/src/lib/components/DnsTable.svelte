@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { untrack } from 'svelte';
     import { domain, queryConfig } from "$lib/state.svelte";
     import {
         createTable,
@@ -93,7 +94,6 @@
     // Table state
     let sorting = $state<SortingState>([]);
     let globalFilter = $state('');
-    let pageSize = $state(25);
 
     // Column definitions
     const columns: ColumnDef<DnsRecord>[] = [
@@ -120,7 +120,17 @@
         },
     ];
 
-    const table = $derived(createTable({
+    // createTable must be called ONCE, not inside $derived. It builds the
+    // whole table instance and registers its own $effect.pre to sync options,
+    // so re-running it per filter click rebuilt every row/cell (tearing down
+    // and remounting the DOM) *and* leaked an extra effect each time — each of
+    // which kept re-syncing options on every later change. That compounding
+    // work is what made the filter chips feel slow.
+    //
+    // Reactivity comes from the getters below: the table reads them live, so
+    // changing `filterType`, `sorting`, or `globalFilter` updates the table
+    // in place instead of recreating it.
+    const table = createTable({
         get data() { return filteredRecords; },
         columns,
         state: {
@@ -142,12 +152,13 @@
                 pageSize: 25,
             },
         },
-    }));
+    });
 
-    // Reset to first page when filter changes
+    // Reset to the first page when the filter changes. Needed now that the
+    // table persists across filter changes (previously a rebuild reset it).
     $effect(() => {
         filterType;
-        table.setPageIndex(0);
+        untrack(() => table.setPageIndex(0));
     });
 </script>
 
