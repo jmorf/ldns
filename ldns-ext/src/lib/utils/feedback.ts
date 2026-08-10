@@ -1,13 +1,12 @@
 /**
  * Bug-report / feedback deep link.
  *
- * Issues live in a public issues-only repo (no code) so users can file
- * reports on GitHub while the extension source itself stays private.
- * The URL prefills environment details the user can review and edit
- * before submitting — nothing is sent until they do.
+ * LDNS is open source, so issues live alongside the code. The URL prefills
+ * environment details the user can review and edit before submitting —
+ * nothing is sent until they do.
  */
 
-export const FEEDBACK_REPO_URL = 'https://github.com/jmorf/ldns-feedback';
+export const FEEDBACK_REPO_URL = 'https://github.com/jmorf/ldns';
 
 /** Maintainer's X profile — an informal channel for feedback and bug reports. */
 export const X_PROFILE_URL = 'https://x.com/jmorf';

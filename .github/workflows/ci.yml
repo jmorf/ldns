@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# `pull_request` (not `pull_request_target`) is deliberate: fork PRs run
+# without access to repository secrets. Never switch this to
+# pull_request_target — it would run untrusted PR code with our secrets.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Type-check, test, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Must install from the repo root: this is an npm workspace and both
+      # apps resolve @ldns/core through it.
+      - name: Install
+        run: npm ci
+
+      - name: Type-check
+        run: npm run check --workspaces --if-present
+
+      - name: Test
+        run: npm test --workspaces --if-present
+
+      - name: Build extension (Chrome)
+        run: npm run build -w ldns-ext
+
+      - name: Build extension (Firefox)
+        run: npm run build:firefox -w ldns-ext
+
+      - name: Build site
+        run: npm run build -w ldns-site

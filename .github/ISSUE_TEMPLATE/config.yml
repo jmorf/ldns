@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/jmorf/ldns/security/advisories/new
+    about: Please do NOT open a public issue for security problems — report privately here.
+  - name: "@jmorf on X"
+    url: https://x.com/jmorf
+    about: Informal feedback and quick questions.
+  - name: ldns.com
+    url: https://ldns.com
+    about: The LDNS website and tools.

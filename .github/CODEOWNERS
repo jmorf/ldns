@@ -1,0 +1,13 @@
+# Every change requires review from the maintainer.
+# Combined with branch protection ("Require review from Code Owners"),
+# this is what stops an approving review from coming from anywhere else.
+* @jmorf
+
+# Security-critical paths — called out so they're never skimmed.
+/packages/core/src/ssrf.ts        @jmorf
+/packages/core/src/url.ts         @jmorf
+/packages/core/src/fetch-utils.ts @jmorf
+/ldns2/src/lib/server/            @jmorf
+/ldns-ext/public/manifest.json    @jmorf
+/ldns-ext/public/manifest.firefox.json @jmorf
+/.github/workflows/               @jmorf

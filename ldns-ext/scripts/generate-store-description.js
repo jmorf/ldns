@@ -22,6 +22,7 @@ const releases = [
   {
     version: '1.8.0',
     notes: [
+      'LDNS is now open source — the full extension and website source is at github.com/jmorf/ldns (MIT). You can read exactly what it does with your lookups.',
       'Removed the marketplace ("For Sale") check — with it goes the last feature that contacted an LDNS server. The extension now has no backend: every lookup goes straight from your browser to public DNS and registry services.'
     ]
   },
@@ -64,7 +65,7 @@ WHAT IT DOES
 
 PRIVACY
 
-No accounts, no analytics, no tracking, no backend. Every lookup goes directly from your browser to public DNS, registry, and Certificate Transparency services — nothing is ever sent to an LDNS server. Recent searches are stored only on your device. Full policy: ldns.com/extension/privacy
+No accounts, no analytics, no tracking, no backend. Every lookup goes directly from your browser to public DNS, registry, and Certificate Transparency services — nothing is ever sent to an LDNS server. Recent searches are stored only on your device. And you don't have to take our word for it: the source is public at github.com/jmorf/ldns. Full policy: ldns.com/extension/privacy
 
 WHAT'S NEW
 
@@ -74,7 +75,8 @@ LINKS
 
 Website: ldns.com
 Privacy policy: ldns.com/extension/privacy
-Feedback and bug reports: github.com/jmorf/ldns-feedback or @jmorf on X
+Source code and issues: github.com/jmorf/ldns
+Contact: @jmorf on X
 `;
 
 // Write the description

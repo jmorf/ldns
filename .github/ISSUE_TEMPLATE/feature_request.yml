@@ -1,0 +1,32 @@
+name: Feature request
+description: Suggest an improvement or new capability.
+title: "[Feature] "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like LDNS to do?
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: What problem does it solve for you?
+      description: The workflow or situation where you'd use this.
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Where does it belong?
+      options:
+        - Browser extension
+        - ldns.com website
+        - Both
+        - Not sure
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      description: LDNS sends nothing to its own servers and has no analytics — features that would change that are very unlikely to be accepted.
+      options:
+        - label: This wouldn't require sending user data to an LDNS server or adding tracking

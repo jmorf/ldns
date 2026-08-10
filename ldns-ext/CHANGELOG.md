@@ -2,6 +2,14 @@
 
 ## [1.8.0] - 2026-08-10
 
+### Added
+- **LDNS is now open source.** The extension, the ldns.com website, and the
+  shared `@ldns/core` lookup library are public at
+  [github.com/jmorf/ldns](https://github.com/jmorf/ldns) under the MIT license
+  (the LDNS name and icons are excluded — see LICENSE-BRAND). The privacy
+  claims are now independently verifiable rather than something you have to
+  take on trust. Bug reports and pull requests welcome.
+
 ### Removed
 - **Marketplace ("For Sale") check removed entirely.** The Settings toggle, the
   "For Sale" chip under the search bar, and the RDAP-tab listing banner are all

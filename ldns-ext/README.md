@@ -127,4 +127,4 @@ The code is licensed under the [MIT License](LICENSE) — use it, fork it, learn
 
 - Website: [ldns.com](https://ldns.com)
 - Privacy: [ldns.com/extension/privacy](https://ldns.com/extension/privacy)
-- Feedback & bug reports: [github.com/jmorf/ldns-feedback](https://github.com/jmorf/ldns-feedback) or [@jmorf on X](https://x.com/jmorf)
+- Source & issues: [github.com/jmorf/ldns](https://github.com/jmorf/ldns) or [@jmorf on X](https://x.com/jmorf)
