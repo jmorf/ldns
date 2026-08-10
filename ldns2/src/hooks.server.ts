@@ -32,18 +32,16 @@ const SECURITY_HEADERS: Record<string, string> = {
  * Structural directives are strict — `default-src 'self'`, `object-src 'none'`,
  * `base-uri 'self'`, `frame-ancestors 'self'`, `form-action 'self'` — which
  * blocks injected `<base>`, plugin objects, framing/clickjacking, and exfil via
- * form posts. `script-src` is restricted to our own origin plus Google
- * Analytics (kept intentionally); `'unsafe-inline'` is required for the two
- * inline bootstrap scripts in app.html (early-paint theme + the gtag config)
- * and SvelteKit's hydration script. The app's HTML-injection surface is
- * otherwise minimal — all dynamic/remote data renders through Svelte's
- * auto-escaping text interpolation, and the only `{@html}` is JSON.stringify'd
- * JSON-LD — so source restriction is the meaningful win here.
+ * form posts. `script-src` is restricted to our own origin; `'unsafe-inline'`
+ * is required for the inline early-paint theme script in app.html and
+ * SvelteKit's hydration script. The app's HTML-injection surface is otherwise
+ * minimal — all dynamic/remote data renders through Svelte's auto-escaping text
+ * interpolation, and the only `{@html}` is JSON.stringify'd JSON-LD — so source
+ * restriction is the meaningful win here.
  *
- * `connect-src` lists the resolvers the page talks to directly (DoH + RDAP) and
- * the Google Analytics collectors; everything else routes through same-origin
- * `/api/*`. A missing GA host would only drop an analytics beacon, never break
- * the page.
+ * `connect-src` lists the resolvers the page talks to directly (DoH + RDAP);
+ * everything else routes through same-origin `/api/*`. No analytics/telemetry
+ * hosts are allowed — the site sends no tracking beacons.
  */
 const CSP = [
   "default-src 'self'",
@@ -51,11 +49,11 @@ const CSP = [
   "object-src 'none'",
   "frame-ancestors 'self'",
   "form-action 'self'",
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com",
+  "script-src 'self' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https:",
   "font-src 'self' data:",
-  "connect-src 'self' https://cloudflare-dns.com https://dns.google https://doh.dns.sb https://rdap.org https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://stats.g.doubleclick.net",
+  "connect-src 'self' https://cloudflare-dns.com https://dns.google https://doh.dns.sb https://rdap.org",
   "manifest-src 'self'",
   "worker-src 'self' blob:",
   'upgrade-insecure-requests'

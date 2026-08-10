@@ -55,6 +55,50 @@ async function guardedFetch(
   return fetchWithTimeout(url, { ...options, signal }, FETCH_TIMEOUT);
 }
 
+const MAX_REDIRECTS = 20;
+
+/**
+ * Fetch a URL and return the final response.
+ *
+ * When a guard is present (server callers), redirects are followed MANUALLY so
+ * the guard runs before every hop — `redirect: 'follow'` would let the runtime
+ * connect to an intermediate hop (e.g. a 302 to 169.254.169.254) before we ever
+ * see it, so the guard on only the initial + final URL is not enough. When no
+ * guard is present (the extension, fetching on the user's own behalf from their
+ * own browser/network), redirects are followed normally.
+ */
+async function followGuarded(
+  url: string,
+  method: 'HEAD' | 'GET',
+  guard: UrlGuard | undefined,
+  signal: AbortSignal | undefined
+): Promise<Response> {
+  if (!guard) {
+    return guardedFetch(url, { method, redirect: 'follow', cache: 'no-store' }, undefined, signal);
+  }
+
+  let currentUrl = url;
+  for (let i = 0; i <= MAX_REDIRECTS; i++) {
+    const res = await guardedFetch(currentUrl, { method, redirect: 'manual', cache: 'no-store' }, guard, signal);
+    // `redirect: 'manual'` on Workers/Node yields the real 3xx with a readable
+    // Location. (Browsers give an opaqueredirect we can't inspect — stop there.)
+    if (res.status >= 300 && res.status < 400 && res.type !== 'opaqueredirect') {
+      const location = res.headers.get('location');
+      if (!location) return res;
+      let next: string;
+      try {
+        next = new URL(location, currentUrl).href;
+      } catch {
+        return res;
+      }
+      currentUrl = next; // guarded at the top of the next iteration
+      continue;
+    }
+    return res;
+  }
+  throw new Error('Too many redirects');
+}
+
 // ─── Main Functions ────────────────────────────────────────────────────
 
 /**
@@ -73,11 +117,7 @@ export async function fetchServerInfo(
   let response: Response;
   try {
     // Try HEAD first (faster, less data transfer)
-    response = await guardedFetch(url, {
-      method: 'HEAD',
-      redirect: 'follow',
-      cache: 'no-store'
-    }, guard, signal);
+    response = await followGuarded(url, 'HEAD', guard, signal);
   } catch (error) {
     // If aborted or timed out, rethrow with a friendly message
     if (isAbortOrTimeout(error)) {
@@ -85,11 +125,7 @@ export async function fetchServerInfo(
     }
     // Fallback to GET if HEAD fails (some servers block HEAD requests)
     try {
-      response = await guardedFetch(url, {
-        method: 'GET',
-        redirect: 'follow',
-        cache: 'no-store'
-      }, guard, signal);
+      response = await followGuarded(url, 'GET', guard, signal);
     } catch (getError) {
       if (isAbortOrTimeout(getError)) {
         throw new Error('Request timed out');
@@ -97,10 +133,6 @@ export async function fetchServerInfo(
       throw getError;
     }
   }
-
-  // `redirect: 'follow'` resolves the chain internally; re-validate where it
-  // actually landed so a redirect onto an internal host can't return data.
-  if (guard) guard(response.url);
 
   const responseTime = Math.round(performance.now() - startTime);
   const headers = headersToObject(response.headers);
