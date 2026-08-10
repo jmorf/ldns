@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { untrack } from 'svelte';
     import {
         createTable,
         getCoreRowModel,
@@ -58,7 +59,12 @@
         },
     ];
 
-    const table = $derived(createTable({
+    // Call createTable ONCE — it builds the whole table instance and registers
+    // its own $effect.pre to sync options. Wrapping it in $derived rebuilt every
+    // row on each keystroke in the search box and leaked an extra effect each
+    // time, so typing got slower the longer you typed. The getters below are
+    // what make it reactive. (Same fix as DnsTable.)
+    const table = createTable({
         get data() { return tableData; },
         columns,
         state: {
@@ -80,7 +86,15 @@
                 pageSize: 25,
             },
         },
-    }));
+    });
+
+    // Reset to the first page when a new set of subdomains arrives (scanning a
+    // different domain). The table now persists across data changes, where the
+    // old per-change rebuild reset this implicitly.
+    $effect(() => {
+        subdomains;
+        untrack(() => table.setPageIndex(0));
+    });
 </script>
 
 {#if loading}
