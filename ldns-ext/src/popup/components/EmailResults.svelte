@@ -15,6 +15,7 @@
 
   const data = $derived(extensionState.emailState.data);
   const dkim = $derived(extensionState.dkimState.data);
+  const spfEval = $derived(extensionState.spfEvalState.data);
 
   const copied = createCopied();
 
@@ -118,6 +119,38 @@
             {#each data.spfAnalysis.providers as provider}
               <span class="px-1.5 py-0.5 text-[10px] bg-surface-3 text-fg-muted rounded-md">{provider}</span>
             {/each}
+          </div>
+        {/if}
+        <!-- DNS lookup budget: exceeding 10 makes receivers return permerror,
+             which fails SPF even though the record looks fine. -->
+        {#if spfEval}
+          {@const over = spfEval.exceeded}
+          <div class="pt-2 border-t border-line">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[10px] text-fg-subtle">DNS lookups</span>
+              <span class={cn('text-[10px] font-mono tnum font-semibold', over ? 'text-bad-400' : spfEval.lookups >= 8 ? 'text-warn-400' : 'text-ok-400')}>
+                {spfEval.lookups} / {spfEval.limit}
+              </span>
+            </div>
+            <div class="h-1 rounded-full bg-surface-3 overflow-hidden">
+              <div
+                class={cn('h-full rounded-full transition-all', over ? 'bg-bad-500' : spfEval.lookups >= 8 ? 'bg-warn-500' : 'bg-ok-500')}
+                style={`width: ${Math.min(100, (spfEval.lookups / spfEval.limit) * 100)}%`}
+              ></div>
+            </div>
+            {#if over}
+              <p class="text-[10px] text-bad-400 mt-1 leading-relaxed">
+                Over the RFC 7208 limit — receivers return <span class="font-mono">permerror</span> and SPF fails. Reduce nested includes.
+              </p>
+            {:else if spfEval.lookups >= 8}
+              <p class="text-[10px] text-warn-400 mt-1 leading-relaxed">Close to the limit of {spfEval.limit}; adding another provider may break SPF.</p>
+            {/if}
+            {#if spfEval.voidExceeded}
+              <p class="text-[10px] text-warn-400 mt-1 leading-relaxed">{spfEval.voidLookups} void lookups (limit {spfEval.voidLimit}) — some includes resolve to nothing.</p>
+            {/if}
+            {#if spfEval.loops.length > 0}
+              <p class="text-[10px] text-bad-400 mt-1 leading-relaxed">Include loop via {spfEval.loops.join(', ')}.</p>
+            {/if}
           </div>
         {/if}
         <div class="pt-2 border-t border-line">

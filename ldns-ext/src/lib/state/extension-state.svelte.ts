@@ -26,6 +26,10 @@ import { analyzeServer } from '@ldns/core/server-info';
 import { queryAllProviders, type PropagationData } from '@ldns/core/dns-propagation';
 import { discoverSubdomains } from '@ldns/core/subdomain-query';
 import { queryDkim } from '@ldns/core/dkim-query';
+import { evaluateSpf, type SpfEvaluation } from '@ldns/core/spf-eval';
+import { checkDnssec, type DnssecCheck } from '@ldns/core/dnssec-check';
+import { checkCaaAgainstIssuer, type CaaIssuerCheck } from '@ldns/core/caa-check';
+import { fetchTlsCertificate } from '@ldns/core/tls-query';
 import { lookupAsnBatch } from '@ldns/core/asn-query';
 import {
   DEFAULT_SETTINGS,
@@ -75,6 +79,9 @@ class ExtensionState {
   subdomainState = $state<ToolState<SubdomainResult>>(idleState());
   dkimState = $state<ToolState<DkimResult>>(idleState());
   asnState = $state<ToolState<Record<string, AsnInfo>>>(idleState());
+  spfEvalState = $state<ToolState<SpfEvaluation>>(idleState());
+  dnssecState = $state<ToolState<DnssecCheck>>(idleState());
+  caaCheckState = $state<ToolState<CaaIssuerCheck>>(idleState());
 
   propagationMode = $state(false);
 
@@ -242,15 +249,22 @@ class ExtensionState {
     this.subdomainState = idleState();
     this.dkimState = idleState();
     this.asnState = idleState();
+    this.spfEvalState = idleState();
+    this.dnssecState = idleState();
+    this.caaCheckState = idleState();
 
     const queries: Promise<void>[] = [
       // ASN depends on DNS results, so chain it — guarded against a newer
       // lookup having superseded this one by the time DNS lands.
       this.queryDns().then(() => {
-        if (this.domain === lookupDomain) this.queryAsn();
+        if (this.domain !== lookupDomain) return;
+        this.queryAsn();
+        this.queryCaaCheck();
       }),
       this.queryRdap(),
+      this.queryDnssec(),
       this.queryEmail(),
+      this.querySpfEval(),
       this.queryDkim(),
       this.queryServer()
     ];
@@ -314,7 +328,9 @@ class ExtensionState {
     if (!this.isValidDomain) return;
     return this.run(
       'subdomains',
-      (signal) => discoverSubdomains(this.rootDomain || this.domain, signal),
+      // The extension queries from the user's own IP, so CertSpotter's
+      // per-IP quota is per-user — safe to race it against crt.sh.
+      (signal) => discoverSubdomains(this.rootDomain || this.domain, { signal, useCertSpotter: true }),
       (next) => (this.subdomainState = next),
       { cacheKey: `subs:${this.rootDomain || this.domain}`, cacheTtlMs: 5 * 60_000, force }
     );
@@ -327,6 +343,57 @@ class ExtensionState {
       (signal) => queryDkim(this.domain, this.endpoint, signal),
       (next) => (this.dkimState = next),
       { cacheKey: `dkim:${this.domain}`, cacheTtlMs: 60_000, force }
+    );
+  }
+
+  /**
+   * Count the DNS lookups an SPF evaluation would consume. Exceeding the
+   * RFC 7208 limit of 10 makes receivers return permerror, silently failing
+   * authentication — invisible without walking the include tree.
+   */
+  async querySpfEval(force = false) {
+    if (!this.isValidDomain) return;
+    return this.run(
+      'spf-eval',
+      (signal) => evaluateSpf(this.domain, this.endpoint, signal),
+      (next) => (this.spfEvalState = next),
+      { cacheKey: `spf:${this.domain}:${this.endpoint}`, cacheTtlMs: 60_000, force }
+    );
+  }
+
+  /** Whether the DNSSEC chain actually validates (not just whether it exists). */
+  async queryDnssec(force = false) {
+    if (!this.isValidDomain) return;
+    return this.run(
+      'dnssec',
+      (signal) => checkDnssec(this.rootDomain || this.domain, this.endpoint, signal),
+      (next) => (this.dnssecState = next),
+      { cacheKey: `dnssec:${this.rootDomain || this.domain}`, cacheTtlMs: 60_000, force }
+    );
+  }
+
+  /**
+   * Compare the CAA policy against the CA that actually issued the current
+   * certificate. Only runs when CAA records exist — most domains have none,
+   * so this costs nothing for them.
+   */
+  async queryCaaCheck() {
+    const caa = this.dnsState.data?.CAA ?? [];
+    if (caa.length === 0) {
+      this.caaCheckState = idleState();
+      return;
+    }
+    const domain = this.rootDomain || this.domain;
+    return this.run(
+      'caa-check',
+      async (signal) => {
+        // Exact-name crt.sh query (fast path), unlike subdomain discovery's
+        // wildcard search.
+        const cert = await fetchTlsCertificate(domain, signal).catch(() => null);
+        return checkCaaAgainstIssuer(caa.map((r) => r.data), cert?.issuer ?? null);
+      },
+      (next) => (this.caaCheckState = next),
+      { cacheKey: `caa:${domain}`, cacheTtlMs: 5 * 60_000 }
     );
   }
 
@@ -364,6 +431,9 @@ class ExtensionState {
     this.subdomainState = idleState();
     this.dkimState = idleState();
     this.asnState = idleState();
+    this.spfEvalState = idleState();
+    this.dnssecState = idleState();
+    this.caaCheckState = idleState();
     this.propagationMode = false;
   }
 }

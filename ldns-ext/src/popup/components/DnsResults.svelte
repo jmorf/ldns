@@ -10,6 +10,7 @@
   import QuickActions from './QuickActions.svelte';
   import { lookupPtrBatch } from '@ldns/core/ptr';
   import { RECORD_TYPE_ORDER } from '@ldns/core/constants';
+  import { ShieldAlert } from 'lucide-svelte';
   import { cn } from '$lib/utils/cn';
 
   const filters = [
@@ -98,6 +99,7 @@
 
   const compareFilterTypes = $derived(getFilterRecordTypes());
   const asnResults = $derived(extensionState.asnState.data ?? {});
+  const caaCheck = $derived(extensionState.caaCheckState.data);
 </script>
 
 <div class="space-y-2.5">
@@ -151,6 +153,16 @@
         <RefreshButton onClick={() => extensionState.queryDns(true)} loading={extensionState.dnsState.loading} />
       </div>
     </div>
+
+    {#if caaCheck && (caaCheck.verdict === 'not-covered' || caaCheck.verdict === 'forbids-all')}
+      <div class="rounded-xl p-3 border bg-warn-500/10 border-warn-500/30">
+        <div class="flex items-center gap-1.5 mb-1">
+          <ShieldAlert class="w-3.5 h-3.5 text-warn-400" />
+          <h3 class="section-title !text-warn-400">CAA mismatch</h3>
+        </div>
+        <p class="text-[10px] text-fg-muted leading-relaxed">{caaCheck.explanation}</p>
+      </div>
+    {/if}
 
     {#if extensionState.propagationMode}
       <PropagationResults filterTypes={compareFilterTypes} />

@@ -9,6 +9,9 @@
   import SkeletonRows from '$lib/components/SkeletonRows.svelte';
   import SectionHeader from '$lib/components/SectionHeader.svelte';
   import SEO from '$lib/components/SEO.svelte';
+  import DnssecValidation from '$lib/components/DnssecValidation.svelte';
+  import CaaIssuerCheck from '$lib/components/CaaIssuerCheck.svelte';
+  import { queryDns } from '@ldns/core/dns-query';
 
   let securityHeaders = $state<SecurityHeadersResponse | null>(null);
   let tls = $state<TlsResponse | { ok: false; error: string } | null>(null);
@@ -16,22 +19,27 @@
   let hsts = $state<HstsPreloadResponse | null>(null);
   let loading = $state(false);
   let error = $state('');
+  // CAA records, fetched here so the policy can be compared against the CA
+  // that actually issued the certificate shown above.
+  let caaRecords = $state<string[]>([]);
 
   async function load() {
     if (!domain.name || !domain.isValid) return;
     loading = true;
     error = '';
     try {
-      const [a, b, c, d] = await Promise.allSettled([
+      const [a, b, c, d, e] = await Promise.allSettled([
         proxy.securityHeaders(domain.name),
         proxy.tls(domain.name),
         proxy.probes(domain.name),
-        proxy.hstsPreload(domain.name)
+        proxy.hstsPreload(domain.name),
+        queryDns(domain.name, ['CAA'])
       ]);
       if (a.status === 'fulfilled') securityHeaders = a.value;
       if (b.status === 'fulfilled') tls = b.value;
       if (c.status === 'fulfilled') probes = c.value;
       if (d.status === 'fulfilled') hsts = d.value;
+      caaRecords = e.status === 'fulfilled' ? (e.value.CAA ?? []).map((r) => r.data) : [];
       if (a.status === 'rejected' && b.status === 'rejected' && c.status === 'rejected') {
         error = 'Security checks failed';
       }
@@ -136,7 +144,17 @@
 
       <!-- Security headers -->
       <div>
-        <SectionHeader id="security-headers" title="02 — Response Security Headers" />
+        <SectionHeader id="caa-policy" title="02 — CAA Policy" />
+        <CaaIssuerCheck {caaRecords} certIssuer={tls && tls.ok ? tls.certificate.issuer : null} />
+      </div>
+
+      <div>
+        <SectionHeader id="dnssec" title="03 — DNSSEC" />
+        <DnssecValidation domain={domain.rootDomain || domain.name} />
+      </div>
+
+      <div>
+        <SectionHeader id="security-headers" title="04 — Response Security Headers" />
         <div class="bg-surface-2 border border-line rounded-xl p-5">
           {#if securityHeaders}
             <div class="space-y-2">
@@ -163,7 +181,7 @@
 
       <!-- HSTS Preload -->
       <div>
-        <SectionHeader id="hsts-preload" title="03 — HSTS Preload List" />
+        <SectionHeader id="hsts-preload" title="05 — HSTS Preload List" />
         <div class="bg-surface-2 border border-line rounded-xl p-5 flex items-center justify-between">
           <div>
             <p class="text-[11px] text-fg-subtle">Status against the public HSTS preload list</p>
@@ -181,7 +199,7 @@
 
       <!-- Well-known probes -->
       <div>
-        <SectionHeader id="well-known" title="04 — Well-Known Files" />
+        <SectionHeader id="well-known" title="06 — Well-Known Files" />
         <div class="bg-surface-2 border border-line rounded-xl divide-y divide-line">
           {#if probes}
             {#each probes.probes as p}
@@ -203,7 +221,7 @@
 
       <!-- Email summary -->
       <div>
-        <SectionHeader id="email-summary" title="05 — Email Authentication" />
+        <SectionHeader id="email-summary" title="07 — Email Authentication" />
         <div class="bg-surface-2 border border-line rounded-xl p-5 text-center">
           <p class="text-sm text-fg-muted">SPF, DMARC, DKIM, BIMI, and MTA-STS records live on the dedicated email page.</p>
           <a href="/{domain.name}/email" class="inline-block mt-3 px-4 py-1.5 text-sm bg-primary-500/15 text-primary-400 border border-primary-500/30 rounded-lg hover:bg-primary-500/25 transition-colors">View email records →</a>

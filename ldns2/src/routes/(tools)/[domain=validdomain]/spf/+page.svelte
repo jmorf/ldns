@@ -8,6 +8,7 @@
     import ShareButton from "$lib/components/ShareButton.svelte";
     import CopyButton from "$lib/components/CopyButton.svelte";
     import SPFAnalyzer from "$lib/components/SPFAnalyzer.svelte";
+    import SpfLookupBudget from "$lib/components/SpfLookupBudget.svelte";
     import Badge from "$lib/components/ui/badge.svelte";
     import { SPF_PAGE } from "$lib/utils/seoContent";
     import { generateSpfFaqJsonLd } from "$lib/utils/faqJsonLd";
@@ -60,6 +61,11 @@
                 <CopyButton text={spfRecords[0]?.data ?? ''} size="sm" variant="compact" />
             </div>
             <p class="text-fg font-mono text-sm break-all">{spfRecords[0]?.data}</p>
+        </div>
+
+        <!-- Lookup budget: the most common silent SPF failure -->
+        <div class="mb-6">
+            <SpfLookupBudget domain={domain.rootDomain || domain.name} hasSpf={spfRecords.length > 0} />
         </div>
 
         <!-- SPF Analyzer -->

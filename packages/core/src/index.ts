@@ -31,4 +31,7 @@ export * from './ptr';
 export * from './asn-query';
 
 export * from './subdomain-query';
+export * from './spf-eval';
+export * from './dnssec-check';
+export * from './caa-check';
 export * from './dkim-query';

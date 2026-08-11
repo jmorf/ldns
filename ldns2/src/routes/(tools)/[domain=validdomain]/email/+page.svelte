@@ -12,6 +12,7 @@
     import { browser } from "$app/environment";
     import SEO from "$lib/components/SEO.svelte";
     import SPFAnalyzer from "$lib/components/SPFAnalyzer.svelte";
+    import SpfLookupBudget from "$lib/components/SpfLookupBudget.svelte";
     import EmailProviderDetector from "$lib/components/EmailProviderDetector.svelte";
     import DMARCAnalyzer from "$lib/components/DMARCAnalyzer.svelte";
     import MTASTSAnalyzer from "$lib/components/MTASTSAnalyzer.svelte";
@@ -256,6 +257,13 @@
             txtRecords={domain.toolState.email.data?.txt}
             variant="detailed"
         />
+
+        <div class="mt-4">
+            <SpfLookupBudget
+                domain={domain.rootDomain || domain.name}
+                hasSpf={(domain.toolState.email.data?.spf?.length ?? 0) > 0}
+            />
+        </div>
     </div>
 
     <!-- DMARC Records and Analysis -->

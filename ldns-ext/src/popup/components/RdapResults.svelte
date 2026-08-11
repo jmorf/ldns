@@ -7,13 +7,14 @@
   import QuickActions from './QuickActions.svelte';
   import CopyRow from './CopyRow.svelte';
   import { formatRdapDate } from '@ldns/core/rdap-query';
-  import { Shield, ShieldOff, Calendar, Server, Building2 } from 'lucide-svelte';
+  import { Shield, ShieldOff, ShieldAlert, Calendar, Server, Building2 } from 'lucide-svelte';
   import { cn } from '$lib/utils/cn';
   import { createCopied } from '$lib/utils/copied.svelte';
 
   const copied = createCopied();
 
   const data = $derived(extensionState.rdapState.data);
+  const dnssec = $derived(extensionState.dnssecState.data);
 
   function getDomainAge(created: string): string {
     if (!created) return '';
@@ -64,18 +65,40 @@
     <div class="flex justify-end">
       <RefreshButton onClick={() => extensionState.queryRdap(true)} loading={extensionState.rdapState.loading} />
     </div>
+    {#if dnssec?.status === 'bogus'}
+      <div class="rounded-xl p-3 border bg-bad-500/10 border-bad-500/30">
+        <div class="flex items-center gap-1.5 mb-1">
+          <ShieldAlert class="w-3.5 h-3.5 text-bad-400" />
+          <h3 class="section-title !text-bad-400">DNSSEC broken</h3>
+        </div>
+        <p class="text-[10px] text-fg-muted leading-relaxed">{dnssec.explanation}</p>
+      </div>
+    {/if}
+
     <!-- Domain & Status -->
     <div class="card fade-in-up">
       <div class="flex items-center justify-between mb-1.5">
         <h3 class="section-title">Domain</h3>
         <div class="flex items-center gap-1">
-          {#if data.dnssecEnabled}
+          <!-- Validation verdict beats "is it signed": a bogus chain makes
+               the domain unreachable for validating resolvers. -->
+          {#if dnssec?.status === 'bogus'}
+            <span class="flex items-center gap-1 text-[10px] text-bad-400 font-semibold" title={dnssec.explanation}>
+              <ShieldAlert class="w-3 h-3" />
+              DNSSEC broken
+            </span>
+          {:else if dnssec?.status === 'secure'}
+            <span class="flex items-center gap-1 text-[10px] text-ok-400" title={dnssec.explanation}>
+              <Shield class="w-3 h-3" />
+              DNSSEC valid
+            </span>
+          {:else if data.dnssecEnabled}
             <span class="flex items-center gap-1 text-[10px] text-ok-400">
               <Shield class="w-3 h-3" />
               DNSSEC
             </span>
           {:else}
-            <span class="flex items-center gap-1 text-[10px] text-fg-subtle">
+            <span class="flex items-center gap-1 text-[10px] text-fg-subtle" title={dnssec?.explanation}>
               <ShieldOff class="w-3 h-3" />
               No DNSSEC
             </span>
