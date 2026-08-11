@@ -95,6 +95,33 @@
         </button>
       {/each}
 
+      <!-- Optional CertSpotter key. Stored locally; nothing is proxied. -->
+      <div class="pt-2 border-t border-line">
+        <label class="block px-2.5 py-2">
+          <span class="text-xs font-medium text-fg">CertSpotter API key</span>
+          <span class="block text-[10px] text-fg-muted mt-0.5 leading-relaxed">
+            Optional. Subdomain discovery falls back to CertSpotter when crt.sh is down, but the
+            free tier allows only a few lookups per hour per IP. A key removes that limit. It is
+            stored only in this browser and sent only to api.certspotter.com.
+          </span>
+          <input
+            type="password"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Paste key (leave blank to use the free tier)"
+            value={extensionState.settings.certSpotterKey ?? ''}
+            onchange={(e) => extensionState.updateSettings({ certSpotterKey: e.currentTarget.value.trim() })}
+            class="w-full mt-2 px-2 py-1.5 text-[11px] font-mono bg-surface-2 border border-line rounded-lg text-fg placeholder-fg-subtle focus:outline-none focus:border-primary-500/50"
+          />
+          <a
+            href="https://sslmate.com/signup?for=ct_search_api"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-block text-[10px] text-primary-400 hover:text-primary-300 mt-1.5"
+          >Get a free key from SSLMate</a>
+        </label>
+      </div>
+
       <div class="pt-2 border-t border-line">
         <a
           href={feedbackUrl()}

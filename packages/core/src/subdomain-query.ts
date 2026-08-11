@@ -50,6 +50,12 @@ export type CertSpotterMode = 'race' | 'fallback' | 'off';
 export interface SubdomainOptions {
   signal?: AbortSignal;
   certSpotter?: CertSpotterMode;
+  /**
+   * Optional CertSpotter (SSLMate) API key. The free unauthenticated tier is
+   * a small per-IP budget that a handful of lookups can exhaust; a key lifts
+   * that. Supplied by the user and stored on their own device, never bundled.
+   */
+  certSpotterKey?: string;
 }
 
 async function fetchCrtSh(domain: string, timeoutMs: number, signal?: AbortSignal): Promise<CtRecord[]> {
@@ -100,14 +106,22 @@ async function fetchCrtSh(domain: string, timeoutMs: number, signal?: AbortSigna
   }
 }
 
-async function fetchCertSpotter(domain: string, timeoutMs: number, signal?: AbortSignal): Promise<CtRecord[]> {
+async function fetchCertSpotter(
+  domain: string,
+  timeoutMs: number,
+  signal?: AbortSignal,
+  apiKey?: string
+): Promise<CtRecord[]> {
   const url =
     `https://api.certspotter.com/v1/issuances?domain=${encodeURIComponent(domain)}` +
     '&include_subdomains=true&expand=dns_names&expand=issuer';
 
   try {
     const response = await fetchWithTimeout(url, {
-      headers: { 'Accept': 'application/json' },
+      headers: {
+        'Accept': 'application/json',
+        ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {})
+      },
       signal
     }, timeoutMs);
 
@@ -234,7 +248,7 @@ export async function discoverSubdomains(
   domain: string,
   options: SubdomainOptions = {}
 ): Promise<SubdomainResult> {
-  const { signal, certSpotter = 'off' } = options;
+  const { signal, certSpotter = 'off', certSpotterKey } = options;
   const asciiDomain = toAsciiDomain(domain).toLowerCase();
 
   const attempt = (timeoutMs: number) => {
@@ -242,7 +256,7 @@ export async function discoverSubdomains(
     if (certSpotter === 'race') {
       return hedge(
         primary,
-        () => fetchCertSpotter(asciiDomain, timeoutMs, signal),
+        () => fetchCertSpotter(asciiDomain, timeoutMs, signal, certSpotterKey),
         HEDGE_DELAY_MS
       );
     }
@@ -259,7 +273,7 @@ export async function discoverSubdomains(
     // spending another slow round on the service that just failed.
     if (certSpotter === 'fallback') {
       try {
-        data = await fetchCertSpotter(asciiDomain, 10_000, signal);
+        data = await fetchCertSpotter(asciiDomain, 10_000, signal, certSpotterKey);
         return toResult(data, asciiDomain);
       } catch {
         /* fall through to the crt.sh retry */

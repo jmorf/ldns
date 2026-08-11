@@ -38,38 +38,74 @@
     document.documentElement.classList.add('sidepanel');
   }
 
+  /** Domain of the browser tab we are currently mirroring, if any. */
+  let followedTabDomain = $state<string | null>(null);
+
+  /** Hostname of the active tab, or null for internal pages we can't inspect. */
+  async function currentTabDomain(): Promise<string | null> {
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (
+        !tab?.url ||
+        tab.url.startsWith('chrome://') ||
+        tab.url.startsWith('about:') ||
+        tab.url.startsWith('edge://') ||
+        tab.url.startsWith('chrome-extension://') ||
+        tab.url.startsWith('moz-extension://')
+      ) {
+        return null;
+      }
+      const domain = new URL(tab.url).hostname;
+      return domain && domain.includes('.') ? domain : null;
+    } catch (e) {
+      console.error('[LDNS] Could not read the active tab:', e);
+      return null;
+    }
+  }
+
   onMount(async () => {
     await extensionState.init();
 
-    let target: string | null = null;
-
-    // Prefer recently-active session (popup just closed → reopened) so we
-    // restore the last lookup immediately without re-querying.
+    const tabDomain = await currentTabDomain();
     const session = await recallSession(5 * 60_000);
-    if (session?.domain) {
+
+    // The tab you are looking at wins. The session is only restored when it
+    // was saved on this same tab (so a manual lookup survives closing and
+    // reopening) or when the tab has no domain to inspect. Preferring the
+    // session unconditionally meant navigating to a new site and reopening
+    // still showed the previous domain.
+    let target: string | null = null;
+    if (session?.domain && (!tabDomain || session.tabDomain === tabDomain)) {
       target = session.domain;
-    } else {
-      // Auto-lookup current tab domain
-      try {
-        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        if (
-          tab?.url &&
-          !tab.url.startsWith('chrome://') &&
-          !tab.url.startsWith('about:') &&
-          !tab.url.startsWith('edge://') &&
-          !tab.url.startsWith('chrome-extension://')
-        ) {
-          const url = new URL(tab.url);
-          const domain = url.hostname;
-          if (domain && domain.includes('.')) target = domain;
-        }
-      } catch (e) {
-        console.error('[LDNS] Auto-lookup failed:', e);
-      }
+    } else if (tabDomain) {
+      target = tabDomain;
+    } else if (session?.domain) {
+      target = session.domain;
     }
 
+    followedTabDomain = tabDomain;
     if (target) {
       await extensionState.setDomain(target, true);
+    }
+
+    // The side panel stays mounted while you browse, so onMount alone would
+    // leave it pinned to whatever was open when it launched. Follow the active
+    // tab, but only while the panel is still showing that tab's domain: if the
+    // user has typed a different domain, leave their lookup alone.
+    if (isSidePanel && chrome.tabs?.onActivated) {
+      const syncToTab = async () => {
+        const next = await currentTabDomain();
+        if (!next || next === followedTabDomain) return;
+        const showingTab = !extensionState.domain || extensionState.domain === followedTabDomain;
+        followedTabDomain = next;
+        if (showingTab) await extensionState.setDomain(next, true);
+      };
+
+      chrome.tabs.onActivated.addListener(() => void syncToTab());
+      chrome.tabs.onUpdated.addListener((_id, changeInfo, tab) => {
+        // Only react once the navigation has committed a new URL.
+        if (changeInfo.url && tab.active) void syncToTab();
+      });
     }
   });
 
@@ -78,7 +114,7 @@
     const d = extensionState.domain;
     const ep = extensionState.endpoint;
     if (d && extensionState.isValidDomain) {
-      rememberSession(d, ep);
+      rememberSession(d, ep, followedTabDomain ?? undefined);
     }
   });
 </script>

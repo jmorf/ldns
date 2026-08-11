@@ -20,6 +20,13 @@ const version = packageJson.version;
 const RECENT_RELEASES = 2;
 const releases = [
   {
+    version: '1.8.1',
+    notes: [
+      'Fixed: the extension follows the tab you are on again, and the side panel now updates as you browse.',
+      'Subdomain lookups are more reliable when crt.sh is having problems, and failures now explain what went wrong. You can add your own CertSpotter API key in Settings to remove the free-tier limit.'
+    ]
+  },
+  {
     version: '1.8.0',
     notes: [
       'LDNS is now open source. The full extension and website source is at github.com/jmorf/ldns (MIT). You can read exactly what it does with your lookups.',

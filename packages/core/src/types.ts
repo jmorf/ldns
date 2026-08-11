@@ -215,6 +215,12 @@ export interface CertInfo {
 
 /** User-configurable settings */
 export interface Settings {
+  /**
+   * Optional CertSpotter (SSLMate) API key for subdomain discovery. Entered
+   * by the user, stored only in their own browser, and sent only to
+   * api.certspotter.com.
+   */
+  certSpotterKey?: string;
   funMessages: boolean;
   grain: boolean;
   sidePanelMode: boolean;

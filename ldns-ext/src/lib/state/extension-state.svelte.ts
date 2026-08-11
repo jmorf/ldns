@@ -330,7 +330,12 @@ class ExtensionState {
       'subdomains',
       // The extension queries from the user's own IP, so CertSpotter's
       // per-IP quota is per-user, safe to race it against crt.sh.
-      (signal) => discoverSubdomains(this.rootDomain || this.domain, { signal, certSpotter: 'race' }),
+      (signal) =>
+        discoverSubdomains(this.rootDomain || this.domain, {
+          signal,
+          certSpotter: 'race',
+          certSpotterKey: this.settings.certSpotterKey?.trim() || undefined
+        }),
       (next) => (this.subdomainState = next),
       // Long TTL on purpose: both CT sources are flaky and rate-limited, and
       // certificate transparency data changes on the order of days, not

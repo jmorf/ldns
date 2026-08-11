@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.8.1] - 2026-08-11
+
+### Fixed
+- **The current tab's domain is used again.** A recent lookup (within five
+  minutes) took priority over the tab you were actually on, so navigating to
+  a new site and reopening still showed the previous domain. The tab wins
+  now; a saved session is only restored when it belongs to that same tab, so
+  a domain you typed manually still survives closing and reopening.
+- **Side panel follows navigation.** The panel stays mounted while you browse,
+  so it previously kept whatever domain was open when it launched. It now
+  updates as you move between tabs and pages, unless you have typed a
+  different domain, in which case your lookup is left alone.
+- **Subdomain lookups fail less often.** The second Certificate Transparency
+  source is now brought in only when crt.sh is slow or failing, rather than
+  on every scan, which keeps its (small) free quota available for when it is
+  actually needed. When both sources fail, the error says so instead of
+  suggesting a retry that cannot work.
+- Subdomain results are cached for 30 minutes rather than 5, since CT data
+  changes over days and both sources are rate-limited.
+
+### Added
+- **Optional CertSpotter API key** in Settings. Subdomain discovery falls back
+  to CertSpotter when crt.sh is down, and its free tier allows only a few
+  lookups per hour per IP. Adding your own key removes that limit. The key is
+  stored only in your browser and sent only to api.certspotter.com; there is
+  no LDNS server involved.
+- Upstream failures now explain themselves: what the status code means, that
+  your domain is not at fault, and whether retrying will help.
+
 ## [1.8.0] - 2026-08-10
 
 ### Added

@@ -162,6 +162,13 @@ interface SessionCache {
   domain: string;
   endpoint: DnsEndpoint;
   at: number;
+  /**
+   * Domain of the tab that was active when this was saved. On restore we
+   * compare it with the current tab: if they differ the user has navigated
+   * since, and the tab they are actually looking at wins over the stale
+   * session.
+   */
+  tabDomain?: string;
 }
 
 function sessionStorage(): chrome.storage.StorageArea | null {
@@ -169,11 +176,17 @@ function sessionStorage(): chrome.storage.StorageArea | null {
   return (chrome.storage as { session?: chrome.storage.StorageArea }).session ?? null;
 }
 
-export async function rememberSession(domain: string, endpoint: DnsEndpoint): Promise<void> {
+export async function rememberSession(
+  domain: string,
+  endpoint: DnsEndpoint,
+  tabDomain?: string
+): Promise<void> {
   const area = sessionStorage();
   if (!area) return;
   try {
-    await area.set({ [SESSION_KEY]: { domain, endpoint, at: Date.now() } satisfies SessionCache });
+    await area.set({
+      [SESSION_KEY]: { domain, endpoint, at: Date.now(), tabDomain } satisfies SessionCache
+    });
   } catch {
     /* noop */
   }
