@@ -60,7 +60,11 @@
   {#if extensionState.rdapState.loading}
     <LoadingState message="Looking up RDAP/WHOIS data…" />
   {:else if extensionState.rdapState.error}
-    <ErrorState message={extensionState.rdapState.error} />
+    <ErrorState
+      message={extensionState.rdapState.error}
+      service="rdap.org"
+      onRetry={() => extensionState.queryRdap(true)}
+    />
   {:else if data}
     <div class="flex justify-end">
       <RefreshButton onClick={() => extensionState.queryRdap(true)} loading={extensionState.rdapState.loading} />

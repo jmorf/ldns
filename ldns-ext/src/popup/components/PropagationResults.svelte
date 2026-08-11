@@ -72,7 +72,11 @@
   {#if extensionState.propagationState.loading}
     <LoadingState message="Comparing DNS providers…" />
   {:else if extensionState.propagationState.error}
-    <ErrorState message={extensionState.propagationState.error} />
+    <ErrorState
+      message={extensionState.propagationState.error}
+      service="the DNS resolvers"
+      onRetry={() => extensionState.queryPropagation(true)}
+    />
   {:else if extensionState.propagationState.hasData}
     {#if allTypes.length === 0}
       <div class="text-center py-6 text-fg-subtle">

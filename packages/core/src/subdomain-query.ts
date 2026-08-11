@@ -1,5 +1,6 @@
 import type { SubdomainResult, CertInfo } from './types';
 import { fetchWithTimeout, isAbortOrTimeout } from './fetch-utils';
+import { UpstreamError } from './upstream-errors';
 import { toAsciiDomain } from './domain-parser';
 
 interface CrtShEntry {
@@ -63,11 +64,13 @@ async function fetchCrtSh(domain: string, timeoutMs: number, signal?: AbortSigna
       signal
     }, timeoutMs);
 
-    if (response.status === 503 || response.status === 429) {
-      throw new Error('crt.sh is temporarily overloaded. Try again in a moment.');
-    }
+    // Carry the status on the error so it can be explained precisely rather
+    // than reduced to "CT log query failed (502)".
     if (!response.ok) {
-      throw new Error(`CT log query failed (${response.status})`);
+      throw new UpstreamError(`crt.sh returned HTTP ${response.status}`, {
+        status: response.status,
+        service: 'crt.sh'
+      });
     }
 
     // crt.sh flaps: a 200 can carry an HTML or empty body. Validate the shape
@@ -76,10 +79,10 @@ async function fetchCrtSh(domain: string, timeoutMs: number, signal?: AbortSigna
     try {
       data = await response.json();
     } catch {
-      throw new Error('crt.sh returned an invalid response. Try again in a moment.');
+      throw new UpstreamError('crt.sh returned a malformed response body', { service: 'crt.sh' });
     }
     if (!Array.isArray(data)) {
-      throw new Error('crt.sh returned an invalid response. Try again in a moment.');
+      throw new UpstreamError('crt.sh returned a malformed response body', { service: 'crt.sh' });
     }
 
     return (data as CrtShEntry[]).map((c) => ({
@@ -91,7 +94,7 @@ async function fetchCrtSh(domain: string, timeoutMs: number, signal?: AbortSigna
     }));
   } catch (err) {
     if (isAbortOrTimeout(err)) {
-      throw new Error('crt.sh request timed out. Try again.');
+      throw new UpstreamError('crt.sh request timed out', { service: 'crt.sh' });
     }
     throw err;
   }
@@ -111,7 +114,10 @@ async function fetchCertSpotter(domain: string, timeoutMs: number, signal?: Abor
     // 429 is the unauthenticated hourly cap. Treat as a normal failure so the
     // crt.sh result still wins the race.
     if (!response.ok) {
-      throw new Error(`CertSpotter query failed (${response.status})`);
+      throw new UpstreamError(`CertSpotter returned HTTP ${response.status}`, {
+        status: response.status,
+        service: 'CertSpotter'
+      });
     }
     const data = await response.json();
     if (!Array.isArray(data)) throw new Error('CertSpotter returned an invalid response.');
@@ -124,7 +130,7 @@ async function fetchCertSpotter(domain: string, timeoutMs: number, signal?: Abor
       names: c.dns_names ?? []
     }));
   } catch (err) {
-    if (isAbortOrTimeout(err)) throw new Error('CertSpotter request timed out.');
+    if (isAbortOrTimeout(err)) throw new UpstreamError('CertSpotter request timed out', { service: 'CertSpotter' });
     throw err;
   }
 }

@@ -75,7 +75,11 @@
   {#if extensionState.serverState.loading}
     <LoadingState message="Analyzing server…" />
   {:else if extensionState.serverState.error}
-    <ErrorState message={extensionState.serverState.error} />
+    <ErrorState
+      message={extensionState.serverState.error}
+      service="the target server"
+      onRetry={() => extensionState.queryServer()}
+    />
   {:else if extensionState.serverState.hasData && extensionState.serverState.data?.info}
     {@const info = extensionState.serverState.data.info}
     {@const redirects = extensionState.serverState.data.redirects}

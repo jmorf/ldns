@@ -36,7 +36,11 @@
   {#if extensionState.emailState.loading}
     <LoadingState message="Analyzing email configuration…" />
   {:else if extensionState.emailState.error}
-    <ErrorState message={extensionState.emailState.error} />
+    <ErrorState
+      message={extensionState.emailState.error}
+      service="the DNS resolver"
+      onRetry={() => extensionState.queryEmail(true)}
+    />
   {:else if data}
     <div class="flex items-center justify-between pb-2 border-b border-line">
       <div class="flex items-center gap-2">

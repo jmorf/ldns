@@ -106,7 +106,11 @@
   {#if extensionState.dnsState.loading}
     <LoadingState message="Looking up DNS records…" />
   {:else if extensionState.dnsState.error}
-    <ErrorState message={extensionState.dnsState.error} />
+    <ErrorState
+      message={extensionState.dnsState.error}
+      service="the DNS resolver"
+      onRetry={() => extensionState.queryDns(true)}
+    />
   {:else if extensionState.dnsState.hasData}
     <!-- Propagation toggle + Filter chips -->
     <div class="flex flex-wrap items-center gap-1.5 pb-2 border-b border-line">

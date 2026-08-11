@@ -51,7 +51,13 @@
   {#if extensionState.subdomainState.loading}
     <LoadingState message="Scanning Certificate Transparency logs…" />
   {:else if extensionState.subdomainState.error}
-    <ErrorState message={extensionState.subdomainState.error} />
+    <ErrorState
+      message={extensionState.subdomainState.error}
+      service="crt.sh"
+      notFoundIsEmpty
+      onRetry={handleScan}
+      statusUrl={`https://crt.sh/?q=%25.${extensionState.rootDomain || extensionState.domain}`}
+    />
     <div class="text-center">
       <button
         onclick={handleScan}

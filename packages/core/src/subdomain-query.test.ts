@@ -146,13 +146,19 @@ describe('discoverSubdomains', () => {
     expect(result.certificates[0].commonName).toBe('www.example.com');
   });
 
-  it('should throw on non-OK response', async () => {
+  it('should throw an UpstreamError carrying the status on a non-OK response', async () => {
+    // The status must survive on the error, not just in the message text:
+    // it is what lets the UI explain what a 502 or 503 actually means.
     mockFetch.mockResolvedValue({
       ok: false,
       status: 500
     });
 
-    await expect(discoverSubdomains('example.com')).rejects.toThrow('CT log query failed');
+    await expect(discoverSubdomains('example.com')).rejects.toMatchObject({
+      name: 'UpstreamError',
+      status: 500,
+      service: 'crt.sh'
+    });
   });
 
   it('should limit certificates to 20', async () => {
