@@ -14,7 +14,9 @@ const handler = createHandler({
     if (!isPlausibleDomain(domain)) throw error(400, 'Invalid domain format');
 
     try {
-      const data = await discoverSubdomains(domain);
+      // Shared Worker egress IPs, so CertSpotter is a rescue only — used when
+      // crt.sh has already failed, never as a first choice.
+      const data = await discoverSubdomains(domain, { certSpotter: 'fallback' });
       return { ok: true as const, domain, ...data };
     } catch (err) {
       const failure = classifyUpstreamError(err, { service: 'crt.sh', notFoundIsEmpty: true });

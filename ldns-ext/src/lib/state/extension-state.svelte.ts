@@ -330,7 +330,7 @@ class ExtensionState {
       'subdomains',
       // The extension queries from the user's own IP, so CertSpotter's
       // per-IP quota is per-user — safe to race it against crt.sh.
-      (signal) => discoverSubdomains(this.rootDomain || this.domain, { signal, useCertSpotter: true }),
+      (signal) => discoverSubdomains(this.rootDomain || this.domain, { signal, certSpotter: 'race' }),
       (next) => (this.subdomainState = next),
       { cacheKey: `subs:${this.rootDomain || this.domain}`, cacheTtlMs: 5 * 60_000, force }
     );

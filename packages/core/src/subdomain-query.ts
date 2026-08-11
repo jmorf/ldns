@@ -29,19 +29,26 @@ interface CtRecord {
   names: string[];
 }
 
+/**
+ * How to use CertSpotter alongside crt.sh. CertSpotter's unauthenticated tier
+ * is rate-limited PER IP, so the right mode depends on whose IP the request
+ * leaves from:
+ *
+ *  - `race`     — query both at once, first answer wins. For the extension,
+ *                 where each request comes from the end user's own IP and so
+ *                 every user has their own quota. Best latency.
+ *  - `fallback` — only query CertSpotter after crt.sh has already failed. For
+ *                 the site, where every request shares a few Cloudflare egress
+ *                 IPs: usage is then proportional to crt.sh's failure rate
+ *                 rather than to total traffic, and if we do get throttled we
+ *                 are no worse off than crt.sh failing alone.
+ *  - `off`      — crt.sh only.
+ */
+export type CertSpotterMode = 'race' | 'fallback' | 'off';
+
 export interface SubdomainOptions {
   signal?: AbortSignal;
-  /**
-   * Also query CertSpotter, racing it against crt.sh.
-   *
-   * Only enable for clients querying from the END USER's own IP — i.e. the
-   * browser extension. CertSpotter's unauthenticated tier is rate-limited per
-   * IP, so a browser extension gives every user their own quota, while a
-   * server (our Cloudflare Worker, where every request shares a small pool of
-   * egress IPs) would be throttled almost immediately and would degrade the
-   * service for everyone.
-   */
-  useCertSpotter?: boolean;
+  certSpotter?: CertSpotterMode;
 }
 
 async function fetchCrtSh(domain: string, timeoutMs: number, signal?: AbortSignal): Promise<CtRecord[]> {
@@ -146,13 +153,14 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
  * least reliable: it rate-limits hard per IP and buckles under load, which is
  * what made this tool time out so often. So:
  *
- *   1. When `useCertSpotter` is set (the extension), query crt.sh and
- *      CertSpotter concurrently and take whichever answers FIRST. We don't
- *      wait for both — the whole point is latency, and either source alone
- *      gives a useful answer.
- *   2. If that round fails entirely, back off and retry crt.sh once. The
- *      backoff matters: crt.sh's failures are dominated by transient
- *      overload, and retrying instantly just gets rejected again.
+ *   1. `race` (extension): query crt.sh and CertSpotter concurrently and take
+ *      whichever answers FIRST. We don't wait for both — the point is latency,
+ *      and either source alone gives a useful answer.
+ *   2. `fallback` (site): try crt.sh; only if it fails, rescue with
+ *      CertSpotter. See CertSpotterMode for why the mode differs by caller.
+ *   3. Either way, a final backoff-and-retry against crt.sh. The backoff
+ *      matters: crt.sh's failures are dominated by transient overload, and
+ *      retrying instantly just gets rejected again.
  *
  * Worst case is ~12s + 0.8s + 10s, inside the Cloudflare Worker budget.
  */
@@ -160,29 +168,51 @@ export async function discoverSubdomains(
   domain: string,
   options: SubdomainOptions = {}
 ): Promise<SubdomainResult> {
-  const { signal, useCertSpotter = false } = options;
+  const { signal, certSpotter = 'off' } = options;
   const asciiDomain = toAsciiDomain(domain).toLowerCase();
 
-  const round = (timeoutMs: number) => {
-    const tasks = [fetchCrtSh(asciiDomain, timeoutMs, signal)];
-    if (useCertSpotter) tasks.push(fetchCertSpotter(asciiDomain, timeoutMs, signal));
-    return firstSuccess(tasks);
+  const attempt = (timeoutMs: number) => {
+    if (certSpotter === 'race') {
+      return firstSuccess([
+        fetchCrtSh(asciiDomain, timeoutMs, signal),
+        fetchCertSpotter(asciiDomain, timeoutMs, signal)
+      ]);
+    }
+    return fetchCrtSh(asciiDomain, timeoutMs, signal);
   };
 
   let data: CtRecord[];
   try {
-    data = await round(12_000);
+    data = await attempt(12_000);
   } catch (firstErr) {
+    if (signal?.aborted) throw firstErr;
+
+    // Rescue path: crt.sh is down or overloaded. Try CertSpotter before
+    // spending another slow round on the service that just failed.
+    if (certSpotter === 'fallback') {
+      try {
+        data = await fetchCertSpotter(asciiDomain, 10_000, signal);
+        return toResult(data, asciiDomain);
+      } catch {
+        /* fall through to the crt.sh retry */
+      }
+    }
+
     if (signal?.aborted) throw firstErr;
     await sleep(800);
     try {
-      data = await round(10_000);
+      data = await attempt(10_000);
     } catch {
       // Surface the original error — it's the more informative one.
       throw firstErr;
     }
   }
 
+  return toResult(data, asciiDomain);
+}
+
+/** Reduce CT records to the deduplicated, sorted subdomain list. */
+function toResult(data: CtRecord[], asciiDomain: string): SubdomainResult {
   const subdomainSet = new Set<string>();
   const certificates: CertInfo[] = [];
 
