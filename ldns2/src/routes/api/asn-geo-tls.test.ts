@@ -12,7 +12,7 @@ import { gcRateLimits } from '$lib/server/ratelimit';
 const fetchSpy = vi.fn();
 globalThis.fetch = fetchSpy as unknown as typeof fetch;
 
-// SvelteKit RequestEvent is overspecified for our needs in tests — cast the
+// SvelteKit RequestEvent is overspecified for our needs in tests, cast the
 // minimal subset we use.
 type Ev = Parameters<typeof asnGet>[0];
 

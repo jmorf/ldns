@@ -3,14 +3,14 @@
  *
  * RFC 7208 §4.6.4 caps an SPF evaluation at **10 DNS-querying terms**:
  * `include`, `a`, `mx`, `ptr`, `exists`, and the `redirect` modifier. Exceed
- * it and a conforming receiver returns `permerror` — which most treat as an
+ * it and a conforming receiver returns `permerror`, which most treat as an
  * SPF failure. This is one of the most common real-world email breakages and
  * it is completely invisible without walking the include tree, because each
  * `include:` can pull in a whole subtree you don't control (and providers
  * change theirs without telling you).
  *
  * Separately, RFC 7208 §4.6.4 limits "void lookups" (terms resolving to
- * NXDOMAIN or no records) to 2 — usually a sign of a stale include.
+ * NXDOMAIN or no records) to 2, usually a sign of a stale include.
  *
  * We count terms the way a receiver does, so the number shown matches what
  * would actually happen during evaluation.
@@ -25,7 +25,7 @@ export const SPF_VOID_LOOKUP_LIMIT = 2;
 
 /**
  * Hard ceiling on DNS queries we'll actually issue while exploring. The RFC
- * limit is 10, but a record can reference far more than that — we keep
+ * limit is 10, but a record can reference far more than that. We keep
  * counting past the limit so the user learns how far over they are, while
  * refusing to spider forever on a pathological record.
  */
@@ -131,7 +131,7 @@ export async function evaluateSpf(
       if (!recursive || !target) continue;
 
       if (ancestry.includes(target)) {
-        node.note = 'loop — already in this chain';
+        node.note = 'loop: already in this chain';
         if (!loops.includes(target)) loops.push(target);
         continue;
       }

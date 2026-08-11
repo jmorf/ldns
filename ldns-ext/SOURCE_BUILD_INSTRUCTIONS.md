@@ -1,4 +1,4 @@
-# LDNS Extension — Source Build Instructions
+# LDNS Extension, Source Build Instructions
 
 This document explains how to reproduce the submitted Firefox add-on (`ldns-firefox.zip`) from source.
 
@@ -6,11 +6,11 @@ This document explains how to reproduce the submitted Firefox add-on (`ldns-fire
 
 ## 1. Operating system & build environment
 
-The build is platform-independent. We have verified it produces an identical output zip on:
+The build is platform-independent, verified to produce an identical output zip on:
 
 - **macOS** 14+ (primary build platform)
-- **Linux** — any distribution with Node.js available (Ubuntu 22.04+ tested)
-- **Windows** 10/11 with WSL2 (the packaging step shells out to the `zip` command, which is not available in native PowerShell/CMD — use WSL, Git Bash, or install a zip utility on PATH)
+- **Linux**: any distribution with Node.js available (Ubuntu 22.04+ tested)
+- **Windows** 10/11 with WSL2 (the packaging step shells out to the `zip` command, which is not available in native PowerShell/CMD: use WSL, Git Bash, or install a zip utility on PATH)
 
 No native compilation is performed; everything runs in pure Node.js.
 
@@ -39,7 +39,7 @@ node --version    # should print v18.x.x or higher
 npm --version     # should print 9.x.x or higher
 ```
 
-No other tooling needs to be installed globally — every other dependency is locked in `package-lock.json` and installed locally into `node_modules/`.
+No other tooling needs to be installed globally. Every other dependency is locked in `package-lock.json` and installed locally into `node_modules/`.
 
 ---
 
@@ -50,7 +50,7 @@ These steps reproduce the exact `ldns-firefox.zip` that was submitted.
 The source archive is a self-contained **npm workspace**: the extension
 (`ldns-ext/`) depends on the shared `@ldns/core` package (`packages/core/`),
 and the root `package.json` wires them together. Always install from the
-archive root — installing inside `ldns-ext/` alone will not resolve
+archive root, installing inside `ldns-ext/` alone will not resolve
 `@ldns/core`.
 
 ```bash
@@ -78,16 +78,16 @@ The version field in `dist-firefox/manifest.json` is read from `package.json` at
 
 `npm run build:firefox` runs [`scripts/build-firefox.js`](scripts/build-firefox.js). It performs every step needed to go from source to packaged extension; there are no manual steps.
 
-1. **Vite build** (`npx vite build --config vite.config.firefox.ts`) — bundles `.ts` and `.svelte` source using:
+1. **Vite build** (`npx vite build --config vite.config.firefox.ts`), bundles `.ts` and `.svelte` source using:
    - Svelte 5 compiler (`@sveltejs/vite-plugin-svelte`) for `.svelte` components
    - TypeScript compiler for `.ts` files
    - Tailwind CSS v4 (`@tailwindcss/vite`) for the stylesheet
    - PostCSS + autoprefixer for vendor prefixes
    - Rollup + esbuild (used internally by Vite) for module bundling and minification
-2. **Manifest copy** — reads `public/manifest.firefox.json`, injects the version from `package.json`, writes to `dist-firefox/manifest.json`
-3. **Icon copy** — copies `public/icons/*` into `dist-firefox/icons/`
-4. **HTML path fix** — rewrites absolute asset paths (`/assets/...`) to relative paths (`../../assets/...`) so the popup HTML loads correctly inside the extension context
-5. **Zip** — runs `zip -r ../ldns-firefox.zip .` from inside `dist-firefox/` to produce the final packaged add-on
+2. **Manifest copy**: reads `public/manifest.firefox.json`, injects the version from `package.json`, writes to `dist-firefox/manifest.json`
+3. **Icon copy**, copies `public/icons/*` into `dist-firefox/icons/`
+4. **HTML path fix**, rewrites absolute asset paths (`/assets/...`) to relative paths (`../../assets/...`) so the popup HTML loads correctly inside the extension context
+5. **Zip**, runs `zip -r ../ldns-firefox.zip .` from inside `dist-firefox/` to produce the final packaged add-on
 
 ---
 
@@ -95,11 +95,11 @@ The version field in `dist-firefox/manifest.json` is read from `package.json` at
 
 Every file in `ldns-source.zip` (outside of `node_modules/`, which is not included) is hand-written, human-readable source:
 
-- `.svelte` files — Svelte 5 single-file components (script + template + style)
-- `.ts` files — TypeScript with original variable names and comments
-- `.css` files — hand-written Tailwind v4 sources
-- `.json` files — manifests and config
-- `.js` files — the three build scripts in `scripts/`, also hand-written
+- `.svelte` files: Svelte 5 single-file components (script + template + style)
+- `.ts` files: TypeScript with original variable names and comments
+- `.css` files: hand-written Tailwind v4 sources
+- `.json` files: manifests and config
+- `.js` files. The three build scripts in `scripts/`, also hand-written
 
 No file in the source archive is the output of another build step. Bundling, transpilation and minification only happen when `npm run build:firefox` runs and only into `dist-firefox/` (which is excluded from the source archive).
 
@@ -110,11 +110,11 @@ The only third-party code in the build output comes from the dependencies declar
 ## 6. Project structure
 
 ```
-(archive root — npm workspace)
+(archive root: npm workspace)
 ├── package.json                   # workspace root: ["packages/*", "ldns-ext"]
-├── package-lock.json              # locked dependency tree — used by `npm ci`
+├── package-lock.json              # locked dependency tree: used by `npm ci`
 ├── packages/
-│   └── core/                      # @ldns/core — pure TS shared modules:
+│   └── core/                      # @ldns/core: pure TS shared modules:
 │       └── src/                   #   dns-query, rdap-query, email-query, server-info,
 │                                  #   dkim-query, asn-query, ptr, security-checks,
 │                                  #   subdomain-query, parsers, fetch-utils,
@@ -168,12 +168,12 @@ All listed in `package.json`. Every one is open-source and on npm.
 - clsx + tailwind-merge (MIT)
 
 **App-level**
-- @ldns/core (MIT) — the shared workspace package in `packages/core/`; resolved locally via the workspace, never from the registry
-- psl (MIT) — Public Suffix List parser (dependency of @ldns/core), used to identify the registrable domain client-side. Bundled into the popup; no network calls.
-- lucide-svelte (ISC) — icon set
+- @ldns/core (MIT): the shared workspace package in `packages/core/`; resolved locally via the workspace, never from the registry
+- psl (MIT): Public Suffix List parser (dependency of @ldns/core), used to identify the registrable domain client-side. Bundled into the popup; no network calls.
+- lucide-svelte (ISC), icon set
 
 **Test (not required for the build)**
-- vitest (MIT) — used by the @ldns/core test suite
+- vitest (MIT), used by the @ldns/core test suite
 
 `npm ci` installs exactly the versions pinned in `package-lock.json`; no other resolver behavior is involved.
 
@@ -183,7 +183,7 @@ All listed in `package.json`. Every one is open-source and on npm.
 
 ```bash
 npm test -w @ldns/core       # runs the shared-core Vitest suite (137 tests, a few seconds)
-npm run check -w ldns-ext    # svelte-check + tsc — type-check the extension
+npm run check -w ldns-ext    # svelte-check + tsc, type-check the extension
 ```
 
 Tests are not required to produce the extension build but are included for completeness.
@@ -194,7 +194,7 @@ Tests are not required to produce the extension build but are included for compl
 
 If your built `ldns-firefox.zip` differs from the submitted one, please verify:
 
-- `node --version` is ≥ 18 (we built on v22)
-- `npm ci` was used (not `npm install`) — `npm install` may resolve newer transitive versions
+- `node --version` is >= 18 (built and tested on v22)
+- `npm ci` was used (not `npm install`): `npm install` may resolve newer transitive versions
 - The `package-lock.json` is the one shipped in the source archive, unchanged
-- The build was run from a clean working directory (no leftover `dist-firefox/` from a previous run; the build script removes it, but a stale `node_modules/` from a different lockfile can still interfere — `rm -rf node_modules dist-firefox && npm ci && npm run build:firefox` is the cleanest path)
+- The build was run from a clean working directory (no leftover `dist-firefox/` from a previous run; the build script removes it, but a stale `node_modules/` from a different lockfile can still interfere, `rm -rf node_modules dist-firefox && npm ci && npm run build:firefox` is the cleanest path)

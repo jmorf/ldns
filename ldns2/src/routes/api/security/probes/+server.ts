@@ -27,7 +27,7 @@ async function probe(origin: string, p: Probe, signal: AbortSignal): Promise<Pro
   const url = `${origin}${p.path}`;
   try {
     // `redirect: 'manual'` so a probed path that 3xx-redirects can't bounce the
-    // fetch onto an internal host — the `ensurePublicHost` check only validates
+    // fetch onto an internal host, the `ensurePublicHost` check only validates
     // the initial origin. A redirect still means the resource exists, so 2xx/3xx
     // (or the opaqueredirect the runtime may surface) all count as "found".
     const res = await fetch(url, { method: 'HEAD', redirect: 'manual', signal });

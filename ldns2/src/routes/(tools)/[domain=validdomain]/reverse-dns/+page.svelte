@@ -32,7 +32,7 @@
     const aaaa = domain.toolState.dns.data?.AAAA?.map((r: { data: string }) => r.data) ?? [];
     const ips = [...a, ...aaaa];
 
-    // PTR + ASN in parallel — PTR uses the shared module (covers IPv4 + IPv6).
+    // PTR + ASN in parallel, PTR uses the shared module (covers IPv4 + IPv6).
     const [ptr] = await Promise.all([
       lookupPtrBatch(ips),
       ...ips.map(async (ip) => {

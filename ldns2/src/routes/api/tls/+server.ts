@@ -20,7 +20,7 @@ const handler = createHandler({
           ok: false as const,
           domain,
           reason: 'no-results' as const,
-          error: 'No certificate found in Certificate Transparency logs for this domain. Either no public certificate has ever been issued, or the domain is too new to have been logged. crt.sh is the only source — there is no backup search.'
+          error: 'No certificate found in Certificate Transparency logs for this domain. Either no public certificate has ever been issued, or the domain is too new to have been logged. crt.sh is the only source. There is no backup search.'
         };
       }
       return { ok: true as const, domain, certificate: cert };

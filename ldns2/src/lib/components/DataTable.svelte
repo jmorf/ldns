@@ -26,7 +26,7 @@
   }: Props = $props();
 
   function fmt(v: unknown): string {
-    if (v == null || v === '') return '—';
+    if (v == null || v === '') return ', ';
     return String(v);
   }
 </script>

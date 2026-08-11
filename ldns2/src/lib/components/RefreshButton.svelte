@@ -6,7 +6,7 @@
         loading: boolean;
         disabled?: boolean;
         /**
-         * Kept for backwards compatibility with existing call sites — the
+         * Kept for backwards compatibility with existing call sites. The
          * new design is a single tight icon-button regardless of variant.
          */
         variant?: 'primary' | 'secondary';

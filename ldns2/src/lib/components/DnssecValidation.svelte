@@ -52,7 +52,7 @@
       {:else if result.status === 'bogus'}
         <ShieldAlert class="w-4 h-4 text-bad-400 shrink-0 mt-0.5" />
         <div>
-          <p class="text-sm text-bad-400 font-medium">Broken — domain unreachable for many users</p>
+          <p class="text-sm text-bad-400 font-medium">Broken, domain unreachable for many users</p>
           <p class="text-xs text-fg-muted mt-0.5 leading-relaxed">{result.explanation}</p>
         </div>
       {:else if result.status === 'insecure'}

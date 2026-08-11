@@ -10,7 +10,7 @@
 
     $effect(() => {
         // Close mobile sidebar on every navigation. Sidebar itself derives
-        // the active item from the URL — no separate currentPage state needed.
+        // the active item from the URL, no separate currentPage state needed.
         $page.url.pathname;
         navigationState.closeSidebar();
     });

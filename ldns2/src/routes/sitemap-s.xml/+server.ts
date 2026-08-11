@@ -4,7 +4,7 @@ import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (event) => {
   return serveCached(event, async () => {
-    // Drop <changefreq> and <priority> — Google has officially ignored both
+    // Drop <changefreq> and <priority>. Google has officially ignored both
     // since 2017 and lying to crawlers about freshness can hurt trust.
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

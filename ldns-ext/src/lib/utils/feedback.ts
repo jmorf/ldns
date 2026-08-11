@@ -2,13 +2,13 @@
  * Bug-report / feedback deep link.
  *
  * LDNS is open source, so issues live alongside the code. The URL prefills
- * environment details the user can review and edit before submitting —
+ * environment details the user can review and edit before submitting,
  * nothing is sent until they do.
  */
 
 export const FEEDBACK_REPO_URL = 'https://github.com/jmorf/ldns';
 
-/** Maintainer's X profile — an informal channel for feedback and bug reports. */
+/** Maintainer's X profile, an informal channel for feedback and bug reports. */
 export const X_PROFILE_URL = 'https://x.com/jmorf';
 export const X_HANDLE = '@jmorf';
 

@@ -33,8 +33,8 @@ function normalizeUrl(url: string, useHttp = false): string {
 }
 
 /**
- * Optional SSRF guard. Server callers pass one so every fetched URL — the
- * initial domain *and* every redirect hop — is re-validated before a socket is
+ * Optional SSRF guard. Server callers pass one so every fetched URL. The
+ * initial domain *and* every redirect hop, is re-validated before a socket is
  * opened. Client callers (the extension, fetching on the user's own behalf)
  * pass nothing, preserving the ability to inspect e.g. a LAN router.
  */
@@ -61,7 +61,7 @@ const MAX_REDIRECTS = 20;
  * Fetch a URL and return the final response.
  *
  * When a guard is present (server callers), redirects are followed MANUALLY so
- * the guard runs before every hop — `redirect: 'follow'` would let the runtime
+ * the guard runs before every hop, `redirect: 'follow'` would let the runtime
  * connect to an intermediate hop (e.g. a 302 to 169.254.169.254) before we ever
  * see it, so the guard on only the initial + final URL is not enough. When no
  * guard is present (the extension, fetching on the user's own behalf from their
@@ -81,7 +81,7 @@ async function followGuarded(
   for (let i = 0; i <= MAX_REDIRECTS; i++) {
     const res = await guardedFetch(currentUrl, { method, redirect: 'manual', cache: 'no-store' }, guard, signal);
     // `redirect: 'manual'` on Workers/Node yields the real 3xx with a readable
-    // Location. (Browsers give an opaqueredirect we can't inspect — stop there.)
+    // Location. (Browsers give an opaqueredirect we can't inspect: stop there.)
     if (res.status >= 300 && res.status < 400 && res.type !== 'opaqueredirect') {
       const location = res.headers.get('location');
       if (!location) return res;
@@ -228,7 +228,7 @@ export async function traceRedirects(
     if (response.status >= 300 && response.status < 400) {
       const location = headers['location'];
       if (!location) break;
-      // A malformed Location header shouldn't blow up the whole trace —
+      // A malformed Location header shouldn't blow up the whole trace,
       // stop here and report the chain up to this point.
       let nextUrl: string;
       try {
@@ -295,7 +295,7 @@ export interface AnalyzeOptions {
 }
 
 /**
- * Analyze a domain/URL — trace redirects and fetch the final URL's headers.
+ * Analyze a domain/URL, trace redirects and fetch the final URL's headers.
  * Throws on network/CORS failures so the state runner can surface the error.
  */
 export async function analyzeServer(urlOrDomain: string, options: AnalyzeOptions = {}): Promise<ServerAnalysis> {

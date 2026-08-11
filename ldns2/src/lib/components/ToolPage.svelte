@@ -17,7 +17,7 @@
     };
     /**
      * Mono caption rendered above the title in homepage-feature style,
-     * e.g. "dns · a records" or "security · tls cert". Optional — when
+     * e.g. "dns · a records" or "security · tls cert". Optional, when
      * omitted the header reads as a plain breadcrumb + heading.
      */
     eyebrow?: string;
@@ -50,7 +50,7 @@
 </script>
 
 <div class="w-full max-w-7xl mx-auto">
-  <!-- Page header: mirrors the homepage section rhythm — eyebrow caption,
+  <!-- Page header: mirrors the homepage section rhythm: eyebrow caption,
        then a large semibold heading, then a muted description paragraph. -->
   <header class="mb-10 pt-2">
     <div class="flex flex-wrap items-end justify-between gap-4 mb-4">

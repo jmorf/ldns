@@ -49,7 +49,7 @@ export async function lookupAsn(ip: string, signal?: AbortSignal): Promise<AsnIn
   const txt = await queryAsnTxt(zone, signal);
   if (!txt) return empty;
   const parts = txt.split('|').map((p) => p.trim());
-  // Multi-origin ASN may appear as "X Y Z" — take the first.
+  // Multi-origin ASN may appear as "X Y Z", take the first.
   const asn = parts[0]?.split(/\s+/)[0];
   const prefix = parts[1] || null;
   const country = parts[2] || null;

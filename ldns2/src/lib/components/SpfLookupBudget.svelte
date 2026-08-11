@@ -75,7 +75,7 @@
         {#if evaluation.exceeded}
           <span class="text-bad-400 font-medium">Over the limit.</span>
           SPF evaluation is capped at {evaluation.limit} DNS lookups by RFC 7208. Receivers
-          return <span class="font-mono">permerror</span> and SPF fails — even though the record
+          return <span class="font-mono">permerror</span> and SPF fails, even though the record
           itself looks valid. Reduce nested <span class="font-mono">include:</span> chains or
           flatten them to IP ranges.
         {:else if evaluation.lookups >= 8}
@@ -89,7 +89,7 @@
 
       {#if evaluation.voidExceeded}
         <p class="text-xs text-warn-400 mt-1 leading-relaxed">
-          {evaluation.voidLookups} void lookups (limit {evaluation.voidLimit}) — some includes
+          {evaluation.voidLookups} void lookups (limit {evaluation.voidLimit}): some includes
           resolve to nothing, usually a provider you no longer use.
         </p>
       {/if}

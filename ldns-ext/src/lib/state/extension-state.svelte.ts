@@ -62,7 +62,7 @@ class ExtensionState {
   useHttpForServer = $state(false);
   recentSearches = $state<RecentSearch[]>([]);
 
-  // Resolved theme — what's actually applied. Tracks system preference when
+  // Resolved theme, what's actually applied. Tracks system preference when
   // `theme === 'system'`, otherwise mirrors the explicit choice.
   get resolvedTheme(): 'dark' | 'light' {
     if (this.theme === 'system') return this.systemPrefersDark ? 'dark' : 'light';
@@ -85,7 +85,7 @@ class ExtensionState {
 
   propagationMode = $state(false);
 
-  // AbortControllers — one per query type, so a new lookup cancels the previous.
+  // AbortControllers: one per query type, so a new lookup cancels the previous.
   private aborters = new Map<string, AbortController>();
 
   get isValidDomain(): boolean {
@@ -164,7 +164,7 @@ class ExtensionState {
     let domain = input.toLowerCase().trim().replace(/\.$/, '');
     if (this.looksLikeUrl(input) || (!isValidDomain(domain) && extractDomainFromUrl(input))) {
       // Full URLs, but also `host:port` / `host?query` forms that aren't
-      // themselves valid domains — extract the hostname.
+      // themselves valid domains, extract the hostname.
       const host = extractDomainFromUrl(input);
       if (host) domain = host.toLowerCase().replace(/\.$/, '');
     }
@@ -254,7 +254,7 @@ class ExtensionState {
     this.caaCheckState = idleState();
 
     const queries: Promise<void>[] = [
-      // ASN depends on DNS results, so chain it — guarded against a newer
+      // ASN depends on DNS results, so chain it, guarded against a newer
       // lookup having superseded this one by the time DNS lands.
       this.queryDns().then(() => {
         if (this.domain !== lookupDomain) return;
@@ -329,7 +329,7 @@ class ExtensionState {
     return this.run(
       'subdomains',
       // The extension queries from the user's own IP, so CertSpotter's
-      // per-IP quota is per-user — safe to race it against crt.sh.
+      // per-IP quota is per-user, safe to race it against crt.sh.
       (signal) => discoverSubdomains(this.rootDomain || this.domain, { signal, certSpotter: 'race' }),
       (next) => (this.subdomainState = next),
       { cacheKey: `subs:${this.rootDomain || this.domain}`, cacheTtlMs: 5 * 60_000, force }
@@ -349,7 +349,7 @@ class ExtensionState {
   /**
    * Count the DNS lookups an SPF evaluation would consume. Exceeding the
    * RFC 7208 limit of 10 makes receivers return permerror, silently failing
-   * authentication — invisible without walking the include tree.
+   * authentication, invisible without walking the include tree.
    */
   async querySpfEval(force = false) {
     if (!this.isValidDomain) return;
@@ -374,7 +374,7 @@ class ExtensionState {
 
   /**
    * Compare the CAA policy against the CA that actually issued the current
-   * certificate. Only runs when CAA records exist — most domains have none,
+   * certificate. Only runs when CAA records exist. Most domains have none,
    * so this costs nothing for them.
    */
   async queryCaaCheck() {

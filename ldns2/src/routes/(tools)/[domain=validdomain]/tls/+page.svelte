@@ -129,7 +129,7 @@
           TLS certificate inspection uses crt.sh, a free public Certificate Transparency log search.
           For an actual TLS handshake (cipher suite, protocol version) try
           <a href="https://www.ssllabs.com/ssltest/analyze.html?d={domain.name}" target="_blank" rel="noopener noreferrer" class="text-primary-400 hover:underline">SSL Labs</a>.
-          Other LDNS tools are unaffected — try
+          Other LDNS tools are unaffected: try
           <a href="/{domain.name}" class="text-primary-400 hover:underline">DNS</a>,
           <a href="/{domain.name}/server" class="text-primary-400 hover:underline">server</a>, or
           <a href="/{domain.name}/security" class="text-primary-400 hover:underline">security</a>.

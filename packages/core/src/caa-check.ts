@@ -4,16 +4,16 @@
  *
  * CAA records say which CAs are *allowed* to issue for a domain. Certificate
  * Transparency says who *did*. We already fetch both, so comparing them is
- * free — no extra network requests — and it surfaces two real problems:
+ * free (no extra network requests), and it surfaces two real problems:
  *
  *   1. CAA that doesn't cover your actual issuer. Issuance works today
  *      (the CA checked CAA at issuance and something matched, or the record
- *      changed since), but your next renewal can fail — often silently, at
+ *      changed since), but your next renewal can fail: often silently, at
  *      3am, via an automated ACME client.
  *   2. CAA that is narrower than you think, e.g. allowing `letsencrypt.org`
  *      while your cert comes from a CDN's own CA.
  *
- * A domain with no CAA records allows any CA — worth flagging as a hardening
+ * A domain with no CAA records allows any CA: worth flagging as a hardening
  * opportunity, not an error.
  */
 
@@ -61,7 +61,7 @@ export interface CaaIssuerCheck {
  *   - Google returns presentation format:  `0 issue "letsencrypt.org"`
  *   - Cloudflare returns RFC 3597 generic format for record types it doesn't
  *     render:  `\# 19 00 05 69 73 73 75 65 63 6f 6d 6f 64 6f 63 61 2e 63 6f 6d`
- *     — a length followed by hex octets: flags(1) tagLength(1) tag value.
+ *, a length followed by hex octets: flags(1) tagLength(1) tag value.
  *
  * We must handle both, or this check silently reports "no CAA records" for
  * every user on the default resolver.
@@ -120,7 +120,7 @@ export function checkCaaAgainstIssuer(
 
   // RFC 8659: `issue ";"` means NO CA may issue. Check before stripping
   // parameters, since the bare ";" would otherwise be filtered away and
-  // misread as "no CAA present" — the opposite of what it means.
+  // misread as "no CAA present". The opposite of what it means.
   if (issueValues.every((v) => v === ';' || v === '')) {
     return {
       verdict: 'forbids-all',
@@ -178,6 +178,6 @@ export function checkCaaAgainstIssuer(
         allowed,
         detectedCa: detected.name,
         rawIssuer,
-        explanation: `The current certificate was issued by ${detected.name}, but CAA only permits ${allowed.join(', ')}. Renewals through ${detected.name} may fail — check this before the certificate expires.`
+        explanation: `The current certificate was issued by ${detected.name}, but CAA only permits ${allowed.join(', ')}. Renewals through ${detected.name} may fail, check this before the certificate expires.`
       };
 }

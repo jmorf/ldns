@@ -14,7 +14,7 @@
 
   const endpoints = ALL_ENDPOINTS;
 
-  // Providers that couldn't be reached — an outage, not propagation evidence.
+  // Providers that couldn't be reached: an outage, not propagation evidence.
   const unreachable = $derived(extensionState.propagationState.data?.unreachable ?? []);
   const reachable = $derived(endpoints.filter((ep) => !unreachable.includes(ep)));
 
@@ -44,7 +44,7 @@
   function hasDiscrepancy(type: string): boolean {
     const data = extensionState.propagationState.data?.results;
     if (!data) return false;
-    // Compare only providers that answered — a dead provider's empty result
+    // Compare only providers that answered. A dead provider's empty result
     // set must not be reported as a propagation mismatch.
     const sets = reachable.map((ep) => {
       const records = data[ep]?.[type] || [];
@@ -86,7 +86,7 @@
           <div class="flex flex-col items-center flex-1">
             <span class="text-[9px] uppercase tracking-wide text-fg-subtle">{name}</span>
             <span class={cn('text-xs font-mono tnum mt-0.5', latencyColor(l.ms))}>
-              {l.ms === null ? '—' : `${l.ms}ms`}
+              {l.ms === null ? ', ' : `${l.ms}ms`}
             </span>
           </div>
         {/each}
@@ -101,7 +101,7 @@
         {/if}
         {#if unreachable.length > 0}
           <span class="block mt-0.5 text-fg-subtle">
-            {unreachable.map((ep) => DNS_ENDPOINTS[ep].name).join(', ')} unreachable — excluded from comparison
+            {unreachable.map((ep) => DNS_ENDPOINTS[ep].name).join(', ')} unreachable: excluded from comparison
           </span>
         {/if}
       </p>

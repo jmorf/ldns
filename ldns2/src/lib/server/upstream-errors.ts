@@ -41,14 +41,14 @@ export function classifyUpstreamError(
   if (lower.includes('timed out') || lower.includes('timeout')) {
     return {
       reason: 'timeout',
-      message: `${service} did not respond in time. This is usually a transient overload — try again in a few minutes. Successful responses are edge-cached for 24 hours so subsequent visits will be instant.`
+      message: `${service} did not respond in time. This is usually a transient overload, try again in a few minutes. Successful responses are edge-cached for 24 hours so subsequent visits will be instant.`
     };
   }
 
   if (lower.includes('overloaded') || raw.includes('503')) {
     return {
       reason: 'overloaded',
-      message: `${service} is temporarily overloaded by other queries. Try again in a few minutes — the result will be edge-cached for 24 hours once it succeeds.`
+      message: `${service} is temporarily overloaded by other queries. Try again in a few minutes. The result will be edge-cached for 24 hours once it succeeds.`
     };
   }
 

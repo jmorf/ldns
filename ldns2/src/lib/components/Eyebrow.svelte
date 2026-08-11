@@ -1,6 +1,6 @@
 <script lang="ts">
   /**
-   * Mono uppercase eyebrow — used above marketing-style section titles to give
+   * Mono uppercase eyebrow, used above marketing-style section titles to give
    * the page a code/terminal aesthetic. Renders as `// label` in Geist Mono.
    */
   interface Props {

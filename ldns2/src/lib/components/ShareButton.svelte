@@ -3,7 +3,7 @@
 
     interface Props {
         /**
-         * Kept for backwards compatibility — the new design is a single
+         * Kept for backwards compatibility. The new design is a single
          * tight icon-button regardless of variant.
          */
         variant?: 'primary' | 'secondary';

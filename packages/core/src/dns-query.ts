@@ -8,7 +8,7 @@ const DNS_TIMEOUT_MS = 10_000;
 /**
  * Normalize a TXT record value from DoH JSON.
  *
- * Records longer than 255 bytes arrive as multiple quoted strings —
+ * Records longer than 255 bytes arrive as multiple quoted strings,
  * Cloudflare and DNS.SB return them as `"chunk1" "chunk2"` while Google
  * pre-joins them. RFC 7208 §3.3 requires concatenation with no separator,
  * so join the chunks and strip the outer quotes; otherwise long SPF records
@@ -29,7 +29,7 @@ function normalizeTxt(data: string): string {
  * @param signal Optional AbortSignal so callers can cancel in-flight queries
  * @returns Object with results indexed by record type
  * @throws when every record type fails at the transport layer (endpoint
- *   unreachable / non-2xx / non-JSON) — an outage must not masquerade as
+ *   unreachable / non-2xx / non-JSON). An outage must not masquerade as
  *   "this domain has no records". Partial failures degrade gracefully.
  */
 export async function queryDns(
@@ -39,7 +39,7 @@ export async function queryDns(
   endpoint: DnsEndpoint = 'cloudflare',
   signal?: AbortSignal
 ): Promise<DnsData> {
-  // Punycode IDN input — DoH endpoints reject raw Unicode query names.
+  // Punycode IDN input, DoH endpoints reject raw Unicode query names.
   const asciiDomain = toAsciiDomain(domain);
   const queryDomain = subdomain ? `${subdomain}.${asciiDomain}` : asciiDomain;
   const endpointUrl = DNS_ENDPOINTS[endpoint].url;
@@ -94,9 +94,9 @@ export async function queryDns(
   const results = await Promise.all(queries);
 
   // If every single query failed at the transport layer, the endpoint (or the
-  // network) is down — throw instead of returning what looks like an empty zone.
+  // network) is down, throw instead of returning what looks like an empty zone.
   if (results.length > 0 && results.every((r) => r.error !== null)) {
-    throw new Error(`DNS lookup failed — could not reach ${DNS_ENDPOINTS[endpoint].name} (${results[0].error?.message})`);
+    throw new Error(`DNS lookup failed, could not reach ${DNS_ENDPOINTS[endpoint].name} (${results[0].error?.message})`);
   }
 
   return results.reduce<DnsData>((acc, { type, results }) => {

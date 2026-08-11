@@ -1,8 +1,8 @@
 /**
  * The single fetch wrapper used by every network call in core.
  *
- * Guarantees a timeout on every request — a hung DoH/RDAP/crt.sh connection
- * must never stall a caller forever — and composes an optional caller
+ * Guarantees a timeout on every request. A hung DoH/RDAP/crt.sh connection
+ * must never stall a caller forever, and composes an optional caller
  * AbortSignal so UI-driven cancellation actually reaches the socket.
  */
 

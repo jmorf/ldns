@@ -132,7 +132,7 @@ export interface ToolState<T> {
 /** DNS endpoint options */
 export type DnsEndpoint = 'cloudflare' | 'google' | 'dns-sb';
 
-/** Theme options — `system` follows the user's OS / browser preference */
+/** Theme options: `system` follows the user's OS / browser preference */
 export type Theme = 'dark' | 'light' | 'system';
 
 /** Recent search entry */
@@ -194,7 +194,7 @@ export interface TechDetection {
   category: 'cdn' | 'server' | 'framework' | 'platform' | 'hosting';
 }
 
-/** DNS propagation result — per-provider DNS results */
+/** DNS propagation result: per-provider DNS results */
 export type PropagationResult = Record<DnsEndpoint, DnsData>;
 
 /** Subdomain discovery result from CT logs */

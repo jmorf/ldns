@@ -12,7 +12,7 @@ const RDAP_TIMEOUT_MS = 15_000;
  * @returns Parsed RDAP data or null on failure
  */
 export async function queryRdap(domain: string, signal?: AbortSignal): Promise<ParsedRdapData> {
-  // Get the registrable domain (root domain without subdomain), punycoded —
+  // Get the registrable domain (root domain without subdomain), punycoded,
   // RDAP servers expect the ASCII form of IDN domains.
   const rootDomain = toAsciiDomain(getRootDomain(domain) || domain);
 
@@ -136,7 +136,7 @@ function findEventDate(events: RdapEvent[], eventType: string): string {
 export function formatRdapDate(dateString: string): string {
   if (!dateString) return 'N/A';
 
-  // `new Date()` never throws — it yields an Invalid Date. Fall back to the
+  // `new Date()` never throws, it yields an Invalid Date. Fall back to the
   // registry's raw string rather than rendering the literal "Invalid Date".
   const date = new Date(dateString);
   if (isNaN(date.getTime())) return dateString;

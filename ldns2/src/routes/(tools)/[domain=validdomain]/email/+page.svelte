@@ -154,7 +154,7 @@
 <ToolPage
     eyebrow="email · authentication"
     title="{domain.name} Email Security Checker"
-    description="Email security checker for {domain.name} — SPF, DMARC, MTA-STS, and BIMI analysis"
+    description="Email security checker for {domain.name}: SPF, DMARC, MTA-STS, and BIMI analysis"
     domainName={domain.name}
     isLoading={domain.toolState.email.loading}
     error={domain.toolState.email.error}

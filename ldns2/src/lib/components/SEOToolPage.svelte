@@ -25,7 +25,7 @@
     }: Props = $props();
 
     // Eyebrow caption: "{datasource} · {slug-or-record-type}", styled after
-    // the homepage section captions. Short, lowercase, mono — sets the
+    // the homepage section captions. Short, lowercase, mono, sets the
     // page in context before the heading lands.
     const eyebrow = $derived(
         `${config.dataSource} · ${config.recordType ? config.recordType.toLowerCase() : config.slug}`

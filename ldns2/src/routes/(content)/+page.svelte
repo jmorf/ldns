@@ -19,7 +19,7 @@
     {
       n: '01',
       name: 'Records',
-      blurb: 'A, AAAA, MX, TXT, NS, SOA, CAA, CNAME — over encrypted DoH.',
+      blurb: 'A, AAAA, MX, TXT, NS, SOA, CAA and CNAME over encrypted DoH.',
       bullets: ['Cloudflare / Google / DNS.SB', 'Per-provider latency', 'Inline reverse DNS'],
       href: '/google.com',
       icon: Database
@@ -27,7 +27,7 @@
     {
       n: '02',
       name: 'Email',
-      blurb: 'SPF, DMARC, DKIM, BIMI, MTA-STS — with provider detection.',
+      blurb: 'SPF, DMARC, DKIM, BIMI and MTA-STS, with provider detection.',
       bullets: ['DKIM probes 22 selectors', '40+ provider patterns', 'Policy explanations'],
       href: '/google.com/email',
       icon: AtSign
@@ -70,7 +70,7 @@
 
 <SEO
   title="Free DNS, RDAP, Email Security & Server Tools"
-  description="Look up DNS records, RDAP/WHOIS, email authentication (SPF, DMARC, DKIM, BIMI), TLS certificates, security headers, ASN, and subdomains for any domain — instant, free, no install."
+  description="Look up DNS records, RDAP/WHOIS, email authentication (SPF, DMARC, DKIM, BIMI), TLS certificates, security headers, ASN, and subdomains for any domain. Instant, free, no install."
 />
 
 <!-- ─── Hero ─────────────────────────────────────────────────────── -->
@@ -83,7 +83,7 @@
         <span class="text-primary-500">in one place.</span>
       </h1>
       <p class="mt-5 text-lg text-fg-muted leading-relaxed">
-        DNS records, registration data, email authentication, TLS certificates, security headers, IP geolocation, and subdomains —
+        DNS records, registration data, email authentication, TLS certificates, security headers, IP geolocation, and subdomains,
         for any domain on the internet. No accounts. No tracking.
       </p>
       <div class="mt-8">
@@ -115,7 +115,6 @@
         >
           <div class="flex items-baseline gap-2 mb-3">
             <span class="font-mono text-primary-500 tnum text-xs">{f.n}</span>
-            <span class="font-mono text-fg-subtle text-xs">—</span>
             <h3 class="text-base font-semibold text-fg">{f.name}</h3>
             <Icon class="w-4 h-4 text-fg-subtle ml-auto group-hover:text-primary-400 transition-colors" />
           </div>
@@ -171,7 +170,7 @@
           One click on any tab.
         </h2>
         <p class="mt-3 text-fg-muted leading-relaxed max-w-md">
-          The LDNS extension for Chrome and Firefox runs the same lookups as this site, on whatever tab you're viewing — popup or pinned in the side panel.
+          The LDNS extension for Chrome and Firefox runs the same lookups as this site, on whatever tab you're viewing, popup or pinned in the side panel.
         </p>
         <div class="mt-5 flex flex-wrap gap-3">
           <a

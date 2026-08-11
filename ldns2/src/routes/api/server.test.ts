@@ -1,7 +1,7 @@
 /**
  * Integration tests for /api/server. Mocks the outbound fetch (DoH for SSRF
  * resolution + the actual HEAD/GET to the target domain) and exercises the
- * full handler — origin check, rate limit, SSRF guard, analyzeServer, and
+ * full handler: origin check, rate limit, SSRF guard, analyzeServer, and
  * JSON envelope.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';

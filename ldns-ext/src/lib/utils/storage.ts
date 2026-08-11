@@ -7,7 +7,7 @@ const STORAGE_KEYS = {
   THEME: 'ldns_theme',
   SETTINGS: 'ldns_settings',
   // First-run banner shown in the popup nudging users to try side-panel mode.
-  // Set to true when the user explicitly dismisses the banner — never reshown.
+  // Set to true when the user explicitly dismisses the banner, never reshown.
   SIDEBAR_TIP_SEEN: 'ldns_sidebar_tip_seen'
 } as const;
 
@@ -22,7 +22,7 @@ export async function getRecentSearches(): Promise<RecentSearch[]> {
   try {
     const result = await chrome.storage.local.get(STORAGE_KEYS.RECENT_SEARCHES);
     const stored = result[STORAGE_KEYS.RECENT_SEARCHES];
-    // Validate the stored shape — corrupt data must not reach the UI, where a
+    // Validate the stored shape, corrupt data must not reach the UI, where a
     // non-string domain would blow up click handlers.
     if (!Array.isArray(stored)) return [];
     return stored.filter(

@@ -16,9 +16,9 @@
   }
 
   const features: Feature[] = [
-    { n: '01', name: 'DNS Records', blurb: 'A, AAAA, MX, TXT, NS, SOA, CAA, DNSKEY — looked up over DoH on the tab you\'re viewing.', icon: Globe },
+    { n: '01', name: 'DNS Records', blurb: 'A, AAAA, MX, TXT, NS, SOA, CAA, DNSKEY: looked up over DoH on the tab you\'re viewing.', icon: Globe },
     { n: '02', name: 'WHOIS / RDAP', blurb: 'Registration, registrar, expiry, DNSSEC. WHOIS fallback for ccTLDs that don\'t speak RDAP.', icon: Search },
-    { n: '03', name: 'Email security', blurb: 'SPF, DMARC, DKIM, BIMI, MTA-STS — with provider detection and policy explanations.', icon: Mail },
+    { n: '03', name: 'Email security', blurb: 'SPF, DMARC, DKIM, BIMI, MTA-STS: with provider detection and policy explanations.', icon: Mail },
     { n: '04', name: 'Server response', blurb: 'HTTP headers, redirect chain, response time. Same data as the website.', icon: Server },
     { n: '05', name: 'Multi-provider DoH', blurb: 'Cloudflare, Google, or DNS.SB. Switch resolvers per-query, see per-provider latency.', icon: Zap },
     { n: '06', name: 'Light & dark', blurb: 'Follows your system theme by default, or pin one explicitly.', icon: Moon },
@@ -29,7 +29,7 @@
 
 <SEO
   title="Browser Extension"
-  description="The LDNS extension for Chrome and Firefox: DNS records, WHOIS, email security, and server info on the tab you're viewing — popup or pinned in the side panel."
+  description="The LDNS extension for Chrome and Firefox: DNS records, WHOIS, email security, and server info on the tab you're viewing, popup or pinned in the side panel."
 />
 
 <!-- ─── Hero ─────────────────────────────────────────────────────── -->
@@ -43,7 +43,7 @@
           <span class="text-primary-500">any tab.</span>
         </h1>
         <p class="mt-5 text-lg text-fg-muted leading-relaxed">
-          Run the same lookups as ldns.com on whatever tab you're viewing — popup
+          Run the same lookups as ldns.com on whatever tab you're viewing, popup
           or pinned in the side panel. Free, no accounts, no tracking.
         </p>
         <div class="mt-8 flex flex-wrap gap-3">
@@ -75,7 +75,7 @@
               <span class="w-2.5 h-2.5 rounded-full bg-warn-400/70"></span>
               <span class="w-2.5 h-2.5 rounded-full bg-ok-400/70"></span>
             </div>
-            <span class="font-mono text-[10px] text-fg-subtle">ldns extension — popup</span>
+            <span class="font-mono text-[10px] text-fg-subtle">ldns extension: popup</span>
           </div>
           <div class="p-8 sm:p-12 flex items-center justify-center bg-surface">
             <img src="/favicon.ico" class="w-32 h-32 opacity-90" alt="LDNS extension" />
@@ -99,7 +99,6 @@
         <div class="bg-surface-2 border border-line rounded-xl p-5 hover:border-primary-500/30 transition-colors">
           <div class="flex items-baseline gap-2 mb-3">
             <span class="font-mono text-primary-500 tnum text-xs">{f.n}</span>
-            <span class="font-mono text-fg-subtle text-xs">—</span>
             <Icon class="w-4 h-4 text-fg-subtle ml-auto" />
           </div>
           <h3 class="text-sm font-semibold text-fg mb-1.5">{f.name}</h3>
@@ -131,7 +130,7 @@
       <div>
         <span class="font-mono text-primary-500 text-sm tnum">03</span>
         <h3 class="text-base font-semibold text-fg mt-2">Look up anything</h3>
-        <p class="text-sm text-fg-muted mt-1.5 leading-relaxed">Type any domain to inspect it — or pick from your recent searches.</p>
+        <p class="text-sm text-fg-muted mt-1.5 leading-relaxed">Type any domain to inspect it, or pick from your recent searches.</p>
       </div>
     </div>
   </div>

@@ -11,7 +11,7 @@ export interface ParsedDomain {
 
 const empty: ParsedDomain = { input: '', tld: '', sld: '', subdomain: '', rootDomain: '', isValid: false };
 
-// Memoize — parse() is invoked many times per render via getters.
+// Memoize, parse() is invoked many times per render via getters.
 const cache = new Map<string, ParsedDomain>();
 const MAX_CACHE = 100;
 
@@ -53,7 +53,7 @@ export function isValidDomain(name: string): boolean {
 
 /**
  * Convert a possibly-Unicode (IDN) domain to its ASCII/punycode form.
- * DoH endpoints, RDAP, and crt.sh all reject raw Unicode query names —
+ * DoH endpoints, RDAP, and crt.sh all reject raw Unicode query names,
  * `münchen.de` must be sent as `xn--mnchen-3ya.de`. The URL parser applies
  * IDNA per the WHATWG spec (and handles `_dmarc.`-style underscore labels).
  * Returns the input unchanged if it can't be parsed as a hostname.
@@ -67,7 +67,7 @@ export function toAsciiDomain(name: string): string {
 }
 
 /**
- * Extract the hostname from user input that looks like a URL — handles full
+ * Extract the hostname from user input that looks like a URL: handles full
  * URLs, scheme-less `host/path`, `host:port`, and `host?query` forms.
  */
 export function extractDomainFromUrl(url: string): string {

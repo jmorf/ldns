@@ -87,7 +87,7 @@
   const ipv4: string[] = $derived(dnsData?.A?.map((r: { data: string }) => r.data) ?? []);
   const ipv6: string[] = $derived(dnsData?.AAAA?.map((r: { data: string }) => r.data) ?? []);
 
-  // Loose-cast the partial server-shaped object — the FAQ generator only reads
+  // Loose-cast the partial server-shaped object: the FAQ generator only reads
   // .response.status, but the type signature wants the full record.
   const faqJsonLd = $derived(success && success.info
     ? generateServerFaqJsonLd(
@@ -237,7 +237,7 @@
               </div>
             </div>
           {:else}
-            <p class="text-xs text-fg-subtle">No redirects detected — direct connection to {info.url}.</p>
+            <p class="text-xs text-fg-subtle">No redirects detected: direct connection to {info.url}.</p>
           {/if}
         </div>
       </div>

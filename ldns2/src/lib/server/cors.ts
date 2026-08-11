@@ -26,7 +26,7 @@ export function isAllowedOrigin(origin: string | null): boolean {
   // Firefox assigns each install its own random moz-extension:// UUID, so
   // there is no stable origin to allow-list the way Chrome's extension ID
   // works. Allowing any moz-extension origin means any installed Firefox
-  // add-on can call these endpoints — acceptable because every response is
+  // add-on can call these endpoints, acceptable because every response is
   // public DNS/domain data behind a rate limit, and nothing here is
   // authenticated or user-specific.
   // TODO: if AMO ever exposes a stable per-add-on origin, pin it here.
@@ -35,7 +35,7 @@ export function isAllowedOrigin(origin: string | null): boolean {
 }
 
 export function corsHeaders(origin: string | null): Record<string, string> {
-  // For same-origin requests Origin is null/empty — echo back ldns.com so we
+  // For same-origin requests Origin is null/empty, echo back ldns.com so we
   // never emit `Access-Control-Allow-Origin: null`.
   const allowed = origin && isAllowedOrigin(origin) ? origin : 'https://ldns.com';
   return {

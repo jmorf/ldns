@@ -11,7 +11,7 @@
 
   let { caaRecords = [], certIssuer }: Props = $props();
 
-  // Pure comparison of data both already fetched — no extra network request.
+  // Pure comparison of data both already fetched, no extra network request.
   const result = $derived<CaaIssuerCheck>(checkCaaAgainstIssuer(caaRecords, certIssuer));
 </script>
 
@@ -28,7 +28,7 @@
     {:else if result.verdict === 'not-covered'}
       <ShieldAlert class="w-4 h-4 text-warn-400 shrink-0 mt-0.5" />
       <div>
-        <p class="text-sm text-warn-400 font-medium">Mismatch — renewals may fail</p>
+        <p class="text-sm text-warn-400 font-medium">Mismatch, renewals may fail</p>
         <p class="text-xs text-fg-muted mt-0.5 leading-relaxed">{result.explanation}</p>
       </div>
     {:else if result.verdict === 'forbids-all'}

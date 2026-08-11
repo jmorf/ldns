@@ -22,29 +22,29 @@ A fast, privacy-focused Chrome & Firefox extension for DNS records, WHOIS/RDAP d
 - Query A, AAAA, MX, TXT, NS, SOA, CAA records
 - Multiple DNS-over-HTTPS providers (Cloudflare, Google, DNS.SB)
 - Filter by record type with one-click copy
-- **DNS Propagation Comparison** — Toggle to compare results across all 3 providers with mismatch highlighting and per-provider latency
-- **Reverse DNS (PTR)** — Auto-lookup PTR records (IPv4 + IPv6) shown inline below A/AAAA records
-- **IP-to-ASN** — Origin AS number, name and country shown inline (Team Cymru, no API key)
+- **DNS Propagation Comparison**: Toggle to compare results across all 3 providers with mismatch highlighting and per-provider latency
+- **Reverse DNS (PTR)**: Auto-lookup PTR records (IPv4 + IPv6) shown inline below A/AAAA records
+- **IP-to-ASN**: Origin AS number, name and country shown inline (Team Cymru, no API key)
 
 ### WHOIS/RDAP
 - Domain registration details, registrar, nameservers
 - Creation, update, and expiration dates
 - DNSSEC status, DS records and key tag
-- **Domain Age & Expiry Countdown** — Color-coded banner (green >90d, yellow 30-90d, red <30d)
+- **Domain Age & Expiry Countdown**: Color-coded banner (green >90d, yellow 30-90d, red <30d)
 
 ### Email Security
 - MX record analysis with provider detection (40+ providers)
 - SPF record parsing and validation
 - DMARC policy analysis
 - BIMI and MTA-STS detection
-- **DKIM** — Probes 20+ common selectors, displays found keys with algorithm and key length
+- **DKIM**: Probes 20+ common selectors, displays found keys with algorithm and key length
 
 ### Server Info
 - HTTP response headers and server software detection
 - Response time measurement and redirect chain tracing
 - Cache information and IP address display
-- **Technology Stack Detection** — CDNs, frameworks, platforms, hosting
-- **Security Headers Audit** — HSTS, CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy
+- **Technology Stack Detection**: CDNs, frameworks, platforms, hosting
+- **Security Headers Audit**: HSTS, CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy
 - **HTTP/3 detection** via Alt-Svc header
 - **HSTS preload status** check
 - **security.txt and robots.txt** indicators
@@ -70,7 +70,7 @@ A fast, privacy-focused Chrome & Firefox extension for DNS records, WHOIS/RDAP d
 The extension is published as "LDNS - DNS & Domain Tools". Visit [ldns.com/extension](https://ldns.com/extension) for the live link.
 
 ### From Firefox Add-ons (AMO)
-Available on [addons.mozilla.org](https://addons.mozilla.org) — search for "LDNS".
+Available on [addons.mozilla.org](https://addons.mozilla.org), search for "LDNS".
 
 ### From Source (Developer Mode)
 1. Clone this repository
@@ -85,7 +85,7 @@ Available on [addons.mozilla.org](https://addons.mozilla.org) — search for "LD
 LDNS is designed with privacy in mind:
 - No analytics, telemetry, or accounts
 - DNS, RDAP and CT-log queries go directly to public services
-- **Nothing is ever sent to LDNS servers** — the extension has no backend
+- **Nothing is ever sent to LDNS servers**. The extension has no backend
 - All preferences and recent searches stay in your local browser storage
 - See [PRIVACY.md](PRIVACY.md) for full details
 
@@ -100,7 +100,7 @@ LDNS is designed with privacy in mind:
 ## Development
 
 ```bash
-npm install         # from the repository root — installs all workspace packages
+npm install         # from the repository root: installs all workspace packages
 npm run dev         # development with hot reload
 npm run check       # type checking
 npm run build       # Chrome build → dist/
@@ -119,9 +119,9 @@ npm run generate:description  # regenerate STORE_DESCRIPTION.txt (release prep)
 
 ## License
 
-The code is licensed under the [MIT License](LICENSE) — use it, fork it, learn from it.
+The code is licensed under the [MIT License](LICENSE): use it, fork it, learn from it.
 
-**Brand exception:** the LDNS name, wordmark, and the extension icons in `public/icons/` are **not** MIT-licensed — all rights reserved, see [LICENSE-BRAND](../LICENSE-BRAND). Forks are welcome, but they must ship under their own name and icons; publishing a fork to an extension store as "LDNS" or with the LDNS icons is not permitted. Referring to LDNS factually ("a fork of LDNS") is of course fine.
+**Brand exception:** the LDNS name, wordmark, and the extension icons in `public/icons/` are **not** MIT-licensed: all rights reserved, see [LICENSE-BRAND](../LICENSE-BRAND). Forks are welcome, but they must ship under their own name and icons; publishing a fork to an extension store as "LDNS" or with the LDNS icons is not permitted. Referring to LDNS factually ("a fork of LDNS") is of course fine.
 
 ## Links
 

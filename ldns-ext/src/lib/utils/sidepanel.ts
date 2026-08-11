@@ -7,7 +7,7 @@
  * `chrome.sidebarAction` (a.k.a. `browser.sidebarAction`). The bridge in
  * `public/background.js` listens for `action.onClicked` and calls
  * `sidebarAction.toggle()` so a single click on the toolbar icon opens or
- * closes the side panel — matching the Chrome UX.
+ * closes the side panel, matching the Chrome UX.
  *
  * For both browsers, "side-panel mode on" means clearing the action's
  * default popup so the click reaches its respective panel-opening path.
@@ -17,7 +17,7 @@
  * extension root; Firefox resolves relative to the *calling page*. So
  * passing a bare `'src/popup/popup.html'` from inside the popup itself
  * produced `moz-extension://uuid/src/popup/src/popup/popup.html` on
- * Firefox — a 404. Use `chrome.runtime.getURL()` to construct an absolute
+ * Firefox, a 404. Use `chrome.runtime.getURL()` to construct an absolute
  * extension URL that both browsers accept unambiguously.
  */
 
@@ -50,12 +50,12 @@ export async function applySidePanelMode(enabled: boolean): Promise<void> {
   const sp = chromeSidePanel();
   const sb = firefoxSidebar();
 
-  // Neither API present — silently no-op so the action keeps its popup.
+  // Neither API present, silently no-op so the action keeps its popup.
   if (!sp && !sb) return;
 
   try {
     if (enabled) {
-      // Clearing the popup is the same on both browsers — it's how the
+      // Clearing the popup is the same on both browsers, it's how the
       // click reaches the side-panel-opening path.
       await chrome.action.setPopup({ popup: '' });
       if (sp) await sp.setPanelBehavior({ openPanelOnActionClick: true });

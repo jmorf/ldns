@@ -4,28 +4,28 @@
 
 ## Overview
 
-LDNS is a browser extension that provides DNS, WHOIS/RDAP, email security, server, and subdomain lookups. We are committed to protecting your privacy and being transparent about every place a piece of data could leave your browser.
+LDNS is a browser extension that provides DNS, WHOIS/RDAP, email security, server, and subdomain lookups. It is built to protect your privacy and to be transparent about every place a piece of data could leave your browser.
 
-## What we do not collect
+## What LDNS does not collect
 
-- We do **not** collect any personal information
-- We do **not** track your browsing history
-- We do **not** use analytics or tracking services
-- We do **not** require an account
-- We do **not** sell or share data with third parties
+- Does **not** collect any personal information
+- Does **not** track your browsing history
+- Does **not** use analytics or tracking services
+- Does **not** require an account
+- Does **not** sell or share data with third parties
 
 ## What stays on your device
 
 The following data is stored locally using the browser's storage API and never leaves your machine:
 
-- **Recent searches** — the last 10 domains you've looked up, for convenience
-- **Preferences** — selected DNS provider and theme
-- **Settings** — UI preferences (side-panel mode, fun loading messages, grain overlay)
-- **In-memory query cache** — short-lived (≤30s) cache of the most recent lookup, cleared when the popup closes
+- **Recent searches**. The last 10 domains you've looked up, for convenience
+- **Preferences**: selected DNS provider and theme
+- **Settings**: UI preferences (side-panel mode, fun loading messages, grain overlay)
+- **In-memory query cache**: short-lived (≤30s) cache of the most recent lookup, cleared when the popup closes
 
 You can clear recent searches at any time from inside the extension.
 
-## Third-party services we contact
+## Third-party services LDNS contacts
 
 When you perform a lookup, the queried **domain name** (and only the domain name) is sent to one or more of the following endpoints. No additional information is included.
 
@@ -37,18 +37,18 @@ When you perform a lookup, the queried **domain name** (and only the domain name
 | RDAP.org (`rdap.org`) | RDAP lookup | Modern WHOIS replacement | Public RDAP bootstrap |
 | crt.sh | Subdomain discovery | Certificate Transparency logs | [crt.sh/about](https://crt.sh) |
 | Team Cymru (`asn.cymru.com`) | ASN/origin lookup | IP-to-ASN mapping (DNS-only) | [team-cymru.com](https://www.team-cymru.com) |
-| Target server (any URL) | Server-info tab | HTTP HEAD/GET to read response headers | — |
+| Target server (any URL) | Server-info tab | HTTP HEAD/GET to read response headers |, |
 | HSTS preload list (`hstspreload.org`) | HSTS check | Public preload database | [hstspreload.org](https://hstspreload.org) |
 
-## We never contact LDNS servers
+## LDNS servers are never contacted
 
 The extension makes **no requests to `ldns.com` or any other LDNS-owned server**. Every lookup goes directly from your browser to the public services listed above. There is no backend, no telemetry, and no account.
 
-The extension does contain links to ldns.com (the header logo and the per-tab "view full report" chips). Those are ordinary links — nothing is sent unless you click one, which opens the site in a new tab like any other link.
+The extension does contain links to ldns.com (the header logo and the per-tab "view full report" chips). Those are ordinary links. Nothing is sent unless you click one, which opens the site in a new tab like any other link.
 
 ## Host permissions
 
-The extension declares specific host permissions for the named services above, plus `<all_urls>`. The latter is required so the **Server Info** tab can fetch headers from any domain you look up — it is only used during an active lookup; no background or page-content access happens.
+The extension declares specific host permissions for the named services above, plus `<all_urls>`. The latter is required so the **Server Info** tab can fetch headers from any domain you look up. It is only used during an active lookup; no background or page-content access happens.
 
 ## Permissions explained
 
@@ -63,7 +63,7 @@ The extension declares specific host permissions for the named services above, p
 
 - All DNS queries use encrypted DNS-over-HTTPS (DoH)
 - Manifest V3 with a strict Content Security Policy (`script-src 'self'; object-src 'self'`)
-- No data is transmitted to LDNS servers, ever — there is no backend to send it to
+- No data is transmitted to LDNS servers, ever. There is no backend to send it to
 - Preferences are stored using the browser's secure local storage API
 
 ## Your rights
@@ -75,7 +75,7 @@ You can:
 
 ## Changes to this policy
 
-We may update this privacy policy from time to time. Any changes will be reflected in the "Last Updated" date above.
+This privacy policy may be updated from time to time. Any changes will be reflected in the "Last Updated" date above.
 
 ## Contact
 
@@ -83,4 +83,4 @@ For privacy concerns or questions, please visit [ldns.com](https://ldns.com).
 
 ---
 
-**Summary:** LDNS is a privacy-focused tool. It sends nothing to LDNS-owned servers — every DNS, RDAP and CT-log query goes directly to the corresponding public service. There is no backend, no account, and no telemetry.
+**Summary:** LDNS is a privacy-focused tool. It sends nothing to LDNS-owned servers. Every DNS, RDAP and CT-log query goes directly to the corresponding public service. There is no backend, no account, and no telemetry.

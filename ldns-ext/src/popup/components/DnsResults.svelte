@@ -65,7 +65,7 @@
     const aaaa = data?.AAAA?.map((r) => r.data) ?? [];
     const ips = [...a, ...aaaa];
     if (ips.length === 0) return;
-    // Guard against a stale batch landing after the domain changed — a slow
+    // Guard against a stale batch landing after the domain changed. A slow
     // PTR response for the previous domain must not replace the current map.
     const forDomain = extensionState.domain;
     untrack(() => {

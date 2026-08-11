@@ -1,6 +1,6 @@
-# LDNS — robots.txt
+# LDNS: robots.txt
 # Free, public DNS / RDAP / email / server / security tools.
-# Everything is crawlable — no admin areas, no auth.
+# Everything is crawlable, no admin areas, no auth.
 
 User-agent: *
 Allow: /
@@ -8,7 +8,7 @@ Disallow: /api/
 
 Sitemap: https://ldns.com/sitemap.xml
 
-# Cloudflare content signals — explicit permissions so AI/search vendors
+# Cloudflare content signals, explicit permissions so AI/search vendors
 # know what's allowed. (search = yes / ai-input = yes / ai-train = no)
 # See https://developers.cloudflare.com/cache/concepts/content-signals/
 Content-Signal: search=yes, ai-input=yes, ai-train=no

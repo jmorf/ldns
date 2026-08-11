@@ -9,7 +9,7 @@ export interface PropagationData {
   latencies: ProviderLatency[];
   /**
    * Providers that could not be reached at all. Consumers must exclude these
-   * from mismatch comparisons — a dead provider is an outage, not evidence
+   * from mismatch comparisons. A dead provider is an outage, not evidence
    * that records haven't propagated.
    */
   unreachable: DnsEndpoint[];

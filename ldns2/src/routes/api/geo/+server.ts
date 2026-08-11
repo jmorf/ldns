@@ -9,7 +9,7 @@ import { isIPv4, isIPv6 } from '@ldns/core/ptr';
  *   1. Cloudflare's `request.cf` provides country/region/city/asn for the
  *      *requesting* IP. Not useful here because we need to look up an arbitrary
  *      IP, not the client's.
- *   2. ipwho.is — free, unauthenticated, reasonable rate limit (~10k/day per IP).
+ *   2. ipwho.is: free, unauthenticated, reasonable rate limit (~10k/day per IP).
  *      We proxy it server-side so the client never talks to ipwho.is directly.
  *
  * Accuracy is "country and region usually correct, city often approximate".

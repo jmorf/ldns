@@ -19,7 +19,7 @@ export function parseSPFRecord(spfRecord: string): SPFAnalysis {
 
     // Check for modifiers (redirect=, exp=)
     if (part.includes('=')) {
-      // Split on the first '=' only — values may themselves contain '='.
+      // Split on the first '=' only, values may themselves contain '='.
       const eq = part.indexOf('=');
       modifiers[part.slice(0, eq)] = part.slice(eq + 1);
     }
@@ -104,7 +104,7 @@ export function parseDMARCRecord(dmarcRecord: string): DMARCAnalysis {
   for (const part of parts) {
     if (!part) continue;
     // Split on the first '=' only (rua/ruf URIs contain '='), and lowercase
-    // the tag name — RFC 7489 tag names are case-insensitive.
+    // the tag name, RFC 7489 tag names are case-insensitive.
     const eq = part.indexOf('=');
     if (eq <= 0) continue;
     const key = part.slice(0, eq).trim().toLowerCase();

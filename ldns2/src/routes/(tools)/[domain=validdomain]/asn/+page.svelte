@@ -62,15 +62,15 @@
           </div>
           <div>
             <p class="text-[10px] uppercase tracking-wider text-fg-subtle">ASN</p>
-            <p class="font-mono text-sm text-fg">{info.asn ? `AS${info.asn}` : '—'}</p>
+            <p class="font-mono text-sm text-fg">{info.asn ? `AS${info.asn}` : ', '}</p>
           </div>
           <div class="md:col-span-2">
             <p class="text-[10px] uppercase tracking-wider text-fg-subtle">AS Name</p>
-            <p class="text-sm text-fg truncate" title={info.asName ?? ''}>{info.asName ?? '—'}</p>
+            <p class="text-sm text-fg truncate" title={info.asName ?? ''}>{info.asName ?? ', '}</p>
           </div>
           <div>
             <p class="text-[10px] uppercase tracking-wider text-fg-subtle">Country</p>
-            <p class="font-mono text-sm text-fg">{info.country ?? '—'}</p>
+            <p class="font-mono text-sm text-fg">{info.country ?? ', '}</p>
           </div>
           {#if info.prefix}
             <div class="md:col-span-5 -mt-2">

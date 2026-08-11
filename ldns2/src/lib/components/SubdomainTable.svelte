@@ -59,7 +59,7 @@
         },
     ];
 
-    // Call createTable ONCE — it builds the whole table instance and registers
+    // Call createTable ONCE, it builds the whole table instance and registers
     // its own $effect.pre to sync options. Wrapping it in $derived rebuilt every
     // row on each keystroke in the search box and leaked an extra effect each
     // time, so typing got slower the longer you typed. The getters below are

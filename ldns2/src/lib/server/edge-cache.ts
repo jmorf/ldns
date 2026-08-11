@@ -1,6 +1,6 @@
 /**
  * Thin helper around Cloudflare Workers' default Cache API. Workers responses
- * are NOT auto-stored at the edge — Cache-Control headers we set are honoured
+ * are NOT auto-stored at the edge, Cache-Control headers we set are honoured
  * by the browser only, never by Cloudflare's CDN unless we explicitly call
  * `caches.default.put()`. This wrapper does that.
  *
@@ -42,7 +42,7 @@ export async function serveCached(
   if (hit) return hit;
 
   const fresh = await generator();
-  // Only cache successful responses — don't pin a 5xx for the full TTL.
+  // Only cache successful responses, don't pin a 5xx for the full TTL.
   if (fresh.ok) {
     const ctx = event.platform?.ctx;
     if (ctx?.waitUntil) {

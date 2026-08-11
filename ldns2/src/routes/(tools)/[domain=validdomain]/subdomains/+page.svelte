@@ -33,7 +33,7 @@
       loading = false;
     }
   }
-  // Retry from a structured failure must bypass the (short) error cache —
+  // Retry from a structured failure must bypass the (short) error cache:
   // otherwise the user clicks Retry, the CDN serves the same cached failure
   // for the next 5 minutes, and nothing changes.
   function retry() {
@@ -149,7 +149,7 @@
       <div class="mt-5 pt-4 border-t border-line">
         <p class="text-[11px] text-fg-subtle leading-relaxed">
           Subdomain discovery uses crt.sh, a free public Certificate Transparency log search.
-          When that service is overloaded or down, no other LDNS data is affected — try the
+          When that service is overloaded or down, no other LDNS data is affected: try the
           <a href="/{domain.name}" class="text-primary-400 hover:underline">DNS</a>,
           <a href="/{domain.name}/server" class="text-primary-400 hover:underline">server</a>, or
           <a href="/{domain.name}/security" class="text-primary-400 hover:underline">security</a> tools instead.

@@ -15,9 +15,9 @@
   }
 
   const capabilities: Capability[] = [
-    { n: '01', name: 'DNS Records', blurb: 'A, AAAA, MX, TXT, NS, SOA, CAA, CNAME — over encrypted DoH with per-provider latency.', href: '/google.com', icon: Globe },
+    { n: '01', name: 'DNS Records', blurb: 'A, AAAA, MX, TXT, NS, SOA, CAA and CNAME over encrypted DoH, with per-provider latency.', href: '/google.com', icon: Globe },
     { n: '02', name: 'RDAP & WHOIS', blurb: 'Registration data, registrar, expiry, DNSSEC. WHOIS fallback for ccTLDs that don\'t support RDAP.', href: '/google.com/rdap', icon: GitBranch },
-    { n: '03', name: 'Email security', blurb: 'SPF, DMARC, DKIM, BIMI, MTA-STS — provider detection, policy explanation.', href: '/google.com/email', icon: Mail },
+    { n: '03', name: 'Email security', blurb: 'SPF, DMARC, DKIM, BIMI and MTA-STS, with provider detection and policy explanation.', href: '/google.com/email', icon: Mail },
     { n: '04', name: 'Server response', blurb: 'Headers, redirect chain, TTFB, tech-stack badges, IP/ASN/country per upstream.', href: '/google.com/server', icon: Server },
     { n: '05', name: 'TLS & security', blurb: 'Cert from CT logs, response security headers, HSTS preload, well-known files.', href: '/google.com/security', icon: ShieldCheck },
     { n: '06', name: 'Subdomains', blurb: 'Discovery via Certificate Transparency logs, deduplicated and exportable as CSV.', href: '/google.com/subdomains', icon: Network }
@@ -26,7 +26,7 @@
 
 <SEO
   title="About"
-  description="LDNS is a free, open-source, no-account toolkit for inspecting any domain on the internet — DNS, RDAP, email, server, security and subdomains."
+  description="LDNS is a free, open-source, no-account toolkit for inspecting any domain on the internet: DNS, RDAP, email, server, security and subdomains."
 />
 
 <!-- ─── Hero ─────────────────────────────────────────────────────── -->
@@ -38,10 +38,10 @@
       <span class="text-primary-500">every domain tool.</span>
     </h1>
     <p class="mt-6 text-lg text-fg-muted leading-relaxed max-w-2xl">
-      LDNS is a free, open-source toolkit for inspecting any domain on the internet — DNS
+      LDNS is a free, open-source toolkit for inspecting any domain on the internet: DNS
       records, registration data, email authentication, TLS certificates, security headers,
       IP geolocation, and subdomains. No accounts. No tracking. Edge-cached on Cloudflare
-      so lookups are fast — and the whole thing is
+      so lookups are fast, and the whole thing is
       <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" class="text-primary-400 hover:underline">on GitHub</a>.
     </p>
   </div>
@@ -63,7 +63,6 @@
         >
           <div class="flex items-baseline gap-2 mb-3">
             <span class="font-mono text-primary-500 tnum text-xs">{c.n}</span>
-            <span class="font-mono text-fg-subtle text-xs">—</span>
             <Icon class="w-4 h-4 text-fg-subtle ml-auto group-hover:text-primary-400 transition-colors" />
           </div>
           <h3 class="text-base font-semibold text-fg group-hover:text-primary-400 transition-colors">{c.name}</h3>
@@ -121,8 +120,8 @@
         that proxy to public services and cache aggressively at the Cloudflare edge.
       </p>
       <p>
-        We don't run a database. We don't track users. Every lookup is a stateless GET
-        against a cached endpoint — that's why the same lookup is essentially free at scale,
+        There is no database and no user tracking. Every lookup is a stateless GET
+        against a cached endpoint. That's why the same lookup is essentially free at scale,
         and why every page is also a public API.
       </p>
       <p>
@@ -144,7 +143,7 @@
     <div class="space-y-4 text-fg-muted leading-relaxed max-w-prose">
       <p>
         LDNS is open source under the MIT license. That covers this website, the Chrome and
-        Firefox extension, and <span class="font-mono text-fg">@ldns/core</span> — the shared
+        Firefox extension, and <span class="font-mono text-fg">@ldns/core</span>, the shared
         library that does the actual DNS, RDAP, email and certificate work for both.
       </p>
       <p>
@@ -174,7 +173,7 @@
       >
         <Bug class="w-4 h-4 text-fg-subtle group-hover:text-primary-400 transition-colors" />
         <h3 class="text-base font-semibold text-fg mt-3 group-hover:text-primary-400 transition-colors">Report a bug</h3>
-        <p class="text-sm text-fg-muted leading-relaxed mt-1.5">Something wrong or missing? Open an issue — they're read.</p>
+        <p class="text-sm text-fg-muted leading-relaxed mt-1.5">Something wrong or missing? Open an issue. They get read.</p>
       </a>
       <a
         href={`${GITHUB_URL}/blob/main/CONTRIBUTING.md`}

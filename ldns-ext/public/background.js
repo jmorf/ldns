@@ -6,7 +6,7 @@
  * sidebar via `chrome.sidebarAction.toggle()`. The toggle call only works
  * inside a user-gesture context, which `action.onClicked` provides.
  *
- * On Chrome the toggle path doesn't run — Chrome handles action click →
+ * On Chrome the toggle path doesn't run: Chrome handles action click →
  * panel directly via `chrome.sidePanel.setPanelBehavior({
  *   openPanelOnActionClick: true })`, set from sidepanel.ts. The listener
  * still registers but is a no-op there because `chrome.sidebarAction` is

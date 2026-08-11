@@ -61,9 +61,9 @@
           {#if info.ok}
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
               <div><p class="text-[10px] uppercase tracking-wider text-fg-subtle">Country</p><p class="text-fg mt-0.5">{info.country} <span class="text-[11px] text-fg-subtle font-mono">{info.countryCode}</span></p></div>
-              <div><p class="text-[10px] uppercase tracking-wider text-fg-subtle">Region</p><p class="text-fg mt-0.5">{info.region || '—'}</p></div>
-              <div><p class="text-[10px] uppercase tracking-wider text-fg-subtle">City</p><p class="text-fg mt-0.5">{info.city || '—'}</p></div>
-              <div><p class="text-[10px] uppercase tracking-wider text-fg-subtle">Timezone</p><p class="text-fg mt-0.5 font-mono text-xs">{info.timezone ?? '—'}</p></div>
+              <div><p class="text-[10px] uppercase tracking-wider text-fg-subtle">Region</p><p class="text-fg mt-0.5">{info.region || ', '}</p></div>
+              <div><p class="text-[10px] uppercase tracking-wider text-fg-subtle">City</p><p class="text-fg mt-0.5">{info.city || ', '}</p></div>
+              <div><p class="text-[10px] uppercase tracking-wider text-fg-subtle">Timezone</p><p class="text-fg mt-0.5 font-mono text-xs">{info.timezone ?? ', '}</p></div>
               {#if info.org}<div class="md:col-span-2"><p class="text-[10px] uppercase tracking-wider text-fg-subtle">Organization</p><p class="text-fg mt-0.5">{info.org}</p></div>{/if}
               {#if info.isp}<div class="md:col-span-2"><p class="text-[10px] uppercase tracking-wider text-fg-subtle">ISP</p><p class="text-fg mt-0.5">{info.isp}</p></div>{/if}
             </div>

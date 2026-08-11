@@ -1,5 +1,5 @@
 /**
- * Real DNSSEC validation status — not just "is the zone signed".
+ * Real DNSSEC validation status, not just "is the zone signed".
  *
  * Showing DS records tells you a zone *claims* to be signed. It does not tell
  * you whether the chain actually validates, and a broken chain is far worse
@@ -20,7 +20,7 @@
  *   |-------------------|--------------------|----------------------|
  *   | NOERROR + AD      | NOERROR            | signed and valid     |
  *   | NOERROR, no AD    | NOERROR            | unsigned (no DNSSEC) |
- *   | SERVFAIL          | NOERROR            | BOGUS — broken chain |
+ *   | SERVFAIL          | NOERROR            | BOGUS, broken chain |
  *   | SERVFAIL          | SERVFAIL           | genuine server error |
  */
 
@@ -76,7 +76,7 @@ async function queryFlags(
  * Determine whether a domain's DNSSEC chain actually validates.
  *
  * Note: DNS.SB's JSON endpoint does not reliably honour `cd`, so this always
- * probes Cloudflare or Google — the validation verdict is a property of the
+ * probes Cloudflare or Google. The validation verdict is a property of the
  * zone, not of the user's chosen resolver.
  */
 export async function checkDnssec(
@@ -98,7 +98,7 @@ export async function checkDnssec(
     const uncheckedStatus = unchecked.Status ?? -1;
     const ad = validated.AD === true;
 
-    // SERVFAIL only when validating, but fine with validation off — the
+    // SERVFAIL only when validating, but fine with validation off. The
     // signature chain is broken. This is the finding that matters.
     if (validatedStatus === 2 && uncheckedStatus === 0) {
       return {
@@ -107,7 +107,7 @@ export async function checkDnssec(
         validatedStatus,
         uncheckedStatus,
         explanation:
-          'DNSSEC is broken. Validating resolvers reject this domain (SERVFAIL) while non-validating ones resolve it — so the site is unreachable for a large share of users. Usually a key rollover gone wrong or a DS record that no longer matches the zone.'
+          'DNSSEC is broken. Validating resolvers reject this domain (SERVFAIL) while non-validating ones resolve it. So the site is unreachable for a large share of users. Usually a key rollover gone wrong or a DS record that no longer matches the zone.'
       };
     }
 
@@ -137,7 +137,7 @@ export async function checkDnssec(
       authenticatedData: false,
       validatedStatus,
       uncheckedStatus,
-      explanation: 'Could not determine DNSSEC status — the domain did not resolve.'
+      explanation: 'Could not determine DNSSEC status. The domain did not resolve.'
     };
   } catch {
     return {

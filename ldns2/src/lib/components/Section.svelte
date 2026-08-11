@@ -1,13 +1,13 @@
 <script lang="ts">
   /**
-   * Editorial section header inspired by factory.ai —
-   *   01 — Section name
+   * Editorial section header inspired by factory.ai:
+   *   01  Section name
    * Numerals are mono, primary-tinted; the dash is gray; label is sentence-case.
    */
   import type { Snippet } from 'svelte';
 
   interface Props {
-    /** "01", "02", etc — pass as a string so we can render leading zeros consistently */
+    /** "01", "02", etc. Pass as a string so leading zeros render consistently. */
     n?: string;
     title: string;
     id?: string;
@@ -23,7 +23,6 @@
     <h2 class="flex items-baseline gap-2.5 font-semibold text-fg">
       {#if n}
         <span class="font-mono text-primary-500 tnum text-sm">{n}</span>
-        <span class="text-fg-subtle">—</span>
       {/if}
       <span class="text-base tracking-tight">{title}</span>
     </h2>

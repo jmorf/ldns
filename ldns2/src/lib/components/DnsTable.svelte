@@ -123,7 +123,7 @@
     // createTable must be called ONCE, not inside $derived. It builds the
     // whole table instance and registers its own $effect.pre to sync options,
     // so re-running it per filter click rebuilt every row/cell (tearing down
-    // and remounting the DOM) *and* leaked an extra effect each time — each of
+    // and remounting the DOM) *and* leaked an extra effect each time. Each of
     // which kept re-syncing options on every later change. That compounding
     // work is what made the filter chips feel slow.
     //

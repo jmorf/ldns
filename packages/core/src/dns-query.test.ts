@@ -176,7 +176,7 @@ describe('queryDns', () => {
   });
 
   it('should join chunked TXT records and strip quotes', async () => {
-    // >255-byte TXT records arrive from Cloudflare/DNS.SB as `"chunk1" "chunk2"` —
+    // >255-byte TXT records arrive from Cloudflare/DNS.SB as `"chunk1" "chunk2"`,
     // RFC 7208 requires concatenation with no separator.
     mockFetch.mockResolvedValue({
       ok: true,

@@ -1,5 +1,5 @@
 /**
- * Theme handling — system / light / dark with localStorage override.
+ * Theme handling, system / light / dark with localStorage override.
  * Mirrors the extension's behaviour so the visual experience is identical.
  */
 

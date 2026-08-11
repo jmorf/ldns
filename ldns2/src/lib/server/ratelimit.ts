@@ -2,7 +2,7 @@
  * Per-IP, per-endpoint rate limit. Uses an in-memory map; under Cloudflare's
  * request routing the same client may hit different worker instances so this
  * is a per-instance cap, not a global one. That is good enough for abuse
- * mitigation — every instance still rejects runaway clients within ~1 minute.
+ * mitigation, every instance still rejects runaway clients within ~1 minute.
  *
  * If we ever need a global ceiling, swap this for a Workers KV namespace with
  * `{ip}:{endpoint}` keys and a numeric counter; the call sites stay identical.

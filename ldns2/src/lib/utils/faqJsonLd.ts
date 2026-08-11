@@ -442,7 +442,7 @@ export function generateMxFaqJsonLd(domainName: string, mxRecords: DnsRecordResu
 
     faqItems.push({
         question: 'What is an MX record?',
-        answer: 'An MX (Mail Exchange) record is a DNS record that specifies the mail server responsible for accepting email on behalf of a domain. MX records include a priority value — lower numbers indicate higher priority.'
+        answer: 'An MX (Mail Exchange) record is a DNS record that specifies the mail server responsible for accepting email on behalf of a domain. MX records include a priority value: lower numbers indicate higher priority.'
     });
 
     if (faqItems.length === 0) return null;

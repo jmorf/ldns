@@ -22,7 +22,7 @@ const handler = createHandler({
       analysis = await analyzeServer(domain, { useHttp, guard: assertRedirectTarget });
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Failed to fetch';
-      // Return a structured error, not a 5xx — clients expect JSON.
+      // Return a structured error, not a 5xx, clients expect JSON.
       return {
         ok: false as const,
         error: message,

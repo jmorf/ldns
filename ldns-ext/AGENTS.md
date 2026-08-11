@@ -1,7 +1,7 @@
 # LDNS Extension - Build Progress
 
 ## Current Status
-v1.7.5 — shared logic extracted to `@ldns/core` workspace package (no user-facing change)
+v1.7.5: shared logic extracted to `@ldns/core` workspace package (no user-facing change)
 
 ## Completed Checkpoints
 - [x] setup-complete
@@ -22,7 +22,7 @@ v1.7.5 — shared logic extracted to `@ldns/core` workspace package (no user-fac
 ## v1.7.0 highlights
 
 ### New tools
-1. **DKIM probing** — 22 common selectors auto-tested
+1. **DKIM probing**, 22 common selectors auto-tested
 2. **IP→ASN/AS-name/country** via Team Cymru DoH (no API key)
 3. **Per-provider DNS latency** in Compare mode
 4. **Security-headers audit** + HTTP/3 + HSTS-preload + security.txt/robots.txt
@@ -40,11 +40,11 @@ v1.7.5 — shared logic extracted to `@ldns/core` workspace package (no user-fac
 - Refresh button on every tab
 
 ### Privacy & Robustness
-- No requests to ldns.com or any LDNS-owned server — the extension has no backend
+- No requests to ldns.com or any LDNS-owned server. The extension has no backend
 - Strict CSP in manifest
 - IPv6 PTR support
 - Every fetch has a timeout, and the per-query AbortSignal is threaded from
-  the state store into the network layer — switching domains cancels
+  the state store into the network layer, switching domains cancels
   in-flight requests
 - No background service worker on Chrome (Firefox ships a 10-line
   action-click bridge for the sidebar)
@@ -98,3 +98,12 @@ v1.7.5 — shared logic extracted to `@ldns/core` workspace package (no user-fac
 | state.svelte.ts | 912-1045 | lib/shared/email-query.ts |
 | state.svelte.ts | 1047-1265 | lib/shared/parsers.ts |
 | state.svelte.ts | 353-412 | lib/shared/domain-parser.ts |
+
+## Writing style
+
+- **Never use em dashes (—), en dashes (–), or double hyphens (--)** in code comments, docs,
+  commit messages, UI copy or anything else. Restructure the sentence instead: a full stop
+  and a new sentence, a colon to introduce, a comma for a light pause, or parentheses for an
+  aside. Regular hyphens in compound words (open-source, per-IP) are fine.
+- **First person singular.** LDNS is maintained by one person, so avoid "we" and "our".
+  Use "LDNS" for what the software does and "I" for the maintainer.

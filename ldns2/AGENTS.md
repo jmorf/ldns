@@ -22,15 +22,15 @@ npm test --workspaces    # all 528 tests across @ldns/core + ldns2
 - **Tailwind CSS v4** with surface-token CSS variables (see `src/styles/tokens.css`)
 - **shadcn-style components** (`src/lib/components/ui/*`) + custom components
 - **Cloudflare Workers** (adapter-cloudflare)
-- **`@ldns/core`** — workspace package with all DNS / RDAP / email / server / security / TLS / ASN / PTR / subdomain / DKIM logic. Shared with the extension.
+- **`@ldns/core`**, workspace package with all DNS / RDAP / email / server / security / TLS / ASN / PTR / subdomain / DKIM logic. Shared with the extension.
 
 ## Critical Rules
 
-1. **Server-side via SvelteKit `/api/*`** for anything that needs to bypass CORS or hit a slow upstream — `/api/server`, `/api/headers`, `/api/tls`, `/api/asn`, `/api/geo`, `/api/security/*`, `/api/subdomains`, `/api/dkim`, plus `/api/whois`.
+1. **Server-side via SvelteKit `/api/*`** for anything that needs to bypass CORS or hit a slow upstream: `/api/server`, `/api/headers`, `/api/tls`, `/api/asn`, `/api/geo`, `/api/security/*`, `/api/subdomains`, `/api/dkim`, plus `/api/whois`.
 2. **Pure DNS-over-HTTPS** for record lookups still happens client-side (no proxy needed; CORS works for DoH).
-3. **Svelte 5 syntax only** — no `$:` reactive statements, use runes.
+3. **Svelte 5 syntax only**: no `$:` reactive statements, use runes.
 4. **Surface tokens** (`bg-surface`, `text-fg-muted`, etc.) instead of `bg-gray-*` / `text-gray-*`. Theme-aware via the `theme.ts` store.
-5. **Object reactivity** — replace whole objects, don't mutate.
+5. **Object reactivity**: replace whole objects, don't mutate.
 
 ## Project Structure
 
@@ -42,7 +42,7 @@ ldns2/
 │   │   ├── theme.ts                   # system / light / dark store
 │   │   ├── state.svelte.ts            # legacy DomainName store (still 2.2k lines, slated for split)
 │   │   ├── server/                    # server-only helpers
-│   │   │   ├── handler.ts             # createHandler — origin + rate-limit + CORS
+│   │   │   ├── handler.ts             # createHandler: origin + rate-limit + CORS
 │   │   │   ├── ssrf.ts                # post-resolution SSRF guard
 │   │   │   ├── ratelimit.ts           # per-IP per-endpoint windowed limit
 │   │   │   └── cors.ts                # origin allow-list
@@ -50,10 +50,10 @@ ldns2/
 │   │   └── utils/                     # cn, navigation, seoContent, faqJsonLd, useToolPage
 │   └── routes/
 │       ├── (content)/                 # marketing pages: /, /about, /extension/*, /tools/[tool]
-│       ├── (tools)/[domain=validdomain]/   # tool pages — 28 of them
+│       ├── (tools)/[domain=validdomain]/   # tool pages: 28 of them
 │       ├── api/                       # 11 endpoints, all on createHandler
 │       └── og/[...path]/              # dynamic OG-image SVG endpoint
-└── ../packages/core/                  # @ldns/core — shared with the extension
+└── ../packages/core/                  # @ldns/core: shared with the extension
 ```
 
 ## Common Patterns
@@ -115,7 +115,7 @@ Define semantic surfaces in `src/styles/tokens.css`. Use:
 - `text-primary-500` (vermilion brand `#fc4e09`)
 - `tnum` utility for tabular numerals on numeric data
 
-Never hardcode `bg-gray-*` or `text-gray-*` — use the tokens.
+Never hardcode `bg-gray-*` or `text-gray-*`, use the tokens.
 
 ## Docs
 
@@ -123,3 +123,12 @@ Never hardcode `bg-gray-*` or `text-gray-*` — use the tokens.
 - [SvelteKit](https://kit.svelte.dev/docs)
 - [Tailwind CSS v4](https://tailwindcss.com/docs)
 - [Cloudflare Workers adapter](https://kit.svelte.dev/docs/adapter-cloudflare)
+
+## Writing style
+
+- **Never use em dashes (—), en dashes (–), or double hyphens (--)** in code comments, docs,
+  commit messages, UI copy or anything else. Restructure the sentence instead: a full stop
+  and a new sentence, a colon to introduce, a comma for a light pause, or parentheses for an
+  aside. Regular hyphens in compound words (open-source, per-IP) are fine.
+- **First person singular.** LDNS is maintained by one person, so avoid "we" and "our".
+  Use "LDNS" for what the software does and "I" for the maintainer.

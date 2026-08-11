@@ -25,7 +25,7 @@
     const hasIPv6 = $derived(aaaaRecords.length > 0);
 
     // Derive a stable list of IPs so the ASN effect only fires when the set
-    // of IPs actually changes — not on every asnByIp mutation.
+    // of IPs actually changes, not on every asnByIp mutation.
     const ipList = $derived([
         ...aRecords.map((r: { data: string }) => r.data),
         ...aaaaRecords.map((r: { data: string }) => r.data)
@@ -36,7 +36,7 @@
         const ips = ipList;
         // untrack the asnByIp read/write so this effect does not retrigger
         // itself on every per-IP fetch completion (root cause of the page
-        // "constantly refreshing" — every set was bumping the dep graph).
+        // "constantly refreshing". Every set was bumping the dep graph).
         untrack(() => {
             ips.forEach(async (ip) => {
                 if (asnByIp[ip]) return;

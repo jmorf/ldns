@@ -96,10 +96,10 @@
       <span class="w-2.5 h-2.5 rounded-full bg-warn-400/70"></span>
       <span class="w-2.5 h-2.5 rounded-full bg-ok-400/70"></span>
     </div>
-    <span class="font-mono text-[10px] text-fg-subtle">ldns.com — domain inspector</span>
+    <span class="font-mono text-[10px] text-fg-subtle">ldns.com, domain inspector</span>
   </div>
 
-  <!-- body — fixed height + horizontal overflow truncates so dynamic content
+  <!-- body, fixed height + horizontal overflow truncates so dynamic content
        doesn't push the surrounding layout around. -->
   <div class="p-4 sm:p-5 font-mono text-[12px] sm:text-[13px] leading-relaxed h-[260px] overflow-hidden">
     <p class="text-fg-muted truncate">{current.cmd}</p>

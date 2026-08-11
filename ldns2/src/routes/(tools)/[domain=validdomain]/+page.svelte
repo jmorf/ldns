@@ -115,7 +115,7 @@
 
 <SEO 
   title="{$page.params.domain} DNS Lookup"
-  description="DNS lookup for {$page.params.domain}. View A, AAAA, MX, TXT, NS, CNAME, SOA and other DNS record types in real-time using our free DNS lookup tool."
+  description="DNS lookup for {$page.params.domain}. View A, AAAA, MX, TXT, NS, CNAME, SOA and other DNS record types in real time with this free DNS lookup tool."
 />
 
 <FaqJsonLd faqData={faqJsonLd} />
@@ -123,7 +123,7 @@
 <ToolPage
   eyebrow="dns · all records"
   title="{domain.name} DNS Lookup"
-  description="DNS lookup results for {domain.name} — live records using the {queryConfig.endpointName} endpoint"
+  description="DNS lookup results for {domain.name}: live records using the {queryConfig.endpointName} endpoint"
   domainName={domain.name}
   isLoading={domain.toolState.dns.loading}
   error={domain.toolState.dns.error}

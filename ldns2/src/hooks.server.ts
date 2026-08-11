@@ -21,7 +21,7 @@ const SECURITY_HEADERS: Record<string, string> = {
   // Disable powerful features the app never uses (and opt out of FLoC/Topics).
   'Permissions-Policy':
     'accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), fullscreen=(self), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=(), interest-cohort=(), browsing-topics=()',
-  // 2 years, includeSubDomains, preload-eligible — the gold standard the
+  // 2 years, includeSubDomains, preload-eligible, the gold standard the
   // site's own HSTS audit recommends.
   'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload'
 };
@@ -29,19 +29,19 @@ const SECURITY_HEADERS: Record<string, string> = {
 /**
  * Content-Security-Policy for HTML documents.
  *
- * Structural directives are strict — `default-src 'self'`, `object-src 'none'`,
- * `base-uri 'self'`, `frame-ancestors 'self'`, `form-action 'self'` — which
+ * Structural directives are strict: `default-src 'self'`, `object-src 'none'`,
+ * `base-uri 'self'`, `frame-ancestors 'self'`, `form-action 'self'`: which
  * blocks injected `<base>`, plugin objects, framing/clickjacking, and exfil via
  * form posts. `script-src` is restricted to our own origin; `'unsafe-inline'`
  * is required for the inline early-paint theme script in app.html and
  * SvelteKit's hydration script. The app's HTML-injection surface is otherwise
- * minimal — all dynamic/remote data renders through Svelte's auto-escaping text
- * interpolation, and the only `{@html}` is JSON.stringify'd JSON-LD — so source
+ * minimal. All dynamic/remote data renders through Svelte's auto-escaping text
+ * interpolation, and the only `{@html}` is JSON.stringify'd JSON-LD. So source
  * restriction is the meaningful win here.
  *
  * `connect-src` lists the resolvers the page talks to directly (DoH + RDAP);
  * everything else routes through same-origin `/api/*`. No analytics/telemetry
- * hosts are allowed — the site sends no tracking beacons.
+ * hosts are allowed, the site sends no tracking beacons.
  */
 const CSP = [
   "default-src 'self'",
@@ -66,7 +66,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     if (!response.headers.has(key)) response.headers.set(key, value);
   }
 
-  // CSP only on HTML documents — it's meaningless on JSON API responses and
+  // CSP only on HTML documents, it's meaningless on JSON API responses and
   // could only cause confusion there.
   const contentType = response.headers.get('content-type') ?? '';
   if (contentType.includes('text/html') && !response.headers.has('content-security-policy')) {

@@ -1,13 +1,13 @@
-# LDNS — workspace
+# LDNS: workspace
 
-DNS, RDAP, email security, server, TLS, ASN, subdomain, and DKIM tools — across the **ldns.com** website and the **LDNS** browser extension. One workspace, one source of truth.
+DNS, RDAP, email security, server, TLS, ASN, subdomain, and DKIM tools, across the **ldns.com** website and the **LDNS** browser extension. One workspace, one source of truth.
 
 ## Layout
 
 ```
 ldns/
 ├── packages/
-│   └── core/              @ldns/core — shared TypeScript modules.
+│   └── core/              @ldns/core, shared TypeScript modules.
 │                          Pure JS APIs (fetch, URL); no DOM, no chrome.*.
 │                          Imported by both the site and the extension.
 │
@@ -54,15 +54,15 @@ npm run -w ldns2 deploy                 # builds + wrangler deploy → ldns.com
 import { queryDns, analyzeServer, fetchTlsCertificate } from '@ldns/core/dns-query';
 ```
 
-The site additionally has a server-side `/api/*` proxy layer ([`ldns2/src/routes/api/`](ldns2/src/routes/api/)) for lookups that need to bypass browser CORS — server info, TLS, ASN, geo, subdomains, security headers, and WHOIS. The extension uses the same `@ldns/core` modules directly because it has MV3 host permissions to fetch arbitrary origins.
+The site additionally has a server-side `/api/*` proxy layer ([`ldns2/src/routes/api/`](ldns2/src/routes/api/)) for lookups that need to bypass browser CORS: server info, TLS, ASN, geo, subdomains, security headers, and WHOIS. The extension uses the same `@ldns/core` modules directly because it has MV3 host permissions to fetch arbitrary origins.
 
 ## Per-project docs
 
-- [ldns2/AGENTS.md](ldns2/AGENTS.md) — site architecture, API endpoint patterns, design tokens
-- [ldns-ext/AGENTS.md](ldns-ext/AGENTS.md) — extension architecture, build pipeline, store submission
-- [packages/core/README.md](packages/core/README.md) — shared module index
-- [ldns2/CHANGELOG.md](ldns2/CHANGELOG.md) — site release notes
-- [ldns-ext/CHANGELOG.md](ldns-ext/CHANGELOG.md) — extension release notes
+- [ldns2/AGENTS.md](ldns2/AGENTS.md): site architecture, API endpoint patterns, design tokens
+- [ldns-ext/AGENTS.md](ldns-ext/AGENTS.md): extension architecture, build pipeline, store submission
+- [packages/core/README.md](packages/core/README.md), shared module index
+- [ldns2/CHANGELOG.md](ldns2/CHANGELOG.md), site release notes
+- [ldns-ext/CHANGELOG.md](ldns-ext/CHANGELOG.md), extension release notes
 
 ## History
 
@@ -70,10 +70,10 @@ This was previously two separate repos (`jmorf/ldns2` and `jmorf/ldns-ext`) plus
 
 ## Contributing
 
-Bug reports and focused pull requests are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for the workspace layout, dev commands, and PR process. For security issues, please **don't** open a public issue; see [SECURITY.md](SECURITY.md).
+Bug reports and focused pull requests are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md) for the workspace layout, dev commands, and PR process. For security issues, please **don't** open a public issue; see [SECURITY.md](SECURITY.md).
 
 ## License
 
-[MIT](LICENSE) — use it, fork it, learn from it.
+[MIT](LICENSE): use it, fork it, learn from it.
 
-**Brand exception:** the LDNS name, wordmark, and the extension/site icons are **not** covered by the MIT license — all rights reserved, see [LICENSE-BRAND](LICENSE-BRAND). Forks are welcome, but must ship under their own name and iconography; publishing a fork to an extension store as "LDNS" is not permitted. Referring to LDNS factually ("a fork of LDNS") is fine.
+**Brand exception:** the LDNS name, wordmark, and the extension/site icons are **not** covered by the MIT license: all rights reserved, see [LICENSE-BRAND](LICENSE-BRAND). Forks are welcome, but must ship under their own name and iconography; publishing a fork to an extension store as "LDNS" is not permitted. Referring to LDNS factually ("a fork of LDNS") is fine.

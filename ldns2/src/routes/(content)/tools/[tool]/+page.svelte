@@ -38,7 +38,7 @@
   const toolPath = $derived(toolMeta?.path ?? (seoConfig ? `/${seoConfig.slug}` : ''));
   const toolLabel = $derived(toolMeta?.label ?? seoConfig?.slug.toUpperCase() ?? toolSlug);
 
-  // Related tool links — surface alternatives so the user can hop between tools
+  // Related tool links, surface alternatives so the user can hop between tools
   // without bouncing back to the homepage.
   const relatedTools = $derived([
     ...ALL_PAGE_SLUGS
@@ -68,7 +68,7 @@
   {@html `<script type="application/ld+json">${JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
-    name: `${toolLabel} — LDNS`,
+    name: `${toolLabel}. LDNS`,
     url: `https://${domain}/tools/${toolSlug}`,
     description: toolDescription,
     applicationCategory: 'UtilitiesApplication',

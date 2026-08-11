@@ -124,7 +124,7 @@
 
       <div class="pt-2 border-t border-line">
         <p class="text-[10px] text-fg-muted leading-relaxed px-1">
-          Every lookup goes straight from your browser to public DNS and registry services — nothing is sent to LDNS. See the
+          Every lookup goes straight from your browser to public DNS and registry services. Nothing is sent to LDNS. See the
           <a
             class="text-primary-400 hover:text-primary-300 inline-flex items-center gap-0.5"
             href="https://ldns.com/extension/privacy"

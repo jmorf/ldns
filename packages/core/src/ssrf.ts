@@ -75,7 +75,7 @@ export function isPrivateIPv4(ip: string): boolean {
  */
 function expandIPv6(ip: string): number[] | null {
   let s = ip.trim().toLowerCase();
-  // Drop a zone id (e.g. fe80::1%eth0) — irrelevant for range checks.
+  // Drop a zone id (e.g. fe80::1%eth0), irrelevant for range checks.
   const pct = s.indexOf('%');
   if (pct !== -1) s = s.slice(0, pct);
   if (s === '') return null;
@@ -162,7 +162,7 @@ export function isPrivateIPv6(ip: string): boolean {
  * Every rejection returns the SAME opaque reason. Distinct messages
  * ("does not resolve" vs "private address") would let an attacker point a
  * domain they control at chosen IPs and read back how our resolver classifies
- * them — a free internal-range probing oracle. The specific cause stays
+ * them, a free internal-range probing oracle. The specific cause stays
  * server-side.
  */
 const REJECTED = 'Cannot look up this domain';
@@ -208,13 +208,13 @@ export async function ensurePublicHost(domain: string): Promise<{ ok: true } | {
 }
 
 /**
- * Synchronous guard for a URL the proxy is about to fetch — including every
+ * Synchronous guard for a URL the proxy is about to fetch, including every
  * redirect hop. Unlike `ensurePublicHost` (one DoH lookup on the *initial*
  * domain) this runs without network I/O, so it's cheap enough to call inside a
  * redirect-follow loop. It rejects:
  *
  *   - non-HTTP(S) schemes (file:, gopher:, data:, …)
- *   - IP-literal hosts in private / loopback / link-local / CGNAT ranges —
+ *   - IP-literal hosts in private / loopback / link-local / CGNAT ranges:
  *     defeating `Location: http://169.254.169.254/`, `http://127.0.0.1/`, and
  *     their octal/hex/decimal encodings (the WHATWG URL parser normalises
  *     those to dotted-decimal before we read `.hostname`)
@@ -227,7 +227,7 @@ export async function ensurePublicHost(domain: string): Promise<{ ok: true } | {
  *
  * IMPORTANT for self-hosting: that last line is a real dependency on the
  * Cloudflare runtime. On a platform without egress restrictions (Node, most
- * VPS/container hosts) this residual becomes exploitable — see SECURITY.md.
+ * VPS/container hosts) this residual becomes exploitable, see SECURITY.md.
  *
  * Throws on a disallowed target so it can abort an in-progress fetch chain.
  */

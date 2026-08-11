@@ -1,5 +1,5 @@
 /**
- * @ldns/core — pure TypeScript runtime-agnostic modules shared by:
+ * @ldns/core: pure TypeScript runtime-agnostic modules shared by:
  *   - the LDNS browser extension (Chrome + Firefox)
  *   - the LDNS website (SvelteKit on Cloudflare)
  *   - the /api proxy endpoints

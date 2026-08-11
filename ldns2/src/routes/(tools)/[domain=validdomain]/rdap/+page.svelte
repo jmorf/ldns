@@ -251,7 +251,7 @@
 <ToolPage
     eyebrow="rdap · registration"
     title="{domain.name} RDAP Lookup"
-    description="RDAP lookup for {domain.name} — domain registration data, DNSSEC status, and registrar details"
+    description="RDAP lookup for {domain.name}: domain registration data, DNSSEC status, and registrar details"
     domainName={domain.name}
     isLoading={domain.toolState.rdap.loading}
     error={domain.toolState.rdap.error}

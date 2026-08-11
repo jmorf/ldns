@@ -20,7 +20,7 @@
   function exportCsv() {
     const data = extensionState.subdomainState.data;
     if (!data) return;
-    // csvCell neutralizes spreadsheet formula injection — subdomain strings
+    // csvCell neutralizes spreadsheet formula injection, subdomain strings
     // come from attacker-controllable CT-log SANs.
     const csv = 'subdomain\n' + filtered.map((s) => csvCell(s)).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
@@ -37,7 +37,7 @@
     if (input && input !== extensionState.domain) {
       await extensionState.setDomain(input, true);
     }
-    // User explicitly asked for a scan — bypass the cache.
+    // User explicitly asked for a scan, bypass the cache.
     extensionState.querySubdomains(true);
   }
 

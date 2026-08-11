@@ -34,15 +34,15 @@ interface CtRecord {
  * is rate-limited PER IP, so the right mode depends on whose IP the request
  * leaves from:
  *
- *  - `race`     — query both at once, first answer wins. For the extension,
+ *  - `race`: query both at once, first answer wins. For the extension,
  *                 where each request comes from the end user's own IP and so
  *                 every user has their own quota. Best latency.
- *  - `fallback` — only query CertSpotter after crt.sh has already failed. For
+ *  - `fallback`, only query CertSpotter after crt.sh has already failed. For
  *                 the site, where every request shares a few Cloudflare egress
  *                 IPs: usage is then proportional to crt.sh's failure rate
  *                 rather than to total traffic, and if we do get throttled we
  *                 are no worse off than crt.sh failing alone.
- *  - `off`      — crt.sh only.
+ *  - `off`, crt.sh only.
  */
 export type CertSpotterMode = 'race' | 'fallback' | 'off';
 
@@ -52,7 +52,7 @@ export interface SubdomainOptions {
 }
 
 async function fetchCrtSh(domain: string, timeoutMs: number, signal?: AbortSignal): Promise<CtRecord[]> {
-  // The wildcard form (%.domain) is what returns SUBDOMAINS — the plain
+  // The wildcard form (%.domain) is what returns SUBDOMAINS. The plain
   // `q=domain` form only matches that exact name, so it is not a usable
   // fallback here even though it is faster.
   const url = `https://crt.sh/?q=%25.${encodeURIComponent(domain)}&output=json&exclude=expired`;
@@ -149,12 +149,12 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
  * Discover subdomains from Certificate Transparency logs.
  * Deduplicates, strips wildcards, and sorts alphabetically.
  *
- * Reliability strategy — crt.sh is the most complete CT source but also the
+ * Reliability strategy. Crt.sh is the most complete CT source but also the
  * least reliable: it rate-limits hard per IP and buckles under load, which is
  * what made this tool time out so often. So:
  *
  *   1. `race` (extension): query crt.sh and CertSpotter concurrently and take
- *      whichever answers FIRST. We don't wait for both — the point is latency,
+ *      whichever answers FIRST. We don't wait for both. The point is latency,
  *      and either source alone gives a useful answer.
  *   2. `fallback` (site): try crt.sh; only if it fails, rescue with
  *      CertSpotter. See CertSpotterMode for why the mode differs by caller.
@@ -203,7 +203,7 @@ export async function discoverSubdomains(
     try {
       data = await attempt(10_000);
     } catch {
-      // Surface the original error — it's the more informative one.
+      // Surface the original error, it's the more informative one.
       throw firstErr;
     }
   }

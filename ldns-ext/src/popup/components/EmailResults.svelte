@@ -140,13 +140,13 @@
             </div>
             {#if over}
               <p class="text-[10px] text-bad-400 mt-1 leading-relaxed">
-                Over the RFC 7208 limit — receivers return <span class="font-mono">permerror</span> and SPF fails. Reduce nested includes.
+                Over the RFC 7208 limit, receivers return <span class="font-mono">permerror</span> and SPF fails. Reduce nested includes.
               </p>
             {:else if spfEval.lookups >= 8}
               <p class="text-[10px] text-warn-400 mt-1 leading-relaxed">Close to the limit of {spfEval.limit}; adding another provider may break SPF.</p>
             {/if}
             {#if spfEval.voidExceeded}
-              <p class="text-[10px] text-warn-400 mt-1 leading-relaxed">{spfEval.voidLookups} void lookups (limit {spfEval.voidLimit}) — some includes resolve to nothing.</p>
+              <p class="text-[10px] text-warn-400 mt-1 leading-relaxed">{spfEval.voidLookups} void lookups (limit {spfEval.voidLimit}): some includes resolve to nothing.</p>
             {/if}
             {#if spfEval.loops.length > 0}
               <p class="text-[10px] text-bad-400 mt-1 leading-relaxed">Include loop via {spfEval.loops.join(', ')}.</p>

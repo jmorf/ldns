@@ -50,7 +50,7 @@ function copy(src, dst) {
 copy(extDir, join(stage, 'ldns-ext'));
 copy(coreDir, join(stage, 'packages', 'core'));
 
-// Drop the per-package lockfiles — the workspace lockfile at the root is what
+// Drop the per-package lockfiles. The workspace lockfile at the root is what
 // `npm install` will use, and keeping the per-package ones around just confuses
 // reviewers.
 const stragglerLocks = [join(stage, 'ldns-ext', 'package-lock.json')];
@@ -63,7 +63,7 @@ if (existsSync(workspaceLock)) {
   cpSync(workspaceLock, join(stage, 'package-lock.json'));
 }
 
-// Workspace root — what makes `npm install` resolve @ldns/core correctly.
+// Workspace root, what makes `npm install` resolve @ldns/core correctly.
 const rootPkg = {
   name: 'ldns-source-bundle',
   version: '1.0.0',
@@ -79,7 +79,7 @@ writeFileSync(join(stage, 'package.json'), JSON.stringify(rootPkg, null, 2) + '\
 
 writeFileSync(
   join(stage, 'README-REVIEWER.md'),
-  `# LDNS — source archive for store review
+  `# LDNS, source archive for store review
 
 This archive contains everything needed to reproduce the submitted extension
 build (\`ldns-firefox.zip\` / Chrome zip). It is a self-contained npm workspace.
@@ -101,10 +101,10 @@ to \`packages/core\` via a symlink. No registry-published version of
 
 ## Layout
 
-- \`ldns-ext/\` — the extension source (TS, Svelte, CSS — unminified)
-- \`packages/core/\` — shared @ldns/core modules (used by the extension and the
+- \`ldns-ext/\`: the extension source (TS, Svelte, CSS: unminified)
+- \`packages/core/\`: shared @ldns/core modules (used by the extension and the
   ldns.com website; pure TypeScript, no DOM, no \`chrome.*\` API)
-- \`ldns-ext/SOURCE_BUILD_INSTRUCTIONS.md\` — detailed build doc
+- \`ldns-ext/SOURCE_BUILD_INSTRUCTIONS.md\`: detailed build doc
 
 ## Environment
 

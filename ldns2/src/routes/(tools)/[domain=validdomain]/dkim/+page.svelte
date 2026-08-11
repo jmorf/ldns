@@ -43,7 +43,7 @@
     {#if result.found === 0}
       <div class="bg-surface border border-line rounded-xl p-8 text-center">
         <p class="text-sm text-fg-muted">No DKIM records found at any of the {result.probed} probed selectors.</p>
-        <p class="text-[11px] text-fg-subtle mt-2">DKIM keys live at <span class="font-mono">selector._domainkey.{domain.name}</span>. If this domain uses a non-standard selector we may not detect it.</p>
+        <p class="text-[11px] text-fg-subtle mt-2">DKIM keys live at <span class="font-mono">selector._domainkey.{domain.name}</span>. A non-standard selector may not be detected.</p>
       </div>
     {:else}
       <div class="bg-surface border border-line rounded-xl divide-y divide-line">

@@ -7,7 +7,7 @@ describe('parseCaaValue', () => {
   });
 
   it('parses RFC 3597 generic hex format (Cloudflare DoH)', () => {
-    // \# <len> <flags> <taglen> <tag...> <value...>  — "issue" + "pki.goog"
+    // \# <len> <flags> <taglen> <tag...> <value...>: "issue" + "pki.goog"
     const hex = '\\# 15 00 05 69 73 73 75 65 70 6b 69 2e 67 6f 6f 67';
     expect(parseCaaValue(hex)).toEqual({ tag: 'issue', value: 'pki.goog' });
   });

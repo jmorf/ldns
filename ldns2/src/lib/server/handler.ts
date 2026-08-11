@@ -5,7 +5,7 @@
  * Cloudflare's edge cache (caches.default).
  *
  * Why we manage the edge cache ourselves: Cloudflare Workers responses
- * are NOT auto-cached by the CDN — Cache-Control headers we set are
+ * are NOT auto-cached by the CDN, Cache-Control headers we set are
  * honored by the browser only. Without an explicit caches.default.put
  * call, every request goes back to origin (and through to the upstream
  * service). For flaky upstreams like crt.sh, that means every retry
@@ -33,7 +33,7 @@ export interface HandlerOptions<TPayload> {
    * for the full success TTL.
    */
   errorCache?: string;
-  /** The actual logic — receives parsed query params. */
+  /** The actual logic, receives parsed query params. */
   run(event: RequestEvent): Promise<TPayload>;
 }
 
@@ -43,7 +43,7 @@ const DEFAULT_ERROR_CACHE = 'public, max-age=30, s-maxage=300, stale-while-reval
 /**
  * Build a stable cache key from the request URL with the `_=…` retry buster
  * stripped. `?_=12345` is the proxy-client's mechanism for forcing a fresh
- * upstream fetch — we shouldn't pollute the cache with one entry per
+ * upstream fetch. We shouldn't pollute the cache with one entry per
  * timestamp, so the buster is removed from the read+write key but the
  * request itself still bypasses cache when the buster is present.
  *
@@ -95,7 +95,7 @@ export function createHandler<T>(opts: HandlerOptions<T>) {
         : (opts.cache ?? DEFAULT_SUCCESS_CACHE);
 
       // Store an origin-agnostic copy in the edge cache. Don't include CORS
-      // headers in the cached body — those get re-stamped on every read.
+      // headers in the cached body, those get re-stamped on every read.
       // Failures are intentionally NOT cached so the user can retry when
       // the upstream comes back without waiting for a 5-minute window.
       // Forced retries DO populate the cache on success so the next

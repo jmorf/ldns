@@ -140,7 +140,7 @@
     </div>
   </header>
 
-  <!-- Side-panel mode tip — shown once on the popup, requires explicit
+  <!-- Side-panel mode tip: shown once on the popup, requires explicit
        dismissal. Never shown inside the side panel itself or on browsers
        that don't support a side-panel API. -->
   <SidebarTipBanner onOpenSettings={() => (settingsOpen = true)} />

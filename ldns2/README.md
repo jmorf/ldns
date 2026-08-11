@@ -1,15 +1,15 @@
 # LDNS
 
-DNS lookup and domain analysis tool at **[ldns.com](https://ldns.com)** — SvelteKit 5 on Cloudflare Workers, sharing its lookup logic with the [LDNS browser extension](../ldns-ext) via the `@ldns/core` workspace package.
+DNS lookup and domain analysis tool at **[ldns.com](https://ldns.com)**: SvelteKit 5 on Cloudflare Workers, sharing its lookup logic with the [LDNS browser extension](../ldns-ext) via the `@ldns/core` workspace package.
 
 ## Features
 
 ### DNS Lookups
 - Query A, AAAA, MX, TXT, NS, SOA, CAA, DNSKEY, HTTPS records
 - DNS-over-HTTPS via Cloudflare, Google, and DNS.SB
-- **DNS Propagation Comparison** — Compare results across all 3 providers with mismatch detection
-- **Reverse DNS (PTR)** — Lookup PTR records for domain A record IPs
-- **IP-to-ASN** — Origin AS number, name, and country via Team Cymru
+- **DNS Propagation Comparison**: Compare results across all 3 providers with mismatch detection
+- **Reverse DNS (PTR)**: Lookup PTR records for domain A record IPs
+- **IP-to-ASN**: Origin AS number, name, and country via Team Cymru
 
 ### RDAP/WHOIS
 - Domain registration details via RDAP protocol
@@ -40,7 +40,7 @@ DNS lookup and domain analysis tool at **[ldns.com](https://ldns.com)** — Svel
 
 ## Architecture
 
-Most lookups run **client-side** (DoH and RDAP are called straight from the browser). A set of server-side `/api/*` endpoints handles the cases the browser can't do itself — CORS-blocked upstreams and raw TCP WHOIS:
+Most lookups run **client-side** (DoH and RDAP are called straight from the browser). A set of server-side `/api/*` endpoints handles the cases the browser can't do itself: CORS-blocked upstreams and raw TCP WHOIS:
 
 | Endpoint | Purpose |
 |---|---|
@@ -50,12 +50,12 @@ Most lookups run **client-side** (DoH and RDAP are called straight from the brow
 | `/api/subdomains`, `/api/tls` | Certificate Transparency queries (crt.sh) |
 | `/api/dkim`, `/api/asn`, `/api/geo` | DKIM selector probing, ASN lookup, IP geolocation |
 
-Every `/api/*` route goes through `src/lib/server/handler.ts`, which applies an origin allow-list, a per-IP rate limit, edge caching, and a standard JSON envelope. Endpoints that fetch a user-supplied host run the SSRF guard in `src/lib/server/ssrf.ts` first — **see [SECURITY.md](../SECURITY.md) before self-hosting on a non-Cloudflare runtime.**
+Every `/api/*` route goes through `src/lib/server/handler.ts`, which applies an origin allow-list, a per-IP rate limit, edge caching, and a standard JSON envelope. Endpoints that fetch a user-supplied host run the SSRF guard in `src/lib/server/ssrf.ts` first, **see [SECURITY.md](../SECURITY.md) before self-hosting on a non-Cloudflare runtime.**
 
 ## Quick Start
 
 ```bash
-# Install from the REPOSITORY ROOT — this is an npm workspace and the site
+# Install from the REPOSITORY ROOT. This is an npm workspace and the site
 # depends on the local @ldns/core package.
 npm install
 
@@ -102,4 +102,4 @@ See [AGENTS.md](./AGENTS.md) for development guidelines and architecture notes, 
 
 ## License
 
-[MIT](./LICENSE) — with a brand exception: the LDNS name, wordmark, and logo are not covered. See [LICENSE-BRAND](../LICENSE-BRAND).
+[MIT](./LICENSE): with a brand exception: the LDNS name, wordmark, and logo are not covered. See [LICENSE-BRAND](../LICENSE-BRAND).

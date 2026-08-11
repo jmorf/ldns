@@ -14,7 +14,7 @@ const packageJson = JSON.parse(
 const version = packageJson.version;
 
 // Store-facing release notes. Only the newest RECENT_RELEASES versions are
-// published — the Chrome Web Store flags long stacked changelogs as spammy.
+// published, the Chrome Web Store flags long stacked changelogs as spammy.
 // Full history lives in CHANGELOG.md. When you ship a version, add it to the
 // top of this list and delete anything beyond the newest few.
 const RECENT_RELEASES = 2;
@@ -22,8 +22,8 @@ const releases = [
   {
     version: '1.8.0',
     notes: [
-      'LDNS is now open source — the full extension and website source is at github.com/jmorf/ldns (MIT). You can read exactly what it does with your lookups.',
-      'Removed the marketplace ("For Sale") check — with it goes the last feature that contacted an LDNS server. The extension now has no backend: every lookup goes straight from your browser to public DNS and registry services.'
+      'LDNS is now open source. The full extension and website source is at github.com/jmorf/ldns (MIT). You can read exactly what it does with your lookups.',
+      'Removed the marketplace ("For Sale") check, with it goes the last feature that contacted an LDNS server. The extension now has no backend: every lookup goes straight from your browser to public DNS and registry services.'
     ]
   },
   {
@@ -35,14 +35,14 @@ const releases = [
   {
     version: '1.7.10',
     notes: [
-      'Report a bug / send feedback — links in Settings and the popup footer open a prefilled GitHub issue. Nothing is sent until you submit it.'
+      'Report a bug / send feedback, links in Settings and the popup footer open a prefilled GitHub issue. Nothing is sent until you submit it.'
     ]
   }
 ];
 
 if (releases[0]?.version !== version) {
   console.warn(
-    `WARNING: newest release note is v${releases[0]?.version} but package.json is v${version} — update the releases list in scripts/generate-store-description.js`
+    `WARNING: newest release note is v${releases[0]?.version} but package.json is v${version}: update the releases list in scripts/generate-store-description.js`
   );
 }
 
@@ -51,7 +51,7 @@ const changelog = releases
   .map((r) => `v${r.version}\n${r.notes.map((n) => `• ${n}`).join('\n')}`)
   .join('\n\n');
 
-const description = `LDNS puts a complete DNS and domain toolkit one click away: DNS records, WHOIS/RDAP registration data, email authentication, server details, and subdomain discovery — for the site you're on, or any domain you type.
+const description = `LDNS puts a complete DNS and domain toolkit one click away: DNS records, WHOIS/RDAP registration data, email authentication, server details, and subdomain discovery. It works on the site you're already on, or any domain you type.
 
 WHAT IT DOES
 
@@ -65,7 +65,7 @@ WHAT IT DOES
 
 PRIVACY
 
-No accounts, no analytics, no tracking, no backend. Every lookup goes directly from your browser to public DNS, registry, and Certificate Transparency services — nothing is ever sent to an LDNS server. Recent searches are stored only on your device. And you don't have to take our word for it: the source is public at github.com/jmorf/ldns. Full policy: ldns.com/extension/privacy
+No accounts, no analytics, no tracking, no backend. Every lookup goes directly from your browser to public DNS, registry, and Certificate Transparency services. Nothing is ever sent to an LDNS server. Recent searches are stored only on your device. And you don't have to take my word for it: the source is public at github.com/jmorf/ldns. Full policy: ldns.com/extension/privacy
 
 WHAT'S NEW
 

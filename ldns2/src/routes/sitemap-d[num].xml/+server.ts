@@ -16,7 +16,7 @@ export const GET: RequestHandler = async (event) => {
     const domains = chunks[num - 1];
 
     // No <lastmod>, no <changefreq>, no <priority>:
-    //   - <lastmod> would be a lie — these are templated tool pages and we
+    //   - <lastmod> would be a lie. These are templated tool pages and we
     //     don't actually know when each domain's data last "changed".
     //   - <changefreq> and <priority> are officially ignored by Google.
     // Listing the URL alone is the most honest signal.

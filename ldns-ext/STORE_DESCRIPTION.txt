@@ -1,4 +1,4 @@
-LDNS puts a complete DNS and domain toolkit one click away: DNS records, WHOIS/RDAP registration data, email authentication, server details, and subdomain discovery — for the site you're on, or any domain you type.
+LDNS puts a complete DNS and domain toolkit one click away: DNS records, WHOIS/RDAP registration data, email authentication, server details, and subdomain discovery. It works on the site you're already on, or any domain you type.
 
 WHAT IT DOES
 
@@ -12,13 +12,13 @@ WHAT IT DOES
 
 PRIVACY
 
-No accounts, no analytics, no tracking, no backend. Every lookup goes directly from your browser to public DNS, registry, and Certificate Transparency services — nothing is ever sent to an LDNS server. Recent searches are stored only on your device. And you don't have to take our word for it: the source is public at github.com/jmorf/ldns. Full policy: ldns.com/extension/privacy
+No accounts, no analytics, no tracking, no backend. Every lookup goes directly from your browser to public DNS, registry, and Certificate Transparency services. Nothing is ever sent to an LDNS server. Recent searches are stored only on your device. And you don't have to take my word for it: the source is public at github.com/jmorf/ldns. Full policy: ldns.com/extension/privacy
 
 WHAT'S NEW
 
 v1.8.0
-• LDNS is now open source — the full extension and website source is at github.com/jmorf/ldns (MIT). You can read exactly what it does with your lookups.
-• Removed the marketplace ("For Sale") check — with it goes the last feature that contacted an LDNS server. The extension now has no backend: every lookup goes straight from your browser to public DNS and registry services.
+• LDNS is now open source. The full extension and website source is at github.com/jmorf/ldns (MIT). You can read exactly what it does with your lookups.
+• Removed the marketplace ("For Sale") check, with it goes the last feature that contacted an LDNS server. The extension now has no backend: every lookup goes straight from your browser to public DNS and registry services.
 
 v1.7.11
 • Reliability hardening: every lookup now has a timeout, network outages show a clear error instead of "no records", international (IDN) domains work, long TXT records (SPF/DKIM) display correctly, and Refresh always fetches fresh data.

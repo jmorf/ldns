@@ -138,7 +138,7 @@
         {#each headerAudit as check}
           <span
             class={cn('px-1.5 py-0.5 text-[10px] rounded-md border', toneBadge[levelTone[check.level]])}
-            title={`${check.key}: ${check.hint}${check.value ? ' — ' + check.value : ''}`}
+            title={`${check.key}: ${check.hint}${check.value ? ': ' + check.value : ''}`}
           >
             {check.label}
           </span>

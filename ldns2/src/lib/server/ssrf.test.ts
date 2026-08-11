@@ -9,7 +9,7 @@ import {
 
 /**
  * Every ensurePublicHost rejection must return this exact string. Distinct
- * messages would leak how our resolver classifies an attacker-chosen IP —
+ * messages would leak how our resolver classifies an attacker-chosen IP,
  * an internal-range probing oracle. Asserting the same constant in all four
  * rejection tests is what pins that property.
  */

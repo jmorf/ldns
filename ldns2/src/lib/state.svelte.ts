@@ -243,7 +243,7 @@ export interface SecurityData {
     recommendations: SecurityRecommendation[];
 }
 
-/** DNS propagation result — per-provider DNS results */
+/** DNS propagation result: per-provider DNS results */
 export type PropagationResult = Record<string, DnsData>;
 
 /** Subdomain tool result from CT logs */
@@ -1108,7 +1108,7 @@ class DomainName {
     }
 
     /**
-     * Look up DNS propagation — query all 3 DoH providers in parallel
+     * Look up DNS propagation: query all 3 DoH providers in parallel
      */
     async lookupPropagation(): Promise<PropagationResult | null> {
         if (!this.isValid) {
@@ -1599,7 +1599,7 @@ class DomainName {
         try {
             // PhishTank reputation lookup intentionally removed: it POSTed the
             // looked-up URL to a third party (checkurl.phishtank.com), and this
-            // whole reputation path is dead code — no route calls it (the live
+            // whole reputation path is dead code, no route calls it (the live
             // /security page uses the server-side /api/* proxy instead). Leave a
             // neutral result so the surrounding (unused) scoring still builds.
             results.phishtank = { status: 'unknown', checked: false };

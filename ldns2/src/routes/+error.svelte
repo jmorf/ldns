@@ -21,7 +21,7 @@
       </div>
     {:else}
       <h2 class="text-2xl font-medium text-bad-400 mb-3">Something went wrong</h2>
-      <p class="text-fg-muted leading-relaxed mb-6">We hit an unexpected error.</p>
+      <p class="text-fg-muted leading-relaxed mb-6">Something went wrong.</p>
     {/if}
 
     {#if $page.error?.message}
