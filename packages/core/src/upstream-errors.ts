@@ -57,12 +57,22 @@ interface ClassifyOptions {
 export class UpstreamError extends Error {
   status?: number;
   service?: string;
+  /**
+   * Extra context appended to the hint, e.g. that the backup source failed
+   * too. Without this the user is told only about the primary failure and
+   * reasonably assumes a retry will work.
+   */
+  note?: string;
 
-  constructor(message: string, options: { status?: number; service?: string } = {}) {
+  constructor(
+    message: string,
+    options: { status?: number; service?: string; note?: string } = {}
+  ) {
     super(message);
     this.name = 'UpstreamError';
     this.status = options.status;
     this.service = options.service;
+    this.note = options.note;
   }
 }
 
@@ -80,7 +90,8 @@ export function classifyUpstreamError(
   const raw = err instanceof Error ? err.message : String(err);
   const lower = raw.toLowerCase();
   const status = statusOf(err, raw);
-  const tail = cacheNote ? ` ${cacheNote}` : '';
+  const note = err instanceof UpstreamError && err.note ? ` ${err.note}` : '';
+  const tail = `${note}${cacheNote ? ` ${cacheNote}` : ''}`;
 
   if (lower.includes('failed to fetch') || lower.includes('networkerror') || lower.includes('network request failed')) {
     return {

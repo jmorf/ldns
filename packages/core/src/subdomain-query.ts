@@ -135,19 +135,79 @@ async function fetchCertSpotter(domain: string, timeoutMs: number, signal?: Abor
   }
 }
 
-/** Resolve as soon as ANY promise fulfills; reject with the first error if all fail. */
-async function firstSuccess<T>(tasks: Array<Promise<T>>): Promise<T> {
-  const errors: unknown[] = [];
+/**
+ * Hedged request: start `primary`, and only start `secondary` if primary has
+ * not answered within `delayMs` (or fails sooner). First success wins.
+ *
+ * Firing both immediately would be simpler, but it spends a CertSpotter query
+ * on every single scan even when crt.sh is perfectly healthy, and
+ * CertSpotter's unauthenticated tier is a limited per-IP budget. Hedging keeps
+ * essentially all of the latency benefit (crt.sh answers in under a second
+ * when it is well) while reserving the second source for the cases that
+ * actually need rescuing.
+ */
+function hedge<T>(primary: Promise<T>, startSecondary: () => Promise<T>, delayMs: number): Promise<T> {
   return new Promise<T>((resolve, reject) => {
-    let pending = tasks.length;
-    for (const t of tasks) {
-      t.then(resolve).catch((e) => {
-        errors.push(e);
-        if (--pending === 0) reject(errors[0]);
-      });
-    }
+    let settled = false;
+    let secondary: Promise<T> | null = null;
+    let primaryErr: unknown;
+    let secondaryErr: unknown;
+    let primaryDone = false;
+    let secondaryDone = false;
+
+    const done = (fn: () => void) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      fn();
+    };
+
+    const bothFailed = () => {
+      if (primaryDone && secondaryDone) {
+        // Report the primary error, but say the backup failed too. Otherwise
+        // the user is told "crt.sh had a gateway error, try again" when the
+        // fallback is also unavailable and retrying will not help either.
+        const backup =
+          secondaryErr instanceof UpstreamError && secondaryErr.status === 429
+            ? 'The backup source (CertSpotter) is also rate-limited right now, so a retry is unlikely to help for a few minutes.'
+            : 'The backup source (CertSpotter) failed as well.';
+        if (primaryErr instanceof UpstreamError) {
+          primaryErr.note = backup;
+        }
+        done(() => reject(primaryErr ?? secondaryErr));
+      }
+    };
+
+    const launchSecondary = () => {
+      if (secondary || settled) return;
+      secondary = startSecondary();
+      secondary.then(
+        (v) => done(() => resolve(v)),
+        (e) => {
+          secondaryErr = e;
+          secondaryDone = true;
+          bothFailed();
+        }
+      );
+    };
+
+    const timer = setTimeout(launchSecondary, delayMs);
+
+    primary.then(
+      (v) => done(() => resolve(v)),
+      (e) => {
+        primaryErr = e;
+        primaryDone = true;
+        // Don't wait out the hedge delay once the primary has already failed.
+        launchSecondary();
+        bothFailed();
+      }
+    );
   });
 }
+
+/** How long to give crt.sh alone before bringing in the second source. */
+const HEDGE_DELAY_MS = 2_500;
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -178,13 +238,15 @@ export async function discoverSubdomains(
   const asciiDomain = toAsciiDomain(domain).toLowerCase();
 
   const attempt = (timeoutMs: number) => {
+    const primary = fetchCrtSh(asciiDomain, timeoutMs, signal);
     if (certSpotter === 'race') {
-      return firstSuccess([
-        fetchCrtSh(asciiDomain, timeoutMs, signal),
-        fetchCertSpotter(asciiDomain, timeoutMs, signal)
-      ]);
+      return hedge(
+        primary,
+        () => fetchCertSpotter(asciiDomain, timeoutMs, signal),
+        HEDGE_DELAY_MS
+      );
     }
-    return fetchCrtSh(asciiDomain, timeoutMs, signal);
+    return primary;
   };
 
   let data: CtRecord[];

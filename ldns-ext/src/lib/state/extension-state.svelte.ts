@@ -332,7 +332,11 @@ class ExtensionState {
       // per-IP quota is per-user, safe to race it against crt.sh.
       (signal) => discoverSubdomains(this.rootDomain || this.domain, { signal, certSpotter: 'race' }),
       (next) => (this.subdomainState = next),
-      { cacheKey: `subs:${this.rootDomain || this.domain}`, cacheTtlMs: 5 * 60_000, force }
+      // Long TTL on purpose: both CT sources are flaky and rate-limited, and
+      // certificate transparency data changes on the order of days, not
+      // minutes. Caching for 30 minutes keeps repeat visits off the upstreams
+      // entirely. Refresh/Rescan passes force:true to bypass it.
+      { cacheKey: `subs:${this.rootDomain || this.domain}`, cacheTtlMs: 30 * 60_000, force }
     );
   }
 
