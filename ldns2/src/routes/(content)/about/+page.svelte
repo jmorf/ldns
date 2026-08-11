@@ -1,5 +1,8 @@
 <script lang="ts">
-  import { Globe, GitBranch, Rocket, Mail, ShieldCheck, Server, Network } from 'lucide-svelte';
+  import { Globe, GitBranch, Rocket, Mail, ShieldCheck, Server, Network, Scale, Bug, Code2 } from 'lucide-svelte';
+  import { SiGithub } from '@icons-pack/svelte-simple-icons';
+
+  const GITHUB_URL = 'https://github.com/jmorf/ldns';
   import SEO from '$lib/components/SEO.svelte';
   import Eyebrow from '$lib/components/Eyebrow.svelte';
 
@@ -23,7 +26,7 @@
 
 <SEO
   title="About"
-  description="LDNS is a free, no-account toolkit for inspecting any domain on the internet — DNS, RDAP, email, server, security and subdomains."
+  description="LDNS is a free, open-source, no-account toolkit for inspecting any domain on the internet — DNS, RDAP, email, server, security and subdomains."
 />
 
 <!-- ─── Hero ─────────────────────────────────────────────────────── -->
@@ -35,10 +38,11 @@
       <span class="text-primary-500">every domain tool.</span>
     </h1>
     <p class="mt-6 text-lg text-fg-muted leading-relaxed max-w-2xl">
-      LDNS is a free toolkit for inspecting any domain on the internet — DNS records,
-      registration data, email authentication, TLS certificates, security headers,
+      LDNS is a free, open-source toolkit for inspecting any domain on the internet — DNS
+      records, registration data, email authentication, TLS certificates, security headers,
       IP geolocation, and subdomains. No accounts. No tracking. Edge-cached on Cloudflare
-      so lookups are fast.
+      so lookups are fast — and the whole thing is
+      <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" class="text-primary-400 hover:underline">on GitHub</a>.
     </p>
   </div>
 </section>
@@ -121,7 +125,76 @@
         against a cached endpoint — that's why the same lookup is essentially free at scale,
         and why every page is also a public API.
       </p>
+      <p>
+        None of that is a claim you have to take on faith: the source for this site, the
+        browser extension, and the shared lookup library is public. If you want to know
+        exactly what happens to a domain you type in, you can go and read it.
+      </p>
     </div>
+  </div>
+</section>
+
+<!-- ─── Open source ─────────────────────────────────────────────── -->
+<section class="border-b border-line bg-surface-2/30">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <Eyebrow text="open source" />
+    <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight text-fg mb-6">
+      Read it, fork it, improve it.
+    </h2>
+    <div class="space-y-4 text-fg-muted leading-relaxed max-w-prose">
+      <p>
+        LDNS is open source under the MIT license. That covers this website, the Chrome and
+        Firefox extension, and <span class="font-mono text-fg">@ldns/core</span> — the shared
+        library that does the actual DNS, RDAP, email and certificate work for both.
+      </p>
+      <p>
+        The privacy promises above are the main reason it's public. A tool that sees every
+        domain you look up should be one you can audit rather than trust.
+      </p>
+    </div>
+
+    <div class="grid sm:grid-cols-3 gap-4 mt-8">
+      <a
+        href={GITHUB_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group bg-surface border border-line rounded-xl p-5 hover:border-primary-500/30 transition-colors"
+      >
+        <span class="text-fg-subtle group-hover:text-primary-400 transition-colors inline-block">
+          <SiGithub size={16} />
+        </span>
+        <h3 class="text-base font-semibold text-fg mt-3 group-hover:text-primary-400 transition-colors">Browse the source</h3>
+        <p class="text-sm text-fg-muted leading-relaxed mt-1.5">Site, extension and shared library in one repository.</p>
+      </a>
+      <a
+        href={`${GITHUB_URL}/issues/new/choose`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group bg-surface border border-line rounded-xl p-5 hover:border-primary-500/30 transition-colors"
+      >
+        <Bug class="w-4 h-4 text-fg-subtle group-hover:text-primary-400 transition-colors" />
+        <h3 class="text-base font-semibold text-fg mt-3 group-hover:text-primary-400 transition-colors">Report a bug</h3>
+        <p class="text-sm text-fg-muted leading-relaxed mt-1.5">Something wrong or missing? Open an issue — they're read.</p>
+      </a>
+      <a
+        href={`${GITHUB_URL}/blob/main/CONTRIBUTING.md`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group bg-surface border border-line rounded-xl p-5 hover:border-primary-500/30 transition-colors"
+      >
+        <Code2 class="w-4 h-4 text-fg-subtle group-hover:text-primary-400 transition-colors" />
+        <h3 class="text-base font-semibold text-fg mt-3 group-hover:text-primary-400 transition-colors">Contribute</h3>
+        <p class="text-sm text-fg-muted leading-relaxed mt-1.5">Focused pull requests welcome. Start with an issue.</p>
+      </a>
+    </div>
+
+    <p class="text-xs text-fg-subtle leading-relaxed mt-6 flex items-start gap-2">
+      <Scale class="w-3.5 h-3.5 shrink-0 mt-0.5" />
+      <span>
+        MIT licensed, with one exception: the LDNS name, wordmark and icons stay ours, so
+        forks need their own branding. Everything else is yours to use.
+      </span>
+    </p>
   </div>
 </section>
 

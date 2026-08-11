@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { SiGooglechrome, SiFirefoxbrowser } from '@icons-pack/svelte-simple-icons';
+  import { SiGooglechrome, SiFirefoxbrowser, SiGithub } from '@icons-pack/svelte-simple-icons';
 
   const CHROME_STORE_URL = 'https://chromewebstore.google.com/detail/ldns-dns-domain-tools/ehgkpjkmaichihneengcigkaoejmcofn';
   const FIREFOX_AMO_URL = 'https://addons.mozilla.org/en-CA/firefox/addon/ldns-dns-domain-tools/';
+  const GITHUB_URL = 'https://github.com/jmorf/ldns';
 
   const tools = [
     { href: '/google.com', label: 'DNS' },
@@ -31,7 +32,7 @@
           <span class="text-base font-semibold tracking-tight text-fg">LDNS</span>
         </a>
         <p class="text-xs text-fg-muted leading-relaxed max-w-[18rem]">
-          Free DNS, RDAP, email, server &amp; security lookups for any domain.
+          Free, open-source DNS, RDAP, email, server &amp; security lookups for any domain.
         </p>
       </div>
 
@@ -60,6 +61,11 @@
               <SiFirefoxbrowser size={12} /> Firefox AMO
             </a>
           </li>
+          <li>
+            <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" class="text-xs text-fg-muted hover:text-fg transition-colors flex items-center gap-1.5">
+              <SiGithub size={12} /> Source on GitHub
+            </a>
+          </li>
         </ul>
       </div>
 
@@ -74,7 +80,10 @@
     </div>
 
     <div class="mt-10 pt-6 border-t border-line flex flex-wrap items-center justify-between gap-3">
-      <p class="text-[11px] text-fg-subtle">© {new Date().getFullYear()} LDNS · No tracking, no accounts.</p>
+      <p class="text-[11px] text-fg-subtle">
+        © {new Date().getFullYear()} LDNS · No tracking, no accounts ·
+        <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" class="hover:text-fg-muted transition-colors underline decoration-line underline-offset-2">Open source (MIT)</a>
+      </p>
       <p class="font-mono text-[10px] text-fg-subtle">edge.cloudflare · sveltekit · svelte 5</p>
     </div>
   </div>
