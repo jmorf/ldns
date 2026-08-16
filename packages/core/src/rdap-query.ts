@@ -3,7 +3,14 @@ import { RDAP_BOOTSTRAP_URL } from './constants';
 import { getRootDomain, toAsciiDomain } from './domain-parser';
 import { fetchWithTimeout } from './fetch-utils';
 
-const RDAP_TIMEOUT_MS = 15_000;
+/**
+ * Generous on purpose. rdap.org's bootstrap intermittently stalls for
+ * 25-35s on a cold TLD and then SUCCEEDS (measured: registro.br 33s then
+ * 0.6s warm; nic.br 29s then 0.6s). A 15s timeout converted those slow but
+ * real answers into failures. The registries themselves answer in under a
+ * second; the stall is in the bootstrap, and it completes.
+ */
+const RDAP_TIMEOUT_MS = 30_000;
 
 /**
  * Look up RDAP information for a domain
