@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.8.2] - 2026-08-11
+
+### Fixed
+- **RDAP timeout raised from 15s to 30s.** rdap.org's bootstrap intermittently
+  stalls for 25-35 seconds on a cold TLD and then answers successfully
+  (measured against .br and others); the shorter timeout was turning those
+  real answers into failures. DNS stays at 10s, which is already several
+  hundred times the typical DoH response time.
+
 ## [1.8.1] - 2026-08-11
 
 ### Fixed
@@ -19,11 +28,6 @@
   suggesting a retry that cannot work.
 - Subdomain results are cached for 30 minutes rather than 5, since CT data
   changes over days and both sources are rate-limited.
-- **RDAP timeout raised from 15s to 30s.** rdap.org's bootstrap intermittently
-  stalls for 25-35 seconds on a cold TLD and then answers successfully
-  (measured against .br and others); the shorter timeout was turning those
-  real answers into failures. DNS stays at 10s, which is already several
-  hundred times the typical DoH response time.
 
 ### Added
 - **Optional CertSpotter API key** in Settings. Subdomain discovery falls back

@@ -20,6 +20,12 @@ const version = packageJson.version;
 const RECENT_RELEASES = 2;
 const releases = [
   {
+    version: '1.8.2',
+    notes: [
+      'RDAP lookups for slow registries (some ccTLDs like .br) no longer time out: the registry data was arriving, just after our cutoff. The timeout now allows for rdap.org\'s occasional slow first answer.'
+    ]
+  },
+  {
     version: '1.8.1',
     notes: [
       'Fixed: the extension follows the tab you are on again, and the side panel now updates as you browse.',
