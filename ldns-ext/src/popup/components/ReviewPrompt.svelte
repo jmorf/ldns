@@ -31,6 +31,16 @@
 
   let visible = $state(false);
 
+  /** Open a URL in a new tab. chrome.tabs.create is the reliable path from an
+   *  extension popup in both browsers; window.open is the dev-mode fallback. */
+  function openTab(url: string) {
+    if (chrome?.tabs?.create) {
+      void chrome.tabs.create({ url });
+    } else {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  }
+
   const isInSidePanel =
     typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('sp');
 
@@ -46,14 +56,16 @@
 
   async function rate() {
     visible = false;
+    // Persist BEFORE opening the tab: opening it closes the popup, and a
+    // write that has not committed by then would resurrect the prompt.
     await completeReviewPrompt();
-    window.open(reviewUrl, '_blank', 'noopener,noreferrer');
+    openTab(reviewUrl);
   }
 
   async function sendFeedback() {
     visible = false;
     await completeReviewPrompt();
-    window.open(feedbackUrl(), '_blank', 'noopener,noreferrer');
+    openTab(feedbackUrl());
   }
 
   async function later() {
