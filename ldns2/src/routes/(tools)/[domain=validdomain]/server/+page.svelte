@@ -112,13 +112,9 @@
 <ToolPage
   eyebrow="server · response"
   title="{domain.name} Server Information"
-  description="Headers, redirects, technology stack, and security signals for {domain.name}"
   domainName={domain.name}
   isLoading={loading}
   error={error || (failure ? failure.error : '')}
-  badge={success
-    ? { text: `${success.info?.status ?? 'online'}`, color: success.info && success.info.status >= 200 && success.info.status < 300 ? 'green' : success.info && success.info.status >= 300 && success.info.status < 400 ? 'yellow' : 'red' }
-    : { text: loading ? 'Checking…' : 'Ready', color: 'gray' }}
 >
   {#snippet actions()}
     <div class="flex gap-2">

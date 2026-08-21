@@ -1,14 +1,11 @@
 <script lang="ts">
-  import { domain, queryConfig } from "$lib/state.svelte";
+  import { domain } from "$lib/state.svelte";
   import { onMount } from "svelte";
-  import Badge from "$lib/components/ui/badge.svelte";
   import DnsTable from "$lib/components/DnsTable.svelte";
   import ToolPage from "$lib/components/ToolPage.svelte";
   import RefreshButton from "$lib/components/RefreshButton.svelte";
   import ShareButton from "$lib/components/ShareButton.svelte";
-  import SectionHeader from "$lib/components/SectionHeader.svelte";
   import SEO from "$lib/components/SEO.svelte";
-  import RecordSummary from "$lib/components/RecordSummary.svelte";
   import EndpointSelector from "$lib/components/EndpointSelector.svelte";
   import { page } from "$app/stores";
   import { browser } from "$app/environment";
@@ -123,14 +120,9 @@
 <ToolPage
   eyebrow="dns · all records"
   title="{domain.name} DNS Lookup"
-  description="DNS lookup results for {domain.name}: live records using the {queryConfig.endpointName} endpoint"
   domainName={domain.name}
   isLoading={domain.toolState.dns.loading}
   error={domain.toolState.dns.error}
-  badge={{
-    text: queryConfig.endpointName,
-    color: "orange",
-  }}
 >
   {#snippet actions()}
     <div class="flex items-center gap-3">
@@ -148,19 +140,10 @@
 
   <!-- Content is only shown when not loading and has data -->
   {#if domain.toolState.dns.hasData}
-    <!-- Record Summary -->
-    <div class="mb-6 hidden sm:block">
-      <RecordSummary
-        dnsData={domain.toolState.dns.data}
-        variant="detailed"
-        onRecordClick={handleFilterChange}
-      />
-    </div>
-
-    <!-- DNS Records Section -->
-    <div class="mb-8">
-      <SectionHeader id="dns-records" title="DNS Lookup Results" />
-      <DnsTable 
+    <!-- DNS records: the table's filter chips carry the per-type counts,
+         so no separate summary block above it -->
+    <div class="mb-8" id="dns-records">
+      <DnsTable
         filterType={currentFilter}
         onFilterChange={handleFilterChange}
       />

@@ -48,7 +48,6 @@
   domainName={domain.name}
   isLoading={loading}
   error={error}
-  badge={result ? { text: `${Object.keys(result.headers).length} headers`, color: 'gray' } : { text: 'Ready', color: 'gray' }}
 >
   {#snippet actions()}
     <ShareButton />

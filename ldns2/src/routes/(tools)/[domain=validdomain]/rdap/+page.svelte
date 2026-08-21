@@ -7,7 +7,7 @@
     import ShareButton from "$lib/components/ShareButton.svelte";
     import SectionHeader from "$lib/components/SectionHeader.svelte";
     import SEO from "$lib/components/SEO.svelte";
-    import Badge from "$lib/components/ui/badge.svelte";
+    import StatStrip from "$lib/components/StatStrip.svelte";
     import { page } from "$app/stores";
     import FaqJsonLd from "$lib/components/FaqJsonLd.svelte";
     import { generateRdapFaqJsonLd } from "$lib/utils/faqJsonLd";
@@ -51,60 +51,6 @@
             expirationDate: expires.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
             isUrgent: diffDays <= 30,
             isCritical: diffDays <= 7
-        };
-    }
-    
-    // Get primary domain status
-    function getPrimaryStatus(statuses: string[] | undefined) {
-        if (!statuses || statuses.length === 0) return null;
-        
-        // Status explanations from RFC 7483
-        const statusExplanations: Record<string, string> = {
-            'active': 'Domain is operational and can be used normally',
-            'inactive': 'Domain exists but is not operational or resolving',
-            'locked': 'Domain is locked and cannot be modified by anyone',
-            'pendingCreate': 'Domain registration is being processed',
-            'pendingRenew': 'Domain renewal is being processed',
-            'pendingTransfer': 'Domain transfer to new registrar is in progress', 
-            'pendingUpdate': 'Domain information changes are being processed',
-            'pendingDelete': 'Domain deletion is scheduled and being processed',
-            'clientTransferProhibited': 'Domain cannot be transferred to another registrar - protection enabled by current registrar',
-            'client transfer prohibited': 'Domain cannot be transferred to another registrar - protection enabled by current registrar',
-            'serverTransferProhibited': 'Domain cannot be transferred to another registrar - protection enabled by registry',
-            'server transfer prohibited': 'Domain cannot be transferred to another registrar - protection enabled by registry',
-            'clientUpdateProhibited': 'Domain information cannot be updated - protection enabled by current registrar',
-            'client update prohibited': 'Domain information cannot be updated - protection enabled by current registrar',
-            'serverUpdateProhibited': 'Domain information cannot be updated - protection enabled by registry',
-            'server update prohibited': 'Domain information cannot be updated - protection enabled by registry',
-            'clientDeleteProhibited': 'Domain cannot be deleted - protection enabled by current registrar to prevent accidental loss',
-            'client delete prohibited': 'Domain cannot be deleted - protection enabled by current registrar to prevent accidental loss',
-            'serverDeleteProhibited': 'Domain cannot be deleted - protection enabled by registry to prevent accidental loss',
-            'server delete prohibited': 'Domain cannot be deleted - protection enabled by registry to prevent accidental loss',
-            'clientHold': 'Domain is suspended by registrar - may not resolve or be usable',
-            'client hold': 'Domain is suspended by registrar - may not resolve or be usable',
-            'serverHold': 'Domain is suspended by registry - may not resolve or be usable',
-            'server hold': 'Domain is suspended by registry - may not resolve or be usable',
-            'ok': 'Domain has no restrictions and operates normally'
-        };
-        
-        // Priority order for showing status
-        const priorityStatuses = ['active', 'clientHold', 'serverHold', 'pendingDelete', 'pendingTransfer', 'ok'];
-        
-        // Check for priority statuses first
-        for (const priority of priorityStatuses) {
-            if (statuses.includes(priority)) {
-                return {
-                    status: priority,
-                    explanation: statusExplanations[priority]
-                };
-            }
-        }
-        
-        // If no priority status, return the first one with its explanation
-        const firstStatus = statuses[0];
-        return {
-            status: firstStatus,
-            explanation: statusExplanations[firstStatus] || `Status: ${firstStatus}`
         };
     }
     
@@ -251,14 +197,9 @@
 <ToolPage
     eyebrow="rdap · registration"
     title="{domain.name} RDAP Lookup"
-    description="RDAP lookup for {domain.name}: domain registration data, DNSSEC status, and registrar details"
     domainName={domain.name}
     isLoading={domain.toolState.rdap.loading}
     error={domain.toolState.rdap.error}
-    badge={{
-        text: "RDAP Registry",
-        color: "blue",
-    }}
 >
     {#snippet actions()}
         <div class="flex gap-2">
@@ -276,96 +217,42 @@
         {#if domain.toolState.rdap.data}
             {@const domainAge = calculateDomainAge(domain.toolState.rdap.data?.created)}
             {@const expiration = calculateExpiration(domain.toolState.rdap.data?.expires)}
-            {@const primaryStatus = getPrimaryStatus(domain.toolState.rdap.data?.status)}
             {@const registrar = getRegistrar(domain.toolState.rdap.data?.entities)}
             
-            <div class="space-y-3 mb-8">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-semibold text-fg">RDAP Lookup Summary</h3>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                    <!-- Domain Age Card -->
-                    <div class="bg-surface-2 rounded-lg p-3 border border-line">
-                        <Badge color="blue" class="text-sm font-medium mb-2">
-                            Age
-                        </Badge>
-                        <p class="text-lg font-bold text-fg">
-                            {#if domainAge}
-                                {domainAge.years} years, {domainAge.months} months
-                            {:else}
-                                <span class="text-fg-subtle">Unknown</span>
-                            {/if}
-                        </p>
-                        <p class="text-xs text-fg-muted">
-                            {#if domainAge}
-                                Since {domainAge.createdDate}
-                            {:else}
-                                Creation date unknown
-                            {/if}
-                        </p>
-                    </div>
-
-                    <!-- Domain Expiration Card -->
-                    <div class="bg-surface-2 rounded-lg p-3 border border-line">
-                        <Badge color={expiration?.expired ? 'red' : expiration?.isCritical ? 'red' : expiration?.isUrgent ? 'yellow' : 'green'} class="text-sm font-medium mb-2">
-                            Expires
-                        </Badge>
-                        <p class="text-lg font-bold {expiration?.expired ? 'text-bad-400' : expiration?.isCritical ? 'text-bad-400' : expiration?.isUrgent ? 'text-warn-400' : 'text-fg'}">
-                            {#if expiration}
-                                {#if expiration.expired}
-                                    Expired
-                                {:else}
-                                    {expiration.months} months, {expiration.days} days
-                                {/if}
-                            {:else}
-                                <span class="text-fg-subtle">Unknown</span>
-                            {/if}
-                        </p>
-                        <p class="text-xs text-fg-muted">
-                            {#if expiration}
-                                Expires {expiration.expirationDate}
-                            {:else}
-                                Expiration date unknown
-                            {/if}
-                        </p>
-                    </div>
-
-                    <!-- Registrar Card -->
-                    <div class="bg-surface-2 rounded-lg p-3 border border-line">
-                        <Badge color="purple" class="text-sm font-medium mb-2">
-                            Registrar
-                        </Badge>
-                        <p class="text-lg font-bold text-fg truncate" title={registrar || domain.toolState.rdap.data?.registrar || 'Unknown'}>
-                            {#if registrar || domain.toolState.rdap.data?.registrar}
-                                {registrar || domain.toolState.rdap.data?.registrar}
-                            {:else}
-                                <span class="text-fg-subtle">Unknown</span>
-                            {/if}
-                        </p>
-                        <p class="text-xs text-fg-muted">
-                            Domain registrar
-                        </p>
-                    </div>
-
-                    <!-- DNSSEC Card -->
-                    <div class="bg-surface-2 rounded-lg p-3 border border-line">
-                        <Badge color={domain.toolState.rdap.data?.dnssecEnabled ? 'green' : 'red'} class="text-sm font-medium mb-2">
-                            DNSSEC
-                        </Badge>
-                        <p class="text-lg font-bold text-fg">
-                            {domain.toolState.rdap.data?.dnssecEnabled ? 'Enabled' : 'Disabled'}
-                        </p>
-                        <p class="text-xs text-fg-muted">
-                            {#if domain.toolState.rdap.data?.dnssecEnabled}
-                                Domain signatures verified
-                            {:else}
-                                No DNSSEC protection
-                            {/if}
-                        </p>
-                    </div>
-                </div>
-            </div>
+            <StatStrip
+                stats={[
+                    {
+                        label: 'Age',
+                        value: domainAge ? `${domainAge.years}y ${domainAge.months}m` : 'Unknown',
+                        sub: domainAge ? `since ${domainAge.createdDate}` : undefined
+                    },
+                    {
+                        label: 'Expires',
+                        value: expiration
+                            ? expiration.expired
+                                ? 'Expired'
+                                : `${expiration.months}m ${expiration.days}d`
+                            : 'Unknown',
+                        sub: expiration ? expiration.expirationDate : undefined,
+                        tone: expiration
+                            ? expiration.expired || expiration.isCritical
+                                ? 'bad'
+                                : expiration.isUrgent
+                                  ? 'warn'
+                                  : undefined
+                            : undefined
+                    },
+                    {
+                        label: 'Registrar',
+                        value: registrar || domain.toolState.rdap.data?.registrar || 'Unknown'
+                    },
+                    {
+                        label: 'DNSSEC',
+                        value: domain.toolState.rdap.data?.dnssecEnabled ? 'Enabled' : 'Disabled',
+                        tone: domain.toolState.rdap.data?.dnssecEnabled ? 'ok' : undefined
+                    }
+                ]}
+            />
         {/if}
         
         <!-- Domain Information -->

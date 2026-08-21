@@ -30,7 +30,6 @@
   domainName={domain.name}
   isLoading={loading}
   error={error}
-  badge={result ? { text: `${result.found}/${result.probed}`, color: result.found > 0 ? 'green' : 'gray' } : { text: 'Ready', color: 'gray' }}
 >
   {#snippet actions()}
     <ShareButton />

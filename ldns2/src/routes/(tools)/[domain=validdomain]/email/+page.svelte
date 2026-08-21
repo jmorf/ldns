@@ -6,9 +6,9 @@
     import ShareButton from "$lib/components/ShareButton.svelte";
     import SectionHeader from "$lib/components/SectionHeader.svelte";
     import MetricsGrid from "$lib/components/MetricsGrid.svelte";
+    import StatStrip from "$lib/components/StatStrip.svelte";
     import EmailAnalysisSection from "$lib/components/EmailAnalysisSection.svelte";
     import CopyButton from "$lib/components/CopyButton.svelte";
-    import Badge from "$lib/components/ui/badge.svelte";
     import { browser } from "$app/environment";
     import SEO from "$lib/components/SEO.svelte";
     import SPFAnalyzer from "$lib/components/SPFAnalyzer.svelte";
@@ -154,16 +154,9 @@
 <ToolPage
     eyebrow="email · authentication"
     title="{domain.name} Email Security Checker"
-    description="Email security checker for {domain.name}: SPF, DMARC, MTA-STS, and BIMI analysis"
     domainName={domain.name}
     isLoading={domain.toolState.email.loading}
     error={domain.toolState.email.error}
-    badge={{
-        text: domain.toolState.email.data?.isEmailEnabled
-            ? "Email Enabled"
-            : "Email Disabled",
-        color: domain.toolState.email.data?.isEmailEnabled ? "green" : "red",
-    }}
 >
     {#snippet actions()}
         <div class="flex gap-2">
@@ -176,67 +169,20 @@
         </div>
     {/snippet}
 
-    <!-- Email DNS Summary -->
-    <div class="mb-8">
-        <SectionHeader id="summary" title="Email Security Check Summary" />
-        
-        <!-- Mobile view - compact summary -->
-        <div class="sm:hidden">
-            <div class="flex items-center justify-between mb-2">
-                <h3 class="text-base font-semibold text-fg">Email Security</h3>
-                <Badge color="gray" class="text-xs">
-                    {emailSummary().filter(item => item.hasData).length} of {emailSummary().length} configured
-                </Badge>
-            </div>
-            <div class="flex flex-wrap gap-1">
-                {#each emailSummary().slice(0, 4) as item (item.type)}
-                    <button
-                        onclick={() => navigateToSection(item.sectionId)}
-                        type="button"
-                        class="cursor-pointer"
-                    >
-                        <Badge color={item.hasData ? item.color : 'gray'} class="text-xs hover:opacity-80 transition-opacity">
-                            {item.type} {#if item.count > 0}({item.count}){/if}
-                        </Badge>
-                    </button>
-                {/each}
-                {#if emailSummary().length > 4}
-                    <span class="text-xs text-fg-muted">+{emailSummary().length - 4} more</span>
-                {/if}
-            </div>
-        </div>
-
-        <!-- Desktop view - full micro cards -->
-        <div class="hidden sm:block">
-            {#if emailSummary().length === 0}
-                <div class="text-fg-muted text-sm italic">
-                    No email configuration data available
-                </div>
-            {:else}
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                    {#each emailSummary() as item (item.type)}
-                        <button
-                            class="bg-surface-2 rounded-lg p-3 border border-line cursor-pointer hover:bg-surface-3 hover:border-line-strong transition-colors w-full text-left"
-                            onclick={() => navigateToSection(item.sectionId)}
-                            type="button"
-                        >
-                            <div class="flex items-center justify-between mb-2">
-                                <Badge color={item.hasData ? item.color : 'gray'} class="text-sm font-medium">
-                                    {item.type}
-                                </Badge>
-                                <span class="text-lg font-bold {item.hasData ? 'text-ok-400' : 'text-fg-muted'}">
-                                    {item.hasData ? '✓' : '✗'}
-                                </span>
-                            </div>
-                            <p class="text-xs text-fg-muted">
-                                {item.description}
-                                <span class="block mt-1 text-xs text-fg-subtle">Click to view details</span>
-                            </p>
-                        </button>
-                    {/each}
-                </div>
-            {/if}
-        </div>
+    <!-- Email security at a glance: one cell per mechanism, click to jump
+         to its analysis section -->
+    <div class="mb-8" id="summary">
+        <StatStrip
+            cols="grid-cols-2 sm:grid-cols-3 lg:grid-cols-5"
+            stats={emailSummary().map((item) => ({
+                label: item.type,
+                value: item.hasData
+                    ? `${item.count} record${item.count === 1 ? '' : 's'}`
+                    : 'Missing',
+                tone: item.hasData ? ('ok' as const) : undefined,
+                onclick: () => navigateToSection(item.sectionId)
+            }))}
+        />
     </div>
     
     <!-- Email Provider Analysis -->

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Badge from '$lib/components/ui/badge.svelte';
   import DomainBreadcrumb from './DomainBreadcrumb.svelte';
   import Eyebrow from './Eyebrow.svelte';
   import SkeletonRows from './SkeletonRows.svelte';
@@ -7,14 +6,15 @@
 
   interface Props {
     title: string;
-    description: string;
+    /**
+     * Optional intro paragraph. The SEO record-type pages pass crafted copy
+     * here; the app-style tool pages omit it so the header stays terse and
+     * the data starts immediately.
+     */
+    description?: string;
     domainName: string;
     isLoading?: boolean;
     error?: string;
-    badge?: {
-      text: string;
-      color: string;
-    };
     /**
      * Mono caption rendered above the title in homepage-feature style,
      * e.g. "dns · a records" or "security · tls cert". Optional, when
@@ -31,42 +31,26 @@
     domainName,
     isLoading = false,
     error,
-    badge,
     eyebrow,
     children,
     actions
   }: Props = $props();
-
-  type BadgeColor = 'green' | 'yellow' | 'red' | 'orange' | 'blue' | 'gray' | 'primary';
-  const colorMap: Record<string, BadgeColor> = {
-    green: 'green',
-    yellow: 'yellow',
-    red: 'red',
-    orange: 'orange',
-    blue: 'blue',
-    gray: 'gray',
-    primary: 'primary'
-  };
 </script>
 
 <div class="w-full max-w-7xl mx-auto">
-  <!-- Page header: mirrors the homepage section rhythm: eyebrow caption,
-       then a large semibold heading, then a muted description paragraph. -->
-  <header class="mb-10 pt-2">
-    <div class="flex flex-wrap items-end justify-between gap-4 mb-4">
+  <!-- Terse page header: eyebrow, breadcrumb, heading, actions. Data starts
+       right below: no badges or filler sentences between the user and the
+       results. -->
+  <header class="mb-6 pt-2">
+    <div class="flex flex-wrap items-end justify-between gap-4">
       <div class="min-w-0">
         {#if eyebrow}
           <Eyebrow text={eyebrow} />
         {/if}
-        <div class="flex items-center gap-3 mb-3 flex-wrap">
-          {#if badge}
-            <Badge variant={colorMap[badge.color] ?? 'gray'} class="text-[11px] tabular-nums">
-              {badge.text}
-            </Badge>
-          {/if}
+        <div class="mb-2">
           <DomainBreadcrumb domain={domainName} />
         </div>
-        <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight text-fg leading-[1.1]">
+        <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight text-fg leading-[1.1]">
           {title}
         </h1>
       </div>
@@ -76,7 +60,9 @@
         </div>
       {/if}
     </div>
-    <p class="text-fg-muted text-sm sm:text-base leading-relaxed max-w-3xl">{description}</p>
+    {#if description}
+      <p class="mt-3 text-fg-muted text-sm leading-relaxed max-w-3xl">{description}</p>
+    {/if}
   </header>
 
   {#if isLoading}

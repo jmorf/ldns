@@ -44,7 +44,6 @@
   domainName={domain.name}
   isLoading={domain.toolState.dns?.loading}
   error={domain.toolState.dns?.error}
-  badge={records.length > 0 ? { text: `${records.length} record${records.length === 1 ? '' : 's'}`, color: 'gray' } : undefined}
 >
   {#snippet actions()}
     <ShareButton />

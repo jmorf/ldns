@@ -39,7 +39,6 @@
   domainName={domain.name}
   isLoading={loading}
   error={error}
-  badge={result ? { text: `${okCount}/${total} OK`, color: okCount === total ? 'green' : okCount >= total / 2 ? 'yellow' : 'red' } : { text: 'Ready', color: 'gray' }}
 >
   {#snippet actions()}
     <ShareButton />
