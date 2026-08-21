@@ -22,7 +22,8 @@ const releases = [
   {
     version: '1.8.2',
     notes: [
-      'RDAP lookups for slow registries (some ccTLDs like .br) no longer time out: the registry data was arriving, just after our cutoff. The timeout now allows for rdap.org\'s occasional slow first answer.'
+      'RDAP lookups for slow registries (some ccTLDs like .br) no longer time out: the registry data was arriving, just after our cutoff. The timeout now allows for rdap.org\'s occasional slow first answer.',
+      'After a week of regular use, LDNS asks once whether you would like to rate it or send feedback. Three clicks of "Later" and it never asks again.'
     ]
   },
   {

@@ -14,6 +14,7 @@
   import RecentSearches from './components/RecentSearches.svelte';
   import SettingsSheet from './components/SettingsSheet.svelte';
   import SidebarTipBanner from './components/SidebarTipBanner.svelte';
+  import ReviewPrompt from './components/ReviewPrompt.svelte';
   import LoadingState from './components/LoadingState.svelte';
 
   // Lazy-load heavy tab components
@@ -180,6 +181,7 @@
        dismissal. Never shown inside the side panel itself or on browsers
        that don't support a side-panel API. -->
   <SidebarTipBanner onOpenSettings={() => (settingsOpen = true)} />
+  <ReviewPrompt />
 
   <!-- Search Form -->
   <div class="px-4 py-3 border-b border-line">

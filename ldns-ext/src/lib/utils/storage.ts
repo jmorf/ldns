@@ -8,7 +8,11 @@ const STORAGE_KEYS = {
   SETTINGS: 'ldns_settings',
   // First-run banner shown in the popup nudging users to try side-panel mode.
   // Set to true when the user explicitly dismisses the banner, never reshown.
-  SIDEBAR_TIP_SEEN: 'ldns_sidebar_tip_seen'
+  SIDEBAR_TIP_SEEN: 'ldns_sidebar_tip_seen',
+  // Usage counters + review-prompt state, see the review-prompt section below.
+  INSTALLED_AT: 'ldns_installed_at',
+  LOOKUP_COUNT: 'ldns_lookup_count',
+  REVIEW_PROMPT: 'ldns_review_prompt'
 } as const;
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -203,5 +207,98 @@ export async function recallSession(maxAgeMs: number): Promise<SessionCache | nu
     return cached;
   } catch {
     return null;
+  }
+}
+
+// ─── Review prompt ──────────────────────────────────────────────────
+//
+// Asks established users to rate the extension or send feedback. The rules
+// exist to make it respectful rather than nagging:
+//
+//   - only after ENGAGED_LOOKUPS successful lookups AND ENGAGED_DAYS since
+//     install, so it never greets a new user;
+//   - "Later" snoozes it for SNOOZE_DAYS, and after MAX_LATERS snoozes it
+//     gives up forever, silence is an answer;
+//   - clicking either action (rate or feedback) retires it permanently.
+//
+// Deliberately NOT review-gated: the prompt never asks "do you like it?"
+// and routes only happy users to the store. Chrome Web Store policy
+// prohibits selectively soliciting reviews, so both actions are always
+// offered together.
+
+const ENGAGED_LOOKUPS = 10;
+const ENGAGED_DAYS = 7;
+const SNOOZE_DAYS = 14;
+const MAX_LATERS = 3;
+
+interface ReviewPromptState {
+  done?: boolean;
+  snoozeUntil?: number;
+  laters?: number;
+}
+
+/** Count a successful lookup; stamps the install time on first use. */
+export async function recordLookup(): Promise<void> {
+  try {
+    const cur = await chrome.storage.local.get([STORAGE_KEYS.LOOKUP_COUNT, STORAGE_KEYS.INSTALLED_AT]);
+    const updates: Record<string, number> = {
+      [STORAGE_KEYS.LOOKUP_COUNT]: (Number(cur[STORAGE_KEYS.LOOKUP_COUNT]) || 0) + 1
+    };
+    if (!cur[STORAGE_KEYS.INSTALLED_AT]) {
+      updates[STORAGE_KEYS.INSTALLED_AT] = Date.now();
+    }
+    await chrome.storage.local.set(updates);
+  } catch {
+    /* noop */
+  }
+}
+
+export async function shouldShowReviewPrompt(): Promise<boolean> {
+  try {
+    const cur = await chrome.storage.local.get([
+      STORAGE_KEYS.LOOKUP_COUNT,
+      STORAGE_KEYS.INSTALLED_AT,
+      STORAGE_KEYS.REVIEW_PROMPT
+    ]);
+    const state = (cur[STORAGE_KEYS.REVIEW_PROMPT] ?? {}) as ReviewPromptState;
+    if (state.done) return false;
+    if ((state.laters ?? 0) >= MAX_LATERS) return false;
+    if (state.snoozeUntil && Date.now() < state.snoozeUntil) return false;
+
+    const lookups = Number(cur[STORAGE_KEYS.LOOKUP_COUNT]) || 0;
+    const installedAt = Number(cur[STORAGE_KEYS.INSTALLED_AT]) || 0;
+    if (lookups < ENGAGED_LOOKUPS) return false;
+    if (!installedAt || Date.now() - installedAt < ENGAGED_DAYS * 86_400_000) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** "Later": snooze for a while; give up entirely after MAX_LATERS snoozes. */
+export async function snoozeReviewPrompt(): Promise<void> {
+  try {
+    const cur = await chrome.storage.local.get(STORAGE_KEYS.REVIEW_PROMPT);
+    const state = (cur[STORAGE_KEYS.REVIEW_PROMPT] ?? {}) as ReviewPromptState;
+    await chrome.storage.local.set({
+      [STORAGE_KEYS.REVIEW_PROMPT]: {
+        ...state,
+        laters: (state.laters ?? 0) + 1,
+        snoozeUntil: Date.now() + SNOOZE_DAYS * 86_400_000
+      } satisfies ReviewPromptState
+    });
+  } catch {
+    /* noop */
+  }
+}
+
+/** The user acted (rated or sent feedback): never ask again. */
+export async function completeReviewPrompt(): Promise<void> {
+  try {
+    await chrome.storage.local.set({
+      [STORAGE_KEYS.REVIEW_PROMPT]: { done: true } satisfies ReviewPromptState
+    });
+  } catch {
+    /* noop */
   }
 }

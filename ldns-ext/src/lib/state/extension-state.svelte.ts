@@ -35,6 +35,7 @@ import {
   DEFAULT_SETTINGS,
   getRecentSearches,
   addRecentSearch,
+  recordLookup,
   clearRecentSearches,
   getEndpointPreference,
   setEndpointPreference,
@@ -243,6 +244,8 @@ class ExtensionState {
 
     await addRecentSearch(this.domain);
     this.recentSearches = await getRecentSearches();
+    // Engagement counter for the review prompt; fire and forget.
+    void recordLookup();
 
     // Reset transient state for new domain
     this.propagationState = idleState();

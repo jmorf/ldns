@@ -2,6 +2,15 @@
 
 ## [1.8.2] - 2026-08-11
 
+### Added
+- **A one-time ask to rate LDNS or send feedback.** Appears only after ten
+  successful lookups and a week of use, offers "Rate it", "Send feedback"
+  and "Later" side by side, snoozes for two weeks on "Later", and gives up
+  permanently after three snoozes or once either action is taken. Both
+  actions are always offered together; the prompt never asks how you feel
+  first and routes only happy users to the store, which Chrome Web Store
+  policy prohibits.
+
 ### Fixed
 - **RDAP timeout raised from 15s to 30s.** rdap.org's bootstrap intermittently
   stalls for 25-35 seconds on a cold TLD and then answers successfully
