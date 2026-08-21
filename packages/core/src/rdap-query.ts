@@ -1,16 +1,16 @@
 import type { ParsedRdapData, RdapResponse, RdapEvent, RdapEntity, VCardProperty } from './types';
-import { RDAP_BOOTSTRAP_URL } from './constants';
 import { getRootDomain, toAsciiDomain } from './domain-parser';
 import { fetchWithTimeout } from './fetch-utils';
+import { getRdapBaseUrl } from './rdap-bootstrap';
+import { UpstreamError } from './upstream-errors';
 
 /**
- * Generous on purpose. rdap.org's bootstrap intermittently stalls for
- * 25-35s on a cold TLD and then SUCCEEDS (measured: registro.br 33s then
- * 0.6s warm; nic.br 29s then 0.6s). A 15s timeout converted those slow but
- * real answers into failures. The registries themselves answer in under a
- * second; the stall is in the bootstrap, and it completes.
+ * Registries answer direct RDAP queries in well under a second (measured:
+ * rdap.verisign.com and rdap.registro.br both ~0.6s). The old 30s ceiling
+ * existed only to outlast rdap.org's bootstrap stalls; querying registries
+ * directly makes 15s comfortably generous again.
  */
-const RDAP_TIMEOUT_MS = 30_000;
+const RDAP_TIMEOUT_MS = 15_000;
 
 /**
  * Look up RDAP information for a domain
@@ -23,9 +23,18 @@ export async function queryRdap(domain: string, signal?: AbortSignal): Promise<P
   // RDAP servers expect the ASCII form of IDN domains.
   const rootDomain = toAsciiDomain(getRootDomain(domain) || domain);
 
-  const bootstrapUrl = `${RDAP_BOOTSTRAP_URL}${rootDomain}`;
+  // Resolve the registry's own RDAP server from IANA's bootstrap file and
+  // query it directly. No rdap.org proxy hop: it added nothing but latency
+  // and a second point of failure, since it consults this same file.
+  const baseUrl = await getRdapBaseUrl(rootDomain, signal);
+  if (!baseUrl) {
+    const tld = rootDomain.split('.').pop();
+    throw new Error(
+      `The .${tld} registry does not provide RDAP, so registration data is not available for this domain. A few country registries (like .de) only offer their own WHOIS.`
+    );
+  }
 
-  const response = await fetchWithTimeout(bootstrapUrl, {
+  const response = await fetchWithTimeout(`${baseUrl}domain/${rootDomain}`, {
     headers: {
       'Accept': 'application/rdap+json'
     },
@@ -35,9 +44,12 @@ export async function queryRdap(domain: string, signal?: AbortSignal): Promise<P
 
   if (!response.ok) {
     if (response.status === 404) {
-      throw new Error(`Domain not found - This domain may be unregistered or the TLD may not support RDAP queries. Status: ${response.status}`);
+      throw new Error('Domain not found. It may be unregistered, or the registry may not publish RDAP data for it.');
     }
-    throw new Error(`RDAP lookup failed with status: ${response.status}`);
+    throw new UpstreamError(`RDAP lookup failed with HTTP ${response.status}`, {
+      status: response.status,
+      service: 'the domain registry'
+    });
   }
 
   const data = await response.json() as RdapResponse;

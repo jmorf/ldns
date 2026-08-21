@@ -62,7 +62,7 @@
   {:else if extensionState.rdapState.error}
     <ErrorState
       message={extensionState.rdapState.error}
-      service="rdap.org"
+      service="the domain registry"
       onRetry={() => extensionState.queryRdap(true)}
     />
   {:else if data}

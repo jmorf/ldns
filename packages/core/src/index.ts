@@ -19,6 +19,7 @@ export * from './ssrf';
 export * from './dns-query';
 export * from './dns-propagation';
 export * from './rdap-query';
+export * from './rdap-bootstrap';
 export * from './email-query';
 export * from './parsers';
 export * from './domain-parser';

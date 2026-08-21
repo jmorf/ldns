@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "LDNS - DNS & Domain Tools",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "description": "Instant DNS records, WHOIS/RDAP data, email security analysis, and server info for any domain. Fast, private, no data collection.",
   "author": "LDNS",
   "homepage_url": "https://ldns.com",

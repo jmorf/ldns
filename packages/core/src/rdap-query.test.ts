@@ -1,17 +1,36 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { queryRdap, formatRdapDate } from './rdap-query';
+import { clearRdapBootstrapCache, IANA_RDAP_BOOTSTRAP_URL } from './rdap-bootstrap';
 
 // Mock fetch globally
 const mockFetch = vi.fn();
 globalThis.fetch = mockFetch;
 
+const BOOTSTRAP = {
+  services: [
+    [['com', 'net'], ['https://rdap.verisign.com/com/v1/']],
+    [['br'], ['https://rdap.registro.br/']]
+  ]
+};
+
+/** Route the IANA bootstrap fetch and the registry fetch separately. */
+function mockRdap(registryResponse: unknown) {
+  mockFetch.mockImplementation((url: string) => {
+    if (String(url) === IANA_RDAP_BOOTSTRAP_URL) {
+      return Promise.resolve({ ok: true, json: () => Promise.resolve(BOOTSTRAP) });
+    }
+    return Promise.resolve(registryResponse);
+  });
+}
+
 describe('queryRdap', () => {
   beforeEach(() => {
     mockFetch.mockReset();
+    clearRdapBootstrapCache();
   });
 
   it('should query RDAP successfully', async () => {
-    mockFetch.mockResolvedValue({
+    mockRdap({
       ok: true,
       url: 'https://rdap.verisign.com/com/v1/domain/example.com',
       json: () => Promise.resolve({
@@ -52,7 +71,7 @@ describe('queryRdap', () => {
   });
 
   it('should handle subdomain by using root domain', async () => {
-    mockFetch.mockResolvedValue({
+    mockRdap({
       ok: true,
       url: 'https://rdap.example.com/domain/example.com',
       json: () => Promise.resolve({
@@ -70,16 +89,23 @@ describe('queryRdap', () => {
   });
 
   it('should throw error for 404 response', async () => {
-    mockFetch.mockResolvedValue({
+    mockRdap({
       ok: false,
       status: 404
     });
 
-    await expect(queryRdap('nonexistent.example')).rejects.toThrow('Domain not found');
+    await expect(queryRdap('nonexistent.com')).rejects.toThrow('Domain not found');
+  });
+
+  it('should explain when the TLD has no RDAP service', async () => {
+    // .de is the canonical example: DENIC publishes no RDAP endpoint, so the
+    // TLD is absent from IANA's bootstrap file entirely.
+    mockRdap({ ok: true, json: () => Promise.resolve({}) });
+    await expect(queryRdap('example.de')).rejects.toThrow(/does not provide RDAP/);
   });
 
   it('should throw error for non-OK response', async () => {
-    mockFetch.mockResolvedValue({
+    mockRdap({
       ok: false,
       status: 500
     });
@@ -88,7 +114,7 @@ describe('queryRdap', () => {
   });
 
   it('should parse entities with different roles', async () => {
-    mockFetch.mockResolvedValue({
+    mockRdap({
       ok: true,
       url: 'https://rdap.example.com/domain/example.com',
       json: () => Promise.resolve({
@@ -122,7 +148,7 @@ describe('queryRdap', () => {
   });
 
   it('should handle missing optional fields', async () => {
-    mockFetch.mockResolvedValue({
+    mockRdap({
       ok: true,
       url: 'https://rdap.example.com/domain/example.com',
       json: () => Promise.resolve({
@@ -143,7 +169,7 @@ describe('queryRdap', () => {
 
   it('should track RDAP server URL', async () => {
     const rdapServerUrl = 'https://rdap.verisign.com/com/v1/domain/example.com';
-    mockFetch.mockResolvedValue({
+    mockRdap({
       ok: true,
       url: rdapServerUrl,
       json: () => Promise.resolve({

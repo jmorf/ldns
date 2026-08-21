@@ -16,13 +16,12 @@ No accounts, no analytics, no tracking, no backend. Every lookup goes directly f
 
 WHAT'S NEW
 
+v1.8.3
+• WHOIS/RDAP lookups are much faster and more reliable: LDNS now queries each registry's own RDAP server directly (using IANA's public directory) instead of going through the rdap.org proxy, which had become slow and flaky. Registries without RDAP (like .de) now say so immediately.
+
 v1.8.2
 • RDAP lookups for slow registries (some ccTLDs like .br) no longer time out: the registry data was arriving, just after our cutoff. The timeout now allows for rdap.org's occasional slow first answer.
 • After a week of regular use, LDNS asks once whether you would like to rate it or send feedback. Three clicks of "Later" and it never asks again.
-
-v1.8.1
-• Fixed: the extension follows the tab you are on again, and the side panel now updates as you browse.
-• Subdomain lookups are more reliable when crt.sh is having problems, and failures now explain what went wrong. You can add your own CertSpotter API key in Settings to remove the free-tier limit.
 
 LINKS
 

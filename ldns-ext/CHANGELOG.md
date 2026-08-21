@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.8.3] - 2026-08-20
+
+### Changed
+- **RDAP queries now go straight to each registry.** rdap.org (a redirect
+  proxy over IANA's public bootstrap file) kept stalling and timing out, so
+  LDNS now reads the IANA bootstrap itself and queries the registry's own
+  RDAP server directly: Verisign for .com, Nominet for .uk, registro.br for
+  .br, and so on. Lookups that took 30 seconds or failed now answer in
+  under a second, and one unreliable middleman is gone from the chain.
+- TLDs whose registry publishes no RDAP at all (such as .de) now say so
+  immediately and clearly, instead of stalling and then showing a timeout.
+- With the slow hop gone, the RDAP timeout returns to 15 seconds.
+
 ## [1.8.2] - 2026-08-11
 
 ### Added

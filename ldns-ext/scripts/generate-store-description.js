@@ -20,6 +20,12 @@ const version = packageJson.version;
 const RECENT_RELEASES = 2;
 const releases = [
   {
+    version: '1.8.3',
+    notes: [
+      'WHOIS/RDAP lookups are much faster and more reliable: LDNS now queries each registry\'s own RDAP server directly (using IANA\'s public directory) instead of going through the rdap.org proxy, which had become slow and flaky. Registries without RDAP (like .de) now say so immediately.'
+    ]
+  },
+  {
     version: '1.8.2',
     notes: [
       'RDAP lookups for slow registries (some ccTLDs like .br) no longer time out: the registry data was arriving, just after our cutoff. The timeout now allows for rdap.org\'s occasional slow first answer.',
