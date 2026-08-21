@@ -31,6 +31,8 @@ export * from './tls-query';
 
 export * from './ptr';
 export * from './asn-query';
+export * from './geo-query';
+export * from './zone-file';
 
 export * from './subdomain-query';
 export * from './spf-eval';

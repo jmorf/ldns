@@ -31,6 +31,7 @@ import { checkDnssec, type DnssecCheck } from '@ldns/core/dnssec-check';
 import { checkCaaAgainstIssuer, type CaaIssuerCheck } from '@ldns/core/caa-check';
 import { fetchTlsCertificate } from '@ldns/core/tls-query';
 import { lookupAsnBatch } from '@ldns/core/asn-query';
+import { lookupGeo, type GeoInfo } from '@ldns/core/geo-query';
 import {
   DEFAULT_SETTINGS,
   getRecentSearches,
@@ -80,6 +81,7 @@ class ExtensionState {
   subdomainState = $state<ToolState<SubdomainResult>>(idleState());
   dkimState = $state<ToolState<DkimResult>>(idleState());
   asnState = $state<ToolState<Record<string, AsnInfo>>>(idleState());
+  geoState = $state<ToolState<GeoInfo>>(idleState());
   spfEvalState = $state<ToolState<SpfEvaluation>>(idleState());
   dnssecState = $state<ToolState<DnssecCheck>>(idleState());
   caaCheckState = $state<ToolState<CaaIssuerCheck>>(idleState());
@@ -252,16 +254,18 @@ class ExtensionState {
     this.subdomainState = idleState();
     this.dkimState = idleState();
     this.asnState = idleState();
+    this.geoState = idleState();
     this.spfEvalState = idleState();
     this.dnssecState = idleState();
     this.caaCheckState = idleState();
 
     const queries: Promise<void>[] = [
-      // ASN depends on DNS results, so chain it, guarded against a newer
-      // lookup having superseded this one by the time DNS lands.
+      // ASN and geo depend on DNS results, so chain them, guarded against a
+      // newer lookup having superseded this one by the time DNS lands.
       this.queryDns().then(() => {
         if (this.domain !== lookupDomain) return;
         this.queryAsn();
+        this.queryGeo();
         this.queryCaaCheck();
       }),
       this.queryRdap(),
@@ -426,6 +430,23 @@ class ExtensionState {
     );
   }
 
+  async queryGeo() {
+    // One location lookup per domain: the primary (first) address is where
+    // the site actually answers from; per-IP geo would multiply ipwho.is
+    // requests for no extra insight on anycast/CDN sites.
+    const ip = this.dnsState.data?.A?.[0]?.data ?? this.dnsState.data?.AAAA?.[0]?.data;
+    if (!ip) {
+      this.geoState = idleState();
+      return;
+    }
+    return this.run(
+      'geo',
+      (signal) => lookupGeo(ip, signal),
+      (next) => (this.geoState = next),
+      { cacheKey: `geo:${ip}`, cacheTtlMs: 60 * 60_000 }
+    );
+  }
+
   async clearRecent() {
     await clearRecentSearches();
     this.recentSearches = [];
@@ -443,6 +464,7 @@ class ExtensionState {
     this.subdomainState = idleState();
     this.dkimState = idleState();
     this.asnState = idleState();
+    this.geoState = idleState();
     this.spfEvalState = idleState();
     this.dnssecState = idleState();
     this.caaCheckState = idleState();

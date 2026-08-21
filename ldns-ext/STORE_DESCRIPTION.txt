@@ -16,12 +16,11 @@ No accounts, no analytics, no tracking, no backend. Every lookup goes directly f
 
 WHAT'S NEW
 
+v1.8.4
+• The Server tab now shows where the site's primary IP is located (city, country, and ISP), and the download menu can export all DNS records as a BIND zone file alongside CSV and JSON.
+
 v1.8.3
 • WHOIS/RDAP lookups are much faster and more reliable: LDNS now queries each registry's own RDAP server directly (using IANA's public directory) instead of going through the rdap.org proxy, which had become slow and flaky. Registries without RDAP (like .de) now say so immediately.
-
-v1.8.2
-• RDAP lookups for slow registries (some ccTLDs like .br) no longer time out: the registry data was arriving, just after our cutoff. The timeout now allows for rdap.org's occasional slow first answer.
-• After a week of regular use, LDNS asks once whether you would like to rate it or send feedback. Three clicks of "Later" and it never asks again.
 
 LINKS
 

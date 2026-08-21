@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.8.4] - 2026-08-21
+
+### Added
+- **IP location on the Server tab.** The primary address now shows its
+  city, region, country, and ISP (via ipwho.is, queried directly from the
+  browser like every other lookup). For CDN and anycast sites this is the
+  nearest edge location, not the origin.
+- **Zone file export.** The download menu can now save all looked-up DNS
+  records as a BIND-style zone file ({domain}.zone), alongside the
+  existing CSV and JSON exports. The same generator now powers the
+  ldns.com zone export, which also fixes its TTLs (they previously always
+  exported as 3600).
+
 ## [1.8.3] - 2026-08-20
 
 ### Changed

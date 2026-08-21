@@ -1,5 +1,6 @@
 <script lang="ts">
     import { File, ChevronDown } from "lucide-svelte";
+    import { generateZoneFile } from "@ldns/core";
     
     interface Props {
         dnsData: any;
@@ -12,121 +13,13 @@
 
     let showDropdown = $state(false);
 
-    function generateZoneFile() {
+    function buildZone(): string {
         if (!dnsData) return "";
-
-        const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-        const serial = `${today}01`; // YYYYMMDDNN format
-        
-        let zoneContent = `; Zone file for ${domain}\n`;
-        zoneContent += `; Generated on ${new Date().toISOString()}\n`;
-        zoneContent += `\n`;
-        zoneContent += `$ORIGIN ${domain}.\n`;
-        zoneContent += `$TTL 3600\n`;
-        zoneContent += `\n`;
-
-        // SOA Record (if available)
-        if (dnsData.SOA && dnsData.SOA.length > 0) {
-            const soa = dnsData.SOA[0];
-            const soaParts = soa.data.split(' ');
-            if (soaParts.length >= 7) {
-                zoneContent += `@ IN SOA ${soaParts[0]} ${soaParts[1]} (\n`;
-                zoneContent += `    ${serial}     ; Serial\n`;
-                zoneContent += `    ${soaParts[3]}        ; Refresh\n`;
-                zoneContent += `    ${soaParts[4]}        ; Retry\n`;
-                zoneContent += `    ${soaParts[5]}        ; Expire\n`;
-                zoneContent += `    ${soaParts[6]}        ; Minimum TTL\n`;
-                zoneContent += `)\n\n`;
-            }
-        }
-
-        // NS Records
-        if (dnsData.NS && dnsData.NS.length > 0) {
-            zoneContent += `; Name Servers\n`;
-            dnsData.NS.forEach((record: any) => {
-                const ttl = record.TTL || 3600;
-                zoneContent += `@ ${ttl} IN NS ${record.data}\n`;
-            });
-            zoneContent += `\n`;
-        }
-
-        // A Records
-        if (dnsData.A && dnsData.A.length > 0) {
-            zoneContent += `; A Records\n`;
-            dnsData.A.forEach((record: any) => {
-                const ttl = record.TTL || 3600;
-                zoneContent += `@ ${ttl} IN A ${record.data}\n`;
-            });
-            zoneContent += `\n`;
-        }
-
-        // AAAA Records
-        if (dnsData.AAAA && dnsData.AAAA.length > 0) {
-            zoneContent += `; AAAA Records\n`;
-            dnsData.AAAA.forEach((record: any) => {
-                const ttl = record.TTL || 3600;
-                zoneContent += `@ ${ttl} IN AAAA ${record.data}\n`;
-            });
-            zoneContent += `\n`;
-        }
-
-        // CNAME Records
-        if (dnsData.CNAME && dnsData.CNAME.length > 0) {
-            zoneContent += `; CNAME Records\n`;
-            dnsData.CNAME.forEach((record: any) => {
-                const ttl = record.TTL || 3600;
-                zoneContent += `@ ${ttl} IN CNAME ${record.data}\n`;
-            });
-            zoneContent += `\n`;
-        }
-
-        // MX Records
-        if (dnsData.MX && dnsData.MX.length > 0) {
-            zoneContent += `; MX Records\n`;
-            dnsData.MX.forEach((record: any) => {
-                const ttl = record.TTL || 3600;
-                zoneContent += `@ ${ttl} IN MX ${record.data}\n`;
-            });
-            zoneContent += `\n`;
-        }
-
-        // TXT Records
-        if (dnsData.TXT && dnsData.TXT.length > 0) {
-            zoneContent += `; TXT Records\n`;
-            dnsData.TXT.forEach((record: any) => {
-                const ttl = record.TTL || 3600;
-                // Escape quotes and ensure proper formatting
-                const txtData = record.data.includes(' ') ? `"${record.data.replace(/"/g, '\\"')}"` : record.data;
-                zoneContent += `@ ${ttl} IN TXT ${txtData}\n`;
-            });
-            zoneContent += `\n`;
-        }
-
-        // SRV Records
-        if (dnsData.SRV && dnsData.SRV.length > 0) {
-            zoneContent += `; SRV Records\n`;
-            dnsData.SRV.forEach((record: any) => {
-                const ttl = record.TTL || 3600;
-                zoneContent += `@ ${ttl} IN SRV ${record.data}\n`;
-            });
-            zoneContent += `\n`;
-        }
-
-        // CAA Records
-        if (dnsData.CAA && dnsData.CAA.length > 0) {
-            zoneContent += `; CAA Records\n`;
-            dnsData.CAA.forEach((record: any) => {
-                const ttl = record.TTL || 3600;
-                zoneContent += `@ ${ttl} IN CAA ${record.data}\n`;
-            });
-            zoneContent += `\n`;
-        }
-
-        return zoneContent;
+        return generateZoneFile(domain, dnsData);
     }
 
     function exportZoneFile() {
-        const zoneContent = generateZoneFile();
+        const zoneContent = buildZone();
         const blob = new Blob([zoneContent], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -141,7 +34,7 @@
     }
 
     function copyZoneFile() {
-        const zoneContent = generateZoneFile();
+        const zoneContent = buildZone();
         if (navigator.clipboard) {
             navigator.clipboard.writeText(zoneContent).catch(err => {
                 console.error('Failed to copy zone file:', err);

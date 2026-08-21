@@ -229,6 +229,7 @@
 
     <!-- IP Addresses -->
     {#if ipv4.length > 0 || ipv6.length > 0}
+      {@const geo = extensionState.geoState.data}
       <div class="card">
         <h3 class="section-title mb-2">IP Addresses</h3>
         <div class="space-y-1.5">
@@ -238,6 +239,22 @@
           {#each ipv6 as ip}
             {@render kv('IPv6', ip, 'truncate max-w-[280px]')}
           {/each}
+          <!-- Location of the primary address (best-effort; CDN/anycast IPs
+               report the nearest edge, not the origin) -->
+          {#if geo}
+            {#if geo.city || geo.country}
+              {@render kv(
+                'Location',
+                [geo.city, geo.region, geo.countryCode ?? geo.country]
+                  .filter(Boolean)
+                  .join(', '),
+                'truncate max-w-[280px]'
+              )}
+            {/if}
+            {#if geo.isp || geo.org}
+              {@render kv('ISP', geo.isp ?? geo.org ?? '', 'truncate max-w-[280px]')}
+            {/if}
+          {/if}
         </div>
       </div>
     {/if}

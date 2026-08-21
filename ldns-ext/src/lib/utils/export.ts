@@ -1,5 +1,6 @@
 import { extensionState } from '$lib/state/extension-state.svelte';
 import { RECORD_TYPE_ORDER } from '@ldns/core/constants';
+import { generateZoneFile } from '@ldns/core/zone-file';
 import type { DnsData, DnsRecordResult } from '@ldns/core/types';
 
 interface FullExport {
@@ -15,6 +16,7 @@ interface FullExport {
   subdomains: unknown;
   dkim: unknown;
   asn: unknown;
+  geo: unknown;
 }
 
 declare const __APP_VERSION__: string;
@@ -32,7 +34,8 @@ export function buildExport(): FullExport {
     propagation: extensionState.propagationState.data,
     subdomains: extensionState.subdomainState.data,
     dkim: extensionState.dkimState.data,
-    asn: extensionState.asnState.data
+    asn: extensionState.asnState.data,
+    geo: extensionState.geoState.data
   };
 }
 
@@ -91,6 +94,15 @@ export function downloadDnsCsv(): void {
   const csv = dnsToCsv(data);
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
   downloadBlob(blob, `ldns-${extensionState.domain || 'lookup'}-dns-${Date.now()}.csv`);
+}
+
+export function downloadZoneFile(): void {
+  const data = extensionState.dnsState.data;
+  if (!data) return;
+  const domain = extensionState.rootDomain || extensionState.domain;
+  const zone = generateZoneFile(domain, data);
+  const blob = new Blob([zone], { type: 'text/plain;charset=utf-8' });
+  downloadBlob(blob, `${domain}.zone`);
 }
 
 export async function copyJson(): Promise<void> {

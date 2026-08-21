@@ -20,6 +20,12 @@ const version = packageJson.version;
 const RECENT_RELEASES = 2;
 const releases = [
   {
+    version: '1.8.4',
+    notes: [
+      'The Server tab now shows where the site\'s primary IP is located (city, country, and ISP), and the download menu can export all DNS records as a BIND zone file alongside CSV and JSON.'
+    ]
+  },
+  {
     version: '1.8.3',
     notes: [
       'WHOIS/RDAP lookups are much faster and more reliable: LDNS now queries each registry\'s own RDAP server directly (using IANA\'s public directory) instead of going through the rdap.org proxy, which had become slow and flaky. Registries without RDAP (like .de) now say so immediately.'

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { Download, FileJson, FileSpreadsheet } from 'lucide-svelte';
-  import { downloadJson, downloadDnsCsv } from '$lib/utils/export';
+  import { Download, FileJson, FileSpreadsheet, FileText } from 'lucide-svelte';
+  import { downloadJson, downloadDnsCsv, downloadZoneFile } from '$lib/utils/export';
   import { extensionState } from '$lib/state/extension-state.svelte';
 
   let open = $state(false);
@@ -17,6 +17,11 @@
 
   function pickCsv() {
     downloadDnsCsv();
+    close();
+  }
+
+  function pickZone() {
+    downloadZoneFile();
     close();
   }
 
@@ -67,6 +72,18 @@
         <div class="flex-1 min-w-0">
           <div class="font-medium">DNS records (CSV)</div>
           <div class="text-[10px] text-fg-subtle">type, data, ttl</div>
+        </div>
+      </button>
+      <button
+        role="menuitem"
+        onclick={pickZone}
+        disabled={!hasDns}
+        class="w-full flex items-center gap-2 px-3 py-2 text-left text-xs text-fg hover:bg-surface-3 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border-t border-line"
+      >
+        <FileText class="w-3.5 h-3.5 text-fg-muted" />
+        <div class="flex-1 min-w-0">
+          <div class="font-medium">Zone file (BIND)</div>
+          <div class="text-[10px] text-fg-subtle">records as {'{domain}'}.zone</div>
         </div>
       </button>
       <button
