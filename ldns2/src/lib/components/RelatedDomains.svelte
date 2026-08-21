@@ -10,17 +10,15 @@
 
     let { domain }: Props = $props();
 
-    // Generate domains ONCE when component is created
-    // Store as const so they never change
-    const generatedDomains: RelatedDomain[] = generateRelatedDomains(domain);
+    // Derived so the list follows client-side navigations between domains
+    const generatedDomains: RelatedDomain[] = $derived(generateRelatedDomains(domain));
 
-    // Group domains by type ONCE
-    const groupedDomainsData: Record<string, RelatedDomain[]> = {};
-    generatedDomains.forEach(rd => {
-        if (!groupedDomainsData[rd.type]) {
-            groupedDomainsData[rd.type] = [];
+    const groupedDomainsData: Record<string, RelatedDomain[]> = $derived.by(() => {
+        const grouped: Record<string, RelatedDomain[]> = {};
+        for (const rd of generatedDomains) {
+            (grouped[rd.type] ??= []).push(rd);
         }
-        groupedDomainsData[rd.type].push(rd);
+        return grouped;
     });
 
     // Get badge variant based on type

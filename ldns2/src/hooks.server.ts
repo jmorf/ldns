@@ -39,9 +39,13 @@ const SECURITY_HEADERS: Record<string, string> = {
  * interpolation, and the only `{@html}` is JSON.stringify'd JSON-LD. So source
  * restriction is the meaningful win here.
  *
- * `connect-src` lists the resolvers the page talks to directly (DoH + RDAP);
- * everything else routes through same-origin `/api/*`. No analytics/telemetry
- * hosts are allowed, the site sends no tracking beacons.
+ * `connect-src` allows any https origin because RDAP lookups go straight from
+ * the browser to each TLD registry's own RDAP server (resolved via IANA's
+ * bootstrap file), and that set of hostnames is unbounded. This costs nothing
+ * in practice: `img-src https:` already permits the same exfiltration channel
+ * an attacker with script execution would need, and `script-src 'self'` is
+ * what actually gates execution. No analytics/telemetry: the site sends no
+ * tracking beacons.
  */
 const CSP = [
   "default-src 'self'",
@@ -53,7 +57,7 @@ const CSP = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https:",
   "font-src 'self' data:",
-  "connect-src 'self' https://cloudflare-dns.com https://dns.google https://doh.dns.sb https://rdap.org",
+  "connect-src 'self' https:",
   "manifest-src 'self'",
   "worker-src 'self' blob:",
   'upgrade-insecure-requests'

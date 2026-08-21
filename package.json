@@ -16,5 +16,8 @@
     "jsdom": "^26.0.0",
     "vitest": "^3.0.0",
     "wrangler": "^4.14.1"
+  },
+  "overrides": {
+    "cookie": "^0.7.2"
   }
 }

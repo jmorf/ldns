@@ -6,6 +6,7 @@
   import FaqSection from '$lib/components/FaqSection.svelte';
   import { SEO_PAGES, PAGE_LABELS, EXISTING_PAGES, ALL_PAGE_SLUGS } from '$lib/utils/seoContent';
   import type { SEOPageConfig } from '$lib/utils/seoContent';
+  import { jsonLdScript } from '$lib/utils/jsonLdScript';
   import { ArrowRight } from 'lucide-svelte';
 
   const domain = 'ldns.com';
@@ -65,7 +66,7 @@
   />
 
   <!-- WebApplication JSON-LD -->
-  {@html `<script type="application/ld+json">${JSON.stringify({
+  {@html jsonLdScript({
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
     name: `${toolLabel}. LDNS`,
@@ -76,7 +77,7 @@
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
     browserRequirements: 'Requires JavaScript',
     softwareHelp: { '@type': 'CreativeWork', url: `https://${domain}/about` }
-  }, null, 2)}</script>`}
+  })}
 
   <!-- ─── Hero ───────────────────────────────────────────────── -->
   <section class="border-b border-line">

@@ -1,20 +1,16 @@
 <script lang="ts">
     import type { FaqPage } from "$lib/utils/faqJsonLd";
+    import { jsonLdScript } from "$lib/utils/jsonLdScript";
 
     interface Props {
         faqData: FaqPage | null;
     }
 
     let { faqData }: Props = $props();
-
-    // Reactive JSON string generation
-    const jsonLdString = $derived(
-        faqData ? JSON.stringify(faqData, null, 2) : ''
-    );
 </script>
 
 <svelte:head>
     {#if faqData}
-        {@html `<script type="application/ld+json">${jsonLdString}</script>`}
+        {@html jsonLdScript(faqData)}
     {/if}
 </svelte:head>

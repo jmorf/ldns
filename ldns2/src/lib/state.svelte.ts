@@ -1,4 +1,7 @@
 import psl from 'psl';
+import { queryRdap } from '@ldns/core';
+import type { ParsedRdapData } from '@ldns/core';
+export type { ParsedRdapData };
 
 
 // ─── Raw API Response Types ────────────────────────────────────────
@@ -39,43 +42,9 @@ function getRecordTypeNumber(typeName: string): number {
     return DNS_TYPE_MAP[typeName.toUpperCase()] || 0;
 }
 
-interface RdapEvent {
-    eventAction: string;
-    eventDate: string;
-    eventActor?: string;
-}
-
-interface RdapEntity {
-    roles: string[];
-    handle?: string;
-    vcardArray?: [string, any[]];
-}
-
-interface RdapResponse {
-    ldhName?: string;
-    handle?: string;
-    status?: string[];
-    events?: RdapEvent[];
-    entities?: RdapEntity[];
-    nameservers?: { ldhName: string }[];
-    secureDNS?: {
-        delegationSigned?: boolean;
-        dsData?: Array<{
-            keyTag: number;
-            algorithm: number;
-            digestType: number;
-            digest: string;
-        }>;
-        keyData?: Array<{
-            flags: number;
-            protocol: number;
-            algorithm: number;
-            publicKey: string;
-        }>;
-    };
-}
-
 // ─── Parsed / Tool Data Types (exported for consumers) ─────────────
+// RDAP types and querying live in @ldns/core (shared with the extension);
+// ParsedRdapData is re-exported above for existing consumers.
 
 /** A single DNS record result (used across DNS, email, etc.) */
 export interface DnsRecordResult {
@@ -86,30 +55,6 @@ export interface DnsRecordResult {
 
 /** DNS lookup results keyed by record type */
 export type DnsData = Record<string, DnsRecordResult[]>;
-
-/** Parsed RDAP / WHOIS data */
-export interface ParsedRdapData {
-    domainName: string;
-    status: string[];
-    events: Array<{ action: string; date: string; actor: string }>;
-    entities: Array<{
-        role: string;
-        handle: string;
-        name: string;
-        org: string;
-        email: string;
-        tel: string;
-        country: string;
-    }>;
-    nameservers: string[];
-    created: string;
-    updated: string;
-    expires: string;
-    registrar: string | null;
-    rdapServer: string;
-    dnssecEnabled: boolean;
-    dnssecData: RdapResponse['secureDNS'];
-}
 
 /** SPF record analysis */
 export interface SPFAnalysis {
@@ -624,59 +569,10 @@ class DomainName {
         };
 
         try {
-            // Get the registrable domain (root domain without subdomain)
-            const domain = this.rootDomain;
-
-            // First try the IANA bootstrap service to find the right RDAP server
-            const bootstrapUrl = `https://rdap.org/domain/${domain}`;
-
-            const response = await fetch(bootstrapUrl, {
-                headers: {
-                    'Accept': 'application/rdap+json'
-                },
-                redirect: 'follow' // Follow redirects automatically
-            });
-
-            if (!response.ok) {
-                if (response.status === 404) {
-                    throw new Error(`Domain not found - This domain may be unregistered or the TLD may not support RDAP queries. Status: ${response.status}`);
-                }
-                throw new Error(`RDAP lookup failed with status: ${response.status}`);
-            }
-
-            const data = await response.json() as RdapResponse;
-
-            // Extract registrar from entities
-            const registrarEntity = (data.entities || []).find((entity: RdapEntity) => 
-                entity.roles?.includes('registrar') || 
-                entity.roles?.includes('registration')
-            );
-            let registrarName = null;
-            if (registrarEntity) {
-                // Try to get registrar name from vCard or handle
-                const vcardArray = registrarEntity.vcardArray || ['vcard', []];
-                const vcardProps = vcardArray[1] || [];
-                registrarName = this.findVcardValue(vcardProps, 'fn') || 
-                               this.findVcardValue(vcardProps, 'org') || 
-                               registrarEntity.handle || 
-                               'Unknown Registrar';
-            }
-
-            // Parse and format RDAP data
-            const parsedData: ParsedRdapData = {
-                domainName: data.ldhName || data.handle || domain,
-                status: data.status || [],
-                events: this.parseRdapEvents(data.events || []),
-                entities: this.parseRdapEntities(data.entities || []),
-                nameservers: (data.nameservers || []).map((ns: { ldhName: string }) => ns.ldhName || ''),
-                created: this.findEventDate(data.events || [], 'registration'),
-                updated: this.findEventDate(data.events || [], 'last changed'),
-                expires: this.findEventDate(data.events || [], 'expiration'),
-                registrar: registrarName,
-                rdapServer: response.url, // The actual RDAP server URL after redirects
-                dnssecEnabled: data.secureDNS?.delegationSigned === true,
-                dnssecData: data.secureDNS
-            };
+            // Shared implementation with the extension: resolves the registry's
+            // own RDAP server from IANA's bootstrap file and queries it directly
+            // (no rdap.org proxy hop), with a timeout.
+            const parsedData = await queryRdap(this.rootDomain);
 
             this.toolState.rdap = {
                 loading: false,
@@ -687,7 +583,9 @@ class DomainName {
 
             return parsedData;
         } catch (error) {
-            console.error("RDAP lookup error:", error);
+            if (import.meta.env.DEV) {
+                console.error("RDAP lookup error:", error);
+            }
             this.toolState.rdap = {
                 loading: false,
                 error: error instanceof Error ? error.message : "Unknown error",
@@ -696,50 +594,6 @@ class DomainName {
             };
             return null;
         }
-    }
-
-    // Helper methods for parsing RDAP data
-    private parseRdapEvents(events: RdapEvent[]) {
-        return events.map((event: RdapEvent) => ({
-            action: event.eventAction || '',
-            date: event.eventDate || '',
-            actor: event.eventActor || ''
-        }));
-    }
-
-    private parseRdapEntities(entities: RdapEntity[]) {
-        return entities.map((entity: RdapEntity) => {
-            const roles = entity.roles || [];
-            const vcardArray = entity.vcardArray || ['vcard', []];
-            const vcardProps = vcardArray[1] || [];
-
-            // Extract common vCard properties
-            const name = this.findVcardValue(vcardProps, 'fn');
-            const org = this.findVcardValue(vcardProps, 'org');
-            const email = this.findVcardValue(vcardProps, 'email');
-            const tel = this.findVcardValue(vcardProps, 'tel');
-            const country = this.findVcardValue(vcardProps, 'country-name');
-
-            return {
-                role: roles.join(', '),
-                handle: entity.handle || '',
-                name,
-                org,
-                email,
-                tel,
-                country
-            };
-        });
-    }
-
-    private findVcardValue(vcardProps: any[], propName: string) {
-        const prop = vcardProps.find((p: any) => p[0] === propName);
-        return prop ? prop[3] : '';
-    }
-
-    private findEventDate(events: RdapEvent[], eventType: string) {
-        const event = events.find((e: RdapEvent) => e.eventAction === eventType);
-        return event ? event.eventDate : '';
     }
 
     /**

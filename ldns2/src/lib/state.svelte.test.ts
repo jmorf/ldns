@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { domain, queryConfig } from './state.svelte';
+import { clearRdapBootstrapCache } from '@ldns/core';
 
 // ─── Helpers ─────────────────────────────────────────────────────
 
@@ -230,10 +231,27 @@ describe('lookupDnsRecordsWithToolState', () => {
 describe('lookupRdap', () => {
     let originalFetch: typeof globalThis.fetch;
 
+    // RDAP queries are two-step now (shared @ldns/core implementation):
+    // IANA's bootstrap file maps the TLD to the registry's RDAP server,
+    // then the registry is queried directly.
+    const BOOTSTRAP = {
+        services: [[['com'], ['https://rdap.example-registry.test/']]]
+    };
+
+    /** Serve the IANA bootstrap fixture and route registry queries to `registry` */
+    function mockRdap(registry: () => Response | Promise<Response>) {
+        globalThis.fetch = mockFetch({
+            'data.iana.org': () => jsonResponse(BOOTSTRAP),
+            'rdap.example-registry.test': registry
+        });
+    }
+
     beforeEach(() => {
         originalFetch = globalThis.fetch;
         domain.name = 'example.com';
         domain.resetToolState('rdap');
+        // The bootstrap file is memoized module-wide; isolate each test.
+        clearRdapBootstrapCache();
     });
 
     afterEach(() => {
@@ -264,7 +282,7 @@ describe('lookupRdap', () => {
             secureDNS: { delegationSigned: true },
         };
 
-        globalThis.fetch = vi.fn(async () => jsonResponse(rdapResponse));
+        mockRdap(() => jsonResponse(rdapResponse));
 
         const result = await domain.lookupRdap();
         expect(result).not.toBeNull();
@@ -279,7 +297,7 @@ describe('lookupRdap', () => {
     });
 
     it('sets toolState on success', async () => {
-        globalThis.fetch = vi.fn(async () => jsonResponse({
+        mockRdap(() => jsonResponse({
             ldhName: 'example.com',
             status: ['active'],
             events: [],
@@ -294,15 +312,24 @@ describe('lookupRdap', () => {
     });
 
     it('handles 404 (domain not found)', async () => {
-        globalThis.fetch = vi.fn(async () => new Response('Not found', { status: 404 }));
+        mockRdap(() => new Response('Not found', { status: 404 }));
 
         const result = await domain.lookupRdap();
         expect(result).toBeNull();
         expect(domain.toolState.rdap.error).toContain('not found');
     });
 
+    it('explains TLDs with no RDAP service', async () => {
+        domain.name = 'example.de';
+        mockRdap(() => jsonResponse({}));
+
+        const result = await domain.lookupRdap();
+        expect(result).toBeNull();
+        expect(domain.toolState.rdap.error).toContain('does not provide RDAP');
+    });
+
     it('handles missing optional fields', async () => {
-        globalThis.fetch = vi.fn(async () => jsonResponse({
+        mockRdap(() => jsonResponse({
             ldhName: 'example.com',
         }));
 

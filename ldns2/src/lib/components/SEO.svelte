@@ -1,6 +1,7 @@
 <script lang="ts">
     import { page } from "$app/stores";
     import { browser } from "$app/environment";
+    import { jsonLdScript } from "$lib/utils/jsonLdScript";
 
     interface Props {
         title?: string;
@@ -97,5 +98,5 @@
     <meta name="twitter:image" content={fullImageUrl} />
 
     <!-- JSON-LD structured data -->
-    {@html `<script type="application/ld+json">${JSON.stringify(jsonLd, null, 2)}</script>`}
+    {@html jsonLdScript(jsonLd)}
 </svelte:head>
